@@ -1,0 +1,38 @@
+{
+    "seed": 42,
+    "title": "Classification",
+    "task": "A",
+    "train": {
+        "file": "data/raw/train_all_tasks.csv",
+        "k_fold": 7
+    },
+    "datasets": {
+        "name": "edos",
+        "labels": [
+            "misogynous",
+            "shaming",
+            "stereotype",
+            "objectification",
+            "violence"
+        ]
+    },
+    "logs": {
+        "dir": "logs",
+        "files": {
+            "train": "train.log",
+            "event": "events.log",
+            "best": "best.log",
+            "predictions": "predictions.log",
+            "data": "data.log",
+            "models": "models"
+        }
+    },
+    "model": {
+        "type": "text",
+        "text": {
+            "bert": "vinai/bertweet-base",
+            "max_length": 128,
+            "dimentions": 768
+        }
+    }   
+}
