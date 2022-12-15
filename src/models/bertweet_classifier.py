@@ -13,8 +13,7 @@ class BertTweetClassifier(t.nn.Module):
         self.bert = AutoModel.from_pretrained(configs.model.text.bert).to(device)
         self.linear_one = t.nn.Linear(configs.model.text.dimentions, 512).to(device)
         self.linear_two = t.nn.Linear(512, 256).to(device)
-        self.linear_three = t.nn.Linear(256, 128).to(device)
-        self.linear_four = t.nn.Linear(128, len(self.configs.datasets.labels)).to(device)
+        self.head_a = t.nn.Linear(256, len(self.configs.datasets.label_sexist.configs)).to(device)
 
     def forward(self, input):
         input_ids = input['input_ids'].to(self.device)
@@ -25,8 +24,7 @@ class BertTweetClassifier(t.nn.Module):
 
         x = t.relu(self.linear_one(pooled_output))
         x = t.relu(self.linear_two(x))
-        x = t.relu(self.linear_three(x))
-        return self.linear_four(x)
+        return self.head_a(x)
 
     def get_intermediate_features(self, input, layer):
         input_ids = input['input_ids'].to(self.device)
