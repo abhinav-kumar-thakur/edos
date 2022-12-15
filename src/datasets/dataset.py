@@ -1,6 +1,8 @@
 import csv
+from collections import defaultdict
 
 from torch.utils.data import Dataset
+from transformers import AutoTokenizer
 from sklearn.model_selection import KFold
 from tqdm import tqdm
 
@@ -13,6 +15,10 @@ class EDOSDataset(Dataset):
         self.kf = KFold(n_splits=self.k_fold, shuffle=True, random_state=42)
         self.k_splits = list(self.kf.split(self.data))
         self.configs = configs
+
+        self.tokenizer = AutoTokenizer.from_pretrained(configs.model.text.bert, use_fast=False)
+        self.text_max_length = configs.model.text.max_length
+
 
     def get_kth_fold_dataset(self, k):
         train_data = []
@@ -27,13 +33,48 @@ class EDOSDataset(Dataset):
         return EDOSDataset(f'train_{k}', self.configs, train_data), EDOSDataset(f'eval_{k}', self.configs, test_data)
 
     def summarize(self):
-        return f'{self.name} dataset has {len(self.data)} samples'
+        # Create dict counter for each label
+        label_sexist_counter = defaultdict(int)
+        label_category_counter = defaultdict(int)
+        label_vector_counter = defaultdict(int)
+
+        for sample in self.data:
+            label_sexist_counter[sample['label_sexist']] += 1
+            label_category_counter[sample['label_category']] += 1
+            label_vector_counter[sample['label_vector']] += 1
+
+        summary = {
+            'name': self.name,
+            'count': len(self.data),
+            'label_sexist': dict(label_sexist_counter),
+            'label_category': dict(label_category_counter),
+            'label_vector': dict(label_vector_counter)
+        }
+
+        return summary
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, index):
-        return self.data[index]
+        item = self.data[index]
+
+        encoding = self.tokenizer.encode_plus(
+            item['text'],
+            add_special_tokens=True,
+            max_length=self.text_max_length,
+            truncation= True,
+            return_token_type_ids=False,
+            padding = 'max_length',
+            return_attention_mask=True,
+            return_tensors='pt',
+        )
+
+        
+        item['input_ids'] =  encoding['input_ids'].flatten()
+        item['attention_mask'] =  encoding['attention_mask'].flatten()
+        
+        return item 
 
 
 class TrainDataset(EDOSDataset):
