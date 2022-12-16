@@ -49,7 +49,7 @@ class Trainer(ABC):
                     best_parames = {
                         'kth_fold': kth_fold,
                         'epoch': epoch,
-                        'eval_metric': eval_metric,
+                        'eval_metric': eval_scores,
                     }
 
                     torch.save(self.model.state_dict(), os.path.join(self.model_save_dir, f'best_model_{kth_fold}.pt'))
@@ -58,8 +58,8 @@ class Trainer(ABC):
                 else:
                     epcohs_without_improvement += 1
                 
-                self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": kth_fold, "Epoch": epoch, 'train': {k: train_scores[k][k]['f1-score'] for k in self.configs.datasets.labels}})
-                self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": kth_fold, "Epoch": epoch, 'eval': {k: eval_scores[k][k]['f1-score'] for k in self.configs.datasets.labels}})
+                self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": kth_fold, "Epoch": epoch, 'train': train_scores})
+                self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": kth_fold, "Epoch": epoch, 'eval': eval_scores})
 
                 if epcohs_without_improvement >= self.configs.train.patience:
                     break

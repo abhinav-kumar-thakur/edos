@@ -8,7 +8,8 @@ class TweetTrainer(Trainer):
     def __init__(self, get_model_func, configs, device, logger) -> None:
         super().__init__(get_model_func, configs, device, logger)
 
-        self.loss = torch.nn.CrossEntropyLoss()
+        class_weights = torch.FloatTensor([1, 3]).to(device)
+        self.loss = torch.nn.CrossEntropyLoss(weight=class_weights)
         self.label2idx = self.configs.datasets.label_sexist_ids.configs
 
 
