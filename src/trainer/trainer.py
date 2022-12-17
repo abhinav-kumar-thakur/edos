@@ -40,7 +40,7 @@ class Trainer(ABC):
             epcohs_without_improvement = 0
 
             for epoch in range(self.configs.train.epochs):
-                self.train(train_dataloader)
+                avg_loss = self.train(train_dataloader)
                 train_scores, _ = self.eval(train_dataloader)
                 eval_scores, _ = self.eval(eval_dataloader)
                 eval_metric = self.summarize_scores(eval_scores)
@@ -58,7 +58,7 @@ class Trainer(ABC):
                 else:
                     epcohs_without_improvement += 1
                 
-                self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": kth_fold, "Epoch": epoch, 'train': train_scores})
+                self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": kth_fold, "Epoch": epoch, 'train': train_scores, 'loss': avg_loss})
                 self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": kth_fold, "Epoch": epoch, 'eval': eval_scores})
 
                 if epcohs_without_improvement >= self.configs.train.patience:

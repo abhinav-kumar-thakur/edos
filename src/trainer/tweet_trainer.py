@@ -21,14 +21,14 @@ class TweetTrainer(Trainer):
             self.optimizer.zero_grad()
             pred = self.model(batch)
             actaul = [self.label2idx[l] for l in  batch['label_sexist']]
-            loss = self.loss(pred, torch.tensor(actaul).to(self.device))
+            actaul = torch.tensor(actaul).to(self.device)
+            loss = self.loss(pred, actaul)
             
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
             
             total_loss += loss.item()
-            break
 
         return total_loss / len(train_dataloader)
 
