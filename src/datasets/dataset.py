@@ -16,8 +16,8 @@ class EDOSDataset(Dataset):
         self.k_splits = list(self.kf.split(self.data))
         self.configs = configs
 
-        self.tokenizer = AutoTokenizer.from_pretrained(configs.model.text.bert, use_fast=False)
-        self.text_max_length = configs.model.text.max_length
+        self.tokenizer = AutoTokenizer.from_pretrained(configs.model.bert.name, use_fast=False)
+        self.text_max_length = configs.model.bert.max_length
 
 
     def get_kth_fold_dataset(self, k):

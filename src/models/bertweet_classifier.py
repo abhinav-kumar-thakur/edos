@@ -9,8 +9,8 @@ class BertTweetClassifier(t.nn.Module):
 
         self.device = device
         self.configs = configs
-        self.bert = AutoModel.from_pretrained(configs.model.text.bert).to(device)
-        self.linear_one = t.nn.Linear(configs.model.text.dimentions, 512).to(device)
+        self.bert = AutoModel.from_pretrained(configs.bert.bert).to(device)
+        self.linear_one = t.nn.Linear(configs.model.bert.dimentions, 512).to(device)
         self.linear_two = t.nn.Linear(512, 256).to(device)
         self.head_a = t.nn.Linear(256, len(self.configs.datasets.label_sexist.configs)).to(device)
 
@@ -20,7 +20,7 @@ class BertTweetClassifier(t.nn.Module):
         self.label2idx = self.configs.datasets.label_sexist_ids.configs
         self.idx2label = {v: k for k, v in self.label2idx.items()}
 
-    def forward(self, input):
+    def forward(self, input, train=True):
         input_ids = input['input_ids'].to(self.device)
         attention_mask = input['attention_mask'].to(self.device)
 
@@ -32,7 +32,7 @@ class BertTweetClassifier(t.nn.Module):
         pred = self.head_a(x)
         
         loss = None
-        if 'label_sexist' in input:
+        if train:
             actaul = [self.label2idx[l] for l in  input['label_sexist']]
             actaul = t.tensor(actaul).to(self.device)
             loss = self.loss(pred, actaul)

@@ -54,11 +54,14 @@
         }
     },
     "model": {
-        "type": "text",
-        "text": {
-            "bert": "vinai/bertweet-base",
+        "type": "unifiedQA",
+        "bert": {
+            "name": "vinai/bertweet-base",
             "max_length": 128,
             "dimentions": 768
+        },
+        "unifiedQA": {
+            "model_size": "small"
         }
     }   
 }
