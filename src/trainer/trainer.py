@@ -3,7 +3,6 @@ import os
 
 import torch
 from torch.utils.data import DataLoader
-from torch.optim import Adam
 
 from src.logger import Logger
 from src.datasets.dataset import TrainDataset
@@ -26,7 +25,6 @@ class Trainer(ABC):
         kfold_eval_metrics = []
         for kth_fold in range(self.configs.train.k_fold):
             self.model = self.get_model_func(self.configs, self.device)
-            self.optimizer = Adam(self.model.parameters(), lr=0.0001)
 
             train_set, eval_set = self.train_dataset.get_kth_fold_dataset(kth_fold)
             self.logger.log_file(self.configs.logs.files.data, train_set.summarize())

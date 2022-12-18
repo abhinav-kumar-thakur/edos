@@ -4,10 +4,10 @@
     "task": "A",
     "train": {
         "file": "data/raw/train_all_tasks.csv",
-        "k_fold": 7,
-        "train_batch_size": 4,
-        "eval_batch_size": 16,
-        "epochs": 3,
+        "k_fold": 6,
+        "train_batch_size": 8,
+        "eval_batch_size": 32,
+        "epochs": 30,
         "patience": 5
     },
     "datasets": {
