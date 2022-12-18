@@ -1,6 +1,6 @@
 {
     "seed": 42,
-    "title": "Classification",
+    "title": "unifiedQA",
     "task": "A",
     "train": {
         "file": "data/raw/train_all_tasks.csv",

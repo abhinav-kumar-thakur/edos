@@ -1,6 +1,6 @@
 {
     "seed": 42,
-    "title": "Classification",
+    "title": "bertweet",
     "task": "A",
     "train": {
         "file": "data/raw/train_all_tasks.csv",

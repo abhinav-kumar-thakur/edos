@@ -59,20 +59,29 @@ class EDOSDataset(Dataset):
     def __getitem__(self, index):
         item = self.data[index]
 
-        encoding = self.tokenizer.encode_plus(
-            item['text'],
-            add_special_tokens=True,
-            max_length=self.text_max_length,
-            truncation= True,
-            return_token_type_ids=False,
-            padding = 'max_length',
-            return_attention_mask=True,
-            return_tensors='pt',
-        )
+        if self.configs.model.type == 'bert':
+            encoding = self.tokenizer.encode_plus(
+                item['text'],
+                add_special_tokens=True,
+                max_length=self.text_max_length,
+                truncation= True,
+                return_token_type_ids=False,
+                padding = 'max_length',
+                return_attention_mask=True,
+                return_tensors='pt',
+            )
 
-        
-        item['input_ids'] =  encoding['input_ids'].flatten()
-        item['attention_mask'] =  encoding['attention_mask'].flatten()
+            
+            item['input_ids'] =  encoding['input_ids'].flatten()
+            item['attention_mask'] =  encoding['attention_mask'].flatten()
+
+        if self.configs.model.type == 'unifiedQA':
+            sexism_definition = f'Sexism: any abuse or negative sentiment that is directed towards women based on their gender, or based on their gender combined with one or more other identity attributes.'
+            question = f'Is the following sentence sexist?'
+            options = ['(A) sexist', '(B) not sexist']
+            evidence = item['text']
+            unifiedQA_question = f'{question}\n{options}\n{evidence}\n{sexism_definition}'
+            item['question'] = unifiedQA_question
         
         return item 
 
