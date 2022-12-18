@@ -23,7 +23,7 @@ class TweetTrainer(Trainer):
         actual_labels = []
         predicted_labels = []
         for batch in tqdm(eval_dataloader):
-            pred, _ = self.model(batch)
+            pred, _ = self.model(batch, train=False)
             actual_labels.extend(batch['label_sexist'])
             predicted_labels.extend(pred)
         
