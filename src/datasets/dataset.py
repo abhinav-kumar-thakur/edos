@@ -78,7 +78,7 @@ class EDOSDataset(Dataset):
         if self.configs.model.type == 'unifiedQA':
             sexism_definition = f'Sexism: any abuse or negative sentiment that is directed towards women based on their gender, or based on their gender combined with one or more other identity attributes.'
             question = f'Is the following sentence sexist?'
-            options = ['(A) sexist', '(B) not sexist']
+            options = ' '.join(['(A) sexist', '(B) not sexist'])
             evidence = item['text']
             unifiedQA_question = f'{question}\n{options}\n{evidence}\n{sexism_definition}'
             item['question'] = unifiedQA_question
