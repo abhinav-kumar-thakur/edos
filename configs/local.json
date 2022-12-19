@@ -1,6 +1,6 @@
 {
     "seed": 42,
-    "title": "bertweet",
+    "title": "unifiedQA",
     "task": "A",
     "train": {
         "file": "data/raw/train_all_tasks.csv",
@@ -43,7 +43,7 @@
         }
     },
     "logs": {
-        "dir": "/content/drive/MyDrive/EDOS/logs",
+        "dir": "logs",
         "files": {
             "train": "train.log",
             "event": "events.log",
@@ -54,7 +54,7 @@
         }
     },
     "model": {
-        "type": "bert",
+        "type": "unifiedQA",
         "bert": {
             "name": "vinai/bertweet-base",
             "max_length": 128,
