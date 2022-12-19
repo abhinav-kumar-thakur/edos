@@ -54,7 +54,7 @@
         }
     },
     "model": {
-        "type": "unifiedQA",
+        "type": "bert",
         "bert": {
             "name": "vinai/bertweet-base",
             "max_length": 128,

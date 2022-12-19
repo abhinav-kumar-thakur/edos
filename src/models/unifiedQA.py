@@ -40,7 +40,7 @@ class UnifiedQAClassifier(t.nn.Module):
             res = self.model.generate(input_ids.to(self.device))
             predictions = self.tokenizer.batch_decode(res, skip_special_tokens=True)
         
-        return predictions, loss if loss else None
+        return predictions, loss.item() if loss else None
 
     def predict(self, input):
         encoding = self.tokenizer(input['question'], padding="longest", max_length=self.configs.model.bert.max_length, truncation=True, return_tensors="pt")
