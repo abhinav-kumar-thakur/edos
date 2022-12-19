@@ -43,7 +43,7 @@
         }
     },
     "logs": {
-        "dir": "logs",
+        "dir": "/content/drive/MyDrive/EDOS/logs",
         "files": {
             "train": "train.log",
             "event": "events.log",
