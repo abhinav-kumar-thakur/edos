@@ -9,7 +9,7 @@ class BertTweetClassifier(t.nn.Module):
 
         self.device = device
         self.configs = configs
-        self.bert = AutoModel.from_pretrained(configs.bert.bert).to(device)
+        self.bert = AutoModel.from_pretrained(configs.model.bert.name).to(device)
         self.linear_one = t.nn.Linear(configs.model.bert.dimentions, 512).to(device)
         self.linear_two = t.nn.Linear(512, 256).to(device)
         self.head_a = t.nn.Linear(256, len(self.configs.datasets.label_sexist.configs)).to(device)

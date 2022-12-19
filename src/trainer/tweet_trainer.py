@@ -22,13 +22,16 @@ class TweetTrainer(Trainer):
         self.model.eval()
         actual_labels = []
         predicted_labels = []
+        predictions = []
         for batch in tqdm(eval_dataloader):
             pred, _ = self.model(batch, train=False)
             actual_labels.extend(batch['label_sexist'])
             predicted_labels.extend(pred)
+            predictions.extend(zip(batch['text'] if self.configs.model.type == 'bert' else batch['question'], pred))
         
         scores = classification_report(actual_labels, predicted_labels, output_dict=True)
-        return scores, {}
+
+        return scores, predictions
 
     def predict(self, dataset):
         pass

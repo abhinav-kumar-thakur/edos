@@ -39,8 +39,8 @@ class Trainer(ABC):
 
             for epoch in range(self.configs.train.epochs):
                 avg_loss = self.train(train_dataloader)
-                train_scores, _ = self.eval(train_dataloader)
-                eval_scores, _ = self.eval(eval_dataloader)
+                train_scores, train_predictions = self.eval(train_dataloader)
+                eval_scores, eval_predictions = self.eval(eval_dataloader)
                 eval_metric = self.summarize_scores(eval_scores)
                 if best_score is None or  eval_metric > best_score:
                     best_score = eval_metric
@@ -52,6 +52,7 @@ class Trainer(ABC):
 
                     torch.save(self.model.state_dict(), os.path.join(self.model_save_dir, f'best_model_{kth_fold}.pt'))
                     self.logger.log_file(self.configs.logs.files.best, best_parames)
+                    self.logger.log_file(self.configs.logs.files.predictions, {'kth_fold': kth_fold, 'epoch': epoch, 'eval': eval_predictions})
                     epcohs_without_improvement = 0
                 else:
                     epcohs_without_improvement += 1

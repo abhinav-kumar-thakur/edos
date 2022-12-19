@@ -18,7 +18,7 @@ class UnifiedQAClassifier(t.nn.Module):
         self.model.to(device)
 
     def forward(self, input, train=True):
-        encoding = self.tokenizer(input['text'], padding="longest", max_length=self.configs.model.bert.max_length, truncation=True, return_tensors="pt")
+        encoding = self.tokenizer(input['question'], padding="longest", max_length=self.configs.model.bert.max_length, truncation=True, return_tensors="pt")
         input_ids, attention_mask = encoding.input_ids, encoding.attention_mask
 
         loss = None
@@ -40,10 +40,10 @@ class UnifiedQAClassifier(t.nn.Module):
             res = self.model.generate(input_ids.to(self.device))
             predictions = self.tokenizer.batch_decode(res, skip_special_tokens=True)
         
-        return predictions, loss if loss else None
+        return predictions, loss.item() if loss else None
 
     def predict(self, input):
-        encoding = self.tokenizer(input['text'], padding="longest", max_length=self.configs.model.bert.max_length, truncation=True, return_tensors="pt")
+        encoding = self.tokenizer(input['question'], padding="longest", max_length=self.configs.model.bert.max_length, truncation=True, return_tensors="pt")
         input_ids, attention_mask = encoding.input_ids, encoding.attention_mask
 
         output = self.model.generate(input_ids=input_ids.to(self.device), attention_mask=attention_mask.to(self.device), max_length=4)
