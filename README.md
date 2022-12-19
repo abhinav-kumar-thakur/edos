@@ -9,3 +9,11 @@ Mac M1: [M1](./envs/m1.md)
 # Runs
 * Bertweet: `!PYTHONPATH=. python src/runner/classify.py --device cuda --config bertweet.json`
 * UnifiedQA: `!PYTHONPATH=. python src/runner/classify.py --device cuda --config unifiedQA.json`
+
+# Ideas
+* Upsampling less represented classes
+* Save intermediate results to disk and start from there
+* Ensemble of models
+* Finetuning specific models to get model wise best scores
+* Analyze failed predictions
+* Use unlabeled data to train a model (Semi-supervised learning, Active learning, Distant supervised learning)

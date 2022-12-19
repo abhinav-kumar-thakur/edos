@@ -1,6 +1,6 @@
 {
     "seed": 42,
-    "title": "unifiedQA",
+    "title": "bertweet",
     "task": "A",
     "train": {
         "file": "data/raw/train_all_tasks.csv",
@@ -50,11 +50,12 @@
             "best": "best.log",
             "predictions": "predictions.log",
             "data": "data.log",
-            "models": "models"
+            "models": "models",
+            "state": "state.json"
         }
     },
     "model": {
-        "type": "unifiedQA",
+        "type": "bert",
         "bert": {
             "name": "vinai/bertweet-base",
             "max_length": 128,

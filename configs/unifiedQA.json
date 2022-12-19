@@ -50,7 +50,8 @@
             "best": "best.log",
             "predictions": "predictions.log",
             "data": "data.log",
-            "models": "models"
+            "models": "models",
+            "state": "state.json"
         }
     },
     "model": {

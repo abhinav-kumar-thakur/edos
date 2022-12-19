@@ -20,11 +20,22 @@ class Trainer(ABC):
         self.model_save_dir = os.path.join(configs.logs.dir, configs.title + '-' + configs.task, configs.logs.files.models)
 
     def train_kfold(self):
-        self.logger.log_file(self.configs.logs.files.data, self.train_dataset.summarize())
-
-        kfold_eval_metrics = []
-        for kth_fold in range(self.configs.train.k_fold):
+        state = self.logger.get_state()
+        current_fold = 0
+        current_epoch = 0
+        
+        if state['kth_fold'] is not None:
             self.model = self.get_model_func(self.configs, self.device)
+            self.model.load_state_dict(self.logger.get_current_state_model())
+            current_fold = state['kth_fold'] + 1
+            current_epoch = state['epoch'] + 1
+        else:
+            self.logger.log_file(self.configs.logs.files.data, self.train_dataset.summarize())
+
+        for kth_fold in range(current_fold, self.configs.train.k_fold):
+            self.model = self.get_model_func(self.configs, self.device)
+            if current_epoch > 0:
+                self.model.load_state_dict(self.logger.get_current_state_model())
 
             train_set, eval_set = self.train_dataset.get_kth_fold_dataset(kth_fold)
             self.logger.log_file(self.configs.logs.files.data, train_set.summarize())
@@ -37,7 +48,7 @@ class Trainer(ABC):
             best_parames = {}
             epcohs_without_improvement = 0
 
-            for epoch in range(self.configs.train.epochs):
+            for epoch in range(current_epoch, self.configs.train.epochs):
                 avg_loss = self.train(train_dataloader)
                 train_scores, train_predictions = self.eval(train_dataloader)
                 eval_scores, eval_predictions = self.eval(eval_dataloader)
@@ -63,8 +74,9 @@ class Trainer(ABC):
                 if epcohs_without_improvement >= self.configs.train.patience:
                     break
             
-            kfold_eval_metrics.append(best_score)
-        
+            self.logger.update_eval_metrics(best_score)
+            
+        kfold_eval_metrics = self.logger.get_eval_metrics()
         self.logger.log_file(self.configs.logs.files.best, {'avg': sum(kfold_eval_metrics)/len(kfold_eval_metrics), 'kfold_eval_metrics': kfold_eval_metrics})
         
 
