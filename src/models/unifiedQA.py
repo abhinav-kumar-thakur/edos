@@ -18,13 +18,13 @@ class UnifiedQAClassifier(t.nn.Module):
         self.model.to(device)
 
     def forward(self, input, train=True):
-        encoding = self.tokenizer(input['question'], padding="longest", max_length=self.configs.model.bert.max_length, truncation=True, return_tensors="pt")
+        encoding = self.tokenizer(input['question'], padding="longest", max_length=512, truncation=True, return_tensors="pt")
         input_ids, attention_mask = encoding.input_ids, encoding.attention_mask
 
         loss = None
         predictions = None
         if train:
-            target_encoding = self.tokenizer(input['label_sexist'], padding="longest", max_length=4, truncation=True)
+            target_encoding = self.tokenizer(input['label_sexist'], padding="longest", max_length=10, truncation=True)
             labels = target_encoding.input_ids
 
             labels = t.tensor(labels)
@@ -43,7 +43,7 @@ class UnifiedQAClassifier(t.nn.Module):
         return predictions, loss.item() if loss else None
 
     def predict(self, input):
-        encoding = self.tokenizer(input['question'], padding="longest", max_length=self.configs.model.bert.max_length, truncation=True, return_tensors="pt")
+        encoding = self.tokenizer(input['question'], padding="longest", max_length=512, truncation=True, return_tensors="pt")
         input_ids, attention_mask = encoding.input_ids, encoding.attention_mask
 
         output = self.model.generate(input_ids=input_ids.to(self.device), attention_mask=attention_mask.to(self.device), max_length=4)
