@@ -8,7 +8,7 @@
         "train_batch_size": 8,
         "eval_batch_size": 32,
         "epochs": 30,
-        "patience": 5
+        "patience": 3
     },
     "datasets": {
         "name": "edos",
@@ -50,7 +50,8 @@
             "best": "best.log",
             "predictions": "predictions.log",
             "data": "data.log",
-            "models": "models"
+            "models": "models",
+            "state": "state.json"
         }
     },
     "model": {

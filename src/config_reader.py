@@ -43,3 +43,6 @@ def read_json_configs(filepath: str):
 def read_dict_configs(configs_dict):
     configs_obj = Configs(configs_dict,'configs_obj')
     return configs_obj
+
+def write_json_configs(configs_obj, filepath: str):
+    json.dump(configs_obj.configs, open(filepath, 'w'))

@@ -1,14 +1,14 @@
 {
     "seed": 42,
-    "title": "bertweet",
-    "task": "A",
+    "title": "unifiedQA",
+    "task": "E1",
     "train": {
         "file": "data/raw/train_all_tasks.csv",
         "k_fold": 6,
         "train_batch_size": 8,
         "eval_batch_size": 32,
         "epochs": 30,
-        "patience": 5
+        "patience": 3
     },
     "datasets": {
         "name": "edos",
@@ -43,7 +43,7 @@
         }
     },
     "logs": {
-        "dir": "logs",
+        "dir": "/content/drive/MyDrive/EDOS/logs",
         "files": {
             "train": "train.log",
             "event": "events.log",
@@ -55,7 +55,7 @@
         }
     },
     "model": {
-        "type": "bert",
+        "type": "unifiedQA",
         "bert": {
             "name": "vinai/bertweet-base",
             "max_length": 128,
