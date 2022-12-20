@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "UnifiedQA Classifier",
+            "name": "Classifier",
             "type": "python",
             "request": "launch",
             "program": "${cwd}/src/runner/classify.py",
@@ -14,19 +14,7 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "unifiedQA.json", "--device", "cpu"]
-        },
-        {
-            "name": "Bertweet Classifier",
-            "type": "python",
-            "request": "launch",
-            "program": "${cwd}/src/runner/classify.py",
-            "console": "integratedTerminal",
-            "justMyCode": false,
-            "env": {
-                "PYTHONPATH": "${cwd}"
-            },
-            "args": ["--config", "bertweet.json", "--device", "cpu"]
+            "args": ["--config", "local.json", "--device", "cpu"]
         }
     ]
 }

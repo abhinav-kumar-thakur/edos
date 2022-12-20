@@ -1,13 +1,28 @@
+import os
+
+import torch
+
 from src.models.bertweet_classifier import BertTweetClassifier
 from src.models.unifiedQA import UnifiedQAClassifier
 
-def get_classification_model(configs, device):
+
+def get_classification_model(configs, state_configs, device):
     model_name = configs.model.type
 
     if model_name == 'bert':
-        return BertTweetClassifier(configs, device)
+        model = BertTweetClassifier(configs, device)
+    elif model_name == 'unifiedQA':
+        model = UnifiedQAClassifier(configs, device)
+    else:
+        raise Exception('Invalid model name')
 
-    if model_name == 'unifiedQA':
-        return UnifiedQAClassifier(configs, device)
+    if state_configs.epoch > 0:
+        saved_model_path = os.path.join(configs.logs.dir, configs.logs.files.models, f'saved_model_state.pt')
+        model.load_state_dict(torch.load(saved_model_path))
 
-    raise Exception('Invalid model name')
+    return model
+
+
+def save_model(model, configs):
+    saved_model_path = os.path.join(configs.logs.dir, configs.title + '-' + configs.task, configs.logs.files.models, f'saved_model_state.pt')
+    torch.save(model.state_dict(), saved_model_path)
