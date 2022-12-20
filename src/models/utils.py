@@ -17,7 +17,7 @@ def get_classification_model(configs, state_configs, device):
         raise Exception('Invalid model name')
 
     if state_configs.epoch > 0:
-        saved_model_path = os.path.join(configs.logs.dir, configs.logs.files.models, f'saved_model_state.pt')
+        saved_model_path = os.path.join(configs.logs.dir, configs.title + '-' + configs.task, configs.logs.files.models, f'saved_model_state.pt')
         model.load_state_dict(torch.load(saved_model_path))
 
     return model
