@@ -1,0 +1,68 @@
+{
+    "seed": 42,
+    "title": "unifiedQA",
+    "task": "E1",
+    "train": {
+        "file": "data/raw/train_all_tasks.csv",
+        "k_fold": 6,
+        "train_batch_size": 8,
+        "eval_batch_size": 32,
+        "epochs": 30,
+        "patience": 3
+    },
+    "datasets": {
+        "name": "edos",
+        "label_sexist": {
+            "not sexist": 10602,
+            "sexist": 3398
+        },
+        "label_sexist_ids": {
+            "not sexist": 0,
+            "sexist": 1
+        },
+        "label_category": {
+            "none": 10602,
+            "2. derogation": 1590,
+            "1. threats, plans to harm and incitement": 310,
+            "3. animosity": 1165,
+            "4. prejudiced discussions": 333
+        },
+        "label_vector": {
+            "none": 10602,
+            "2.3 dehumanising attacks & overt sexual objectification": 200,
+            "2.1 descriptive attacks": 717,
+            "1.2 incitement and encouragement of harm": 254,
+            "3.1 casual use of gendered slurs, profanities, and insults": 637,
+            "4.2 supporting systemic discrimination against women as a group": 258,
+            "2.2 aggressive and emotive attacks": 673,
+            "3.2 immutable gender differences and gender stereotypes": 417,
+            "3.4 condescending explanations or unwelcome advice": 47,
+            "3.3 backhanded gendered compliments": 64,
+            "4.1 supporting mistreatment of individual women": 75,
+            "1.1 threats of harm": 56
+        }
+    },
+    "logs": {
+        "dir": "/content/drive/MyDrive/EDOS/logs",
+        "files": {
+            "train": "train.log",
+            "event": "events.log",
+            "best": "best.log",
+            "predictions": "predictions.log",
+            "data": "data.log",
+            "models": "models",
+            "state": "state.json"
+        }
+    },
+    "model": {
+        "type": "unifiedQA",
+        "bert": {
+            "name": "vinai/bertweet-base",
+            "max_length": 128,
+            "dimentions": 768
+        },
+        "unifiedQA": {
+            "model_size": "small"
+        }
+    }   
+}
