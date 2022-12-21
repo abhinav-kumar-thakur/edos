@@ -1,14 +1,18 @@
 {
     "seed": 42,
     "title": "bertweet",
-    "task": "A",
+    "task": "local",
     "train": {
         "file": "data/raw/train_all_tasks.csv",
         "k_fold": 6,
         "train_batch_size": 8,
         "eval_batch_size": 32,
         "epochs": 30,
-        "patience": 5
+        "patience": 2
+    },
+    "predict": {
+        "file": "data/raw/dev_task_a_entries.csv",
+        "batch_size": 32
     },
     "datasets": {
         "name": "edos",
@@ -51,7 +55,8 @@
             "predictions": "predictions.log",
             "data": "data.log",
             "models": "models",
-            "state": "state.json"
+            "state": "state.json",
+            "submission": "submission.csv"
         }
     },
     "model": {
