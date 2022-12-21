@@ -5,7 +5,6 @@ import torch
 import random
 
 from src.config_reader import read_json_configs, read_dict_configs
-from src.models.utils import get_classification_model
 from src.logger import Logger
 from src.trainer.tweet_trainer import TweetTrainer
 
