@@ -26,6 +26,11 @@ class Trainer(ABC):
             self.logger.log_file(self.configs.logs.files.data, train_set.summarize())
             self.logger.log_file(self.configs.logs.files.data, eval_set.summarize())
 
+            # oversample train set
+            train_set.oversample_the_dataset()
+            self.logger.log_file(self.configs.logs.files.data, train_set.summarize())
+
+
             self.model = get_classification_model(self.configs, self.state_configs, self.device)
             train_dataloader = DataLoader(train_set, batch_size=self.configs.train.train_batch_size, shuffle=True)
             eval_dataloader = DataLoader(eval_set, batch_size=self.configs.train.eval_batch_size, shuffle=False)

@@ -24,13 +24,42 @@ class EDOSDataset(Dataset):
         train_data = []
         test_data = []
         train_set, test_set =  self.k_splits[k]
-        
+
         for i in train_set:
             train_data.append(self.data[i])
         for i in test_set:
             test_data.append(self.data[i])
 
         return EDOSDataset(f'train_{k}', self.configs, train_data), EDOSDataset(f'eval_{k}', self.configs, test_data)
+
+    def oversample_the_dataset(self):
+        # Create dict counter for each label
+        label_sexist_counter = defaultdict(int)
+
+        for sample in self.data:
+            label_sexist_counter[sample['label_sexist']] += 1
+
+        # Get the max count
+        max_count = max(label_sexist_counter.values())
+
+        # Create dict of lists for each label
+        label_sexist_data = defaultdict(list)
+
+        for sample in self.data:
+            label_sexist_data[sample['label_sexist']].append(sample)
+
+        # Duplicate the minority class samples to match the majority class
+        for label, count in label_sexist_counter.items():
+            if count < max_count:
+                label_sexist_data[label] *= (max_count // count)
+
+        # Concatenate the lists
+        self.data = []
+        for label, data in label_sexist_data.items():
+            self.data += data
+
+
+        
 
     def summarize(self):
         # Create dict counter for each label
@@ -89,9 +118,9 @@ class EDOSDataset(Dataset):
 class TrainDataset(EDOSDataset):
     def __init__(self, configs):
         data = []
-        with open(configs.train.file, newline='') as csvfile:
+        with open(configs.train.file, newline='', encoding="utf8") as csvfile:
             reader = csv.DictReader(csvfile)
-            for row in tqdm(reader, desc='Loading train dataset'):
+            for row in reader:
                 data.append(row)
         
         super().__init__('train', configs, data)
