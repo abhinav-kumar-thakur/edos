@@ -1,5 +1,6 @@
 import csv
 from collections import defaultdict
+from math import ceil
 
 from torch.utils.data import Dataset
 from transformers import AutoTokenizer
@@ -32,7 +33,7 @@ class EDOSDataset(Dataset):
 
         return EDOSDataset(f'train_{k}', self.configs, train_data), EDOSDataset(f'eval_{k}', self.configs, test_data)
 
-    def oversample_the_dataset(self):
+    def duplicate_oversample(self):
         # Create dict counter for each label
         label_sexist_counter = defaultdict(int)
 
@@ -52,14 +53,57 @@ class EDOSDataset(Dataset):
         for label, count in label_sexist_counter.items():
             if count < max_count:
                 label_sexist_data[label] *= (max_count // count)
-
+      
         # Concatenate the lists
         self.data = []
         for label, data in label_sexist_data.items():
             self.data += data
-
-
+    
+    def back_translate_oversample(self):
+        from translate import Translator
+        from translate.exceptions import TranslationError
+        from random import SystemRandom
         
+        languages = ["es", "de", "fr", "ar", "te", "hi", "ja", "fa", "sq", "bg", "nl", "gu", "ig", "kk", "mt", "ps"]
+        sr = SystemRandom()
+        
+        label_sexist_counter = defaultdict(int)
+
+        for sample in self.data:
+            label_sexist_counter[sample['label_sexist']] += 1
+
+        max_count = max(label_sexist_counter.values())
+        
+        for label, count in label_sexist_counter.items():
+            imbalance_count = max_count - count
+            augmentation_multiplier = ceil(imbalance_count/count)
+            english_translator = Translator(to_lang="en")
+            
+            if augmentation_multiplier: #* Will be 0 if label is the majority label
+                for sample in self.data:
+                    if sample['label_sexist'] == label:
+                        
+                        augmented_sample_list = []
+                        for i in range(augmentation_multiplier):
+                            random_translator = Translator(to_lang=sr.choice(languages))
+                            try:
+                                translated_text = random_translator.translate(sample['text'])
+                                augmented_text = english_translator.translate(translated_text)
+                            except TranslationError:
+                                # Error Log
+                                pass
+                            augmented_sample = sample
+                            augmented_sample['text'] = augmented_text
+                            augmented_sample_list.append(augmented_sample)
+                        
+                        self.data += augmented_sample_list
+                
+    def oversample_the_dataset(self, strategy:str = None):
+        if strategy == "duplicate":
+            self.duplicate_oversample()
+        
+        elif strategy == "back_translate":
+            self.back_translate_oversample()
 
     def summarize(self):
         # Create dict counter for each label
