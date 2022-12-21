@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from src.config_reader import write_json_configs
 from src.logger import Logger
 from src.datasets.dataset import TrainDataset
-from src.models.utils import get_classification_model, save_model
+from src.models.utils import get_classification_model_from_state, save_model
 
 
 class Trainer(ABC):
@@ -31,7 +31,7 @@ class Trainer(ABC):
             self.logger.log_file(self.configs.logs.files.data, train_set.summarize())
 
 
-            self.model = get_classification_model(self.configs, self.state_configs, self.device)
+            self.model = get_classification_model_from_state(self.configs, self.state_configs, self.device)
             train_dataloader = DataLoader(train_set, batch_size=self.configs.train.train_batch_size, shuffle=True)
             eval_dataloader = DataLoader(eval_set, batch_size=self.configs.train.eval_batch_size, shuffle=False)
 
@@ -59,6 +59,7 @@ class Trainer(ABC):
                 
                 self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": kth_fold, "Epoch": epoch, 'train': train_scores, 'loss': avg_loss})
                 self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": kth_fold, "Epoch": epoch, 'eval': eval_scores})
+                self.logger.log(f'Train Score: {train_scores} \n\n Eval Score: {eval_scores} \n\n Best Score: {self.state_configs.best_score} \n\n Epochs Without Improvement: {self.state_configs.epochs_without_improvement}')
                 save_model(self.model, self.configs)
                 self.state_configs.edit('epoch', epoch + 1)
                 write_json_configs(self.state_configs, os.path.join(self.logger.dir, self.configs.logs.files.state))

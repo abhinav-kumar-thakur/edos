@@ -10,6 +10,10 @@
         "epochs": 30,
         "patience": 3
     },
+    "predict": {
+        "file": "data/raw/dev_task_a_entries.csv",
+        "batch_size": 32
+    },
     "datasets": {
         "name": "edos",
         "label_sexist": {
@@ -51,7 +55,8 @@
             "predictions": "predictions.log",
             "data": "data.log",
             "models": "models",
-            "state": "state.json"
+            "state": "state.json",
+            "submission": "submission.csv"
         }
     },
     "model": {

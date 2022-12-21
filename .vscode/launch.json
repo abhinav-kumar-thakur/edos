@@ -15,6 +15,18 @@
                 "PYTHONPATH": "${cwd}"
             },
             "args": ["--config", "local.json", "--device", "cpu"]
+        },
+        {
+            "name": "Generate Submission",
+            "type": "python",
+            "request": "launch",
+            "program": "${cwd}/src/runner/generate_submission.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${cwd}"
+            },
+            "args": ["--config", "local.json", "--device", "cpu"]
         }
     ]
 }
