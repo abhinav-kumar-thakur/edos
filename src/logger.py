@@ -22,7 +22,8 @@ class Logger:
         filepath = os.path.join(self.dir, log_file)
         with open(filepath, 'w') as f:
             for line in data:
-                f.write(','.join([str(x) for x in line]))
+                row = [str(x).replace('"',"'") for x in line]
+                f.write(','.join([f'"{x}"' for x in row]))
                 f.write('\n')
 
     def log_text(self, log_file, text):

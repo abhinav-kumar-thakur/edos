@@ -10,4 +10,3 @@ Mac M1: [M1](./envs/m1.md)
 * Bertweet: `!PYTHONPATH=. python src/runner/classify.py --device cuda --config bertweet.json`
 * UnifiedQA: `!PYTHONPATH=. python src/runner/classify.py --device cuda --config unifiedQA.json`
 * Generate submission: `!PYTHONPATH=. python src/runner/generate_submission.py --device cuda --config <config>.json`
-

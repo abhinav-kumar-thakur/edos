@@ -52,7 +52,7 @@
             "train": "train.log",
             "event": "events.log",
             "best": "best.log",
-            "predictions": "predictions.log",
+            "predictions": "predictions.csv",
             "data": "data.log",
             "models": "models",
             "state": "state.json",

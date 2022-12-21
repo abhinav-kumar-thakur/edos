@@ -52,7 +52,7 @@ class Trainer(ABC):
 
                     torch.save(self.model.state_dict(), os.path.join(self.model_save_dir, f'best_model_{kth_fold}.pt'))
                     self.logger.log_file(self.configs.logs.files.best, best_parames)
-                    self.logger.log_csv(f'{self.configs.logs.files.predictions}_{kth_fold}', eval_predictions)
+                    self.logger.log_csv(f'{kth_fold}_{epoch}_{self.configs.logs.files.predictions}', eval_predictions)
                     self.state_configs.edit('epochs_without_improvement', 0)
                 else:
                     self.state_configs.edit('epochs_without_improvement', self.state_configs.epochs_without_improvement + 1)
