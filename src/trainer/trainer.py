@@ -26,11 +26,6 @@ class Trainer(ABC):
             self.logger.log_file(self.configs.logs.files.data, train_set.summarize())
             self.logger.log_file(self.configs.logs.files.data, eval_set.summarize())
 
-            # oversample train set
-            if "oversampling_strategy" in self.configs.dataset:
-                if self.configs.dataset.oversampling_strategy: 
-                    train_set.oversample_the_dataset(self.configs.dataset.oversampling_strategy)
-
             self.logger.log_file(self.configs.logs.files.data, train_set.summarize())
 
 
