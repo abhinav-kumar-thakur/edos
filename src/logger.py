@@ -18,6 +18,14 @@ class Logger:
             f.write(json.dumps(log_dict))
             f.write('\n')
 
+    def log_csv(self, log_file, data):
+        filepath = os.path.join(self.dir, log_file)
+        with open(filepath, 'w') as f:
+            for line in data:
+                row = [str(x).replace('"',"'") for x in line]
+                f.write(','.join([f'"{x}"' for x in row]))
+                f.write('\n')
+
     def log_text(self, log_file, text):
         filepath = os.path.join(self.dir, log_file)
         with open(filepath, 'a+') as f:
