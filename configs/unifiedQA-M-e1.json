@@ -18,7 +18,7 @@
         "name": "edos",
         "preprocess":{
             "preprocess":null,
-            "oversampling_strategy": null,
+            "oversampling_strategy": "back_translate",
             "oversampled_data_dir": "/content/drive/MyDrive/EDOS/data/preprocessed/oversampled",
             "oversampled_data_file":"oversampled_training_task_a.csv"
         },
