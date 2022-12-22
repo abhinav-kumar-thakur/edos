@@ -1,7 +1,7 @@
 {
     "seed": 42,
     "title": "unifiedQA",
-    "task": "J-E1",
+    "task": "M-E1",
     "train": {
         "file": "data/raw/train_all_tasks.csv",
         "k_fold": 6,
@@ -16,7 +16,12 @@
     },
     "datasets": {
         "name": "edos",
-        "oversampling_strategy": null,
+        "preprocess":{
+            "preprocess":null,
+            "oversampling_strategy": null,
+            "oversampled_data_dir": "/content/drive/MyDrive/EDOS/data/preprocessed/oversampled",
+            "oversampled_data_file":"oversampled_training_task_a.csv"
+        },
         "label_sexist": {
             "not sexist": 10602,
             "sexist": 3398
