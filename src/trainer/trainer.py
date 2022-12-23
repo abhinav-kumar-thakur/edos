@@ -27,6 +27,9 @@ class Trainer(ABC):
         for epoch in range(self.state_configs.epoch, self.configs.train.epochs):
             self.logger.log(f'Kth Fold: {self.state_configs.kth_fold}, Epoch: {epoch}')
 
+            if self.state_configs.epochs_without_improvement >= self.configs.train.patience:
+                break
+
             avg_loss = self.train(self.train_dataloader)
             train_scores, train_predictions = self.eval(self.train_dataloader)
             eval_scores, eval_predictions = self.eval(self.eval_dataloader)
@@ -44,14 +47,10 @@ class Trainer(ABC):
 
             self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": self.state_configs.kth_fold, "Epoch": epoch, 'train': train_scores, 'loss': avg_loss})
             self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": self.state_configs.kth_fold, "Epoch": epoch, 'eval': eval_scores})
-            self.logger.log(
-                f'Train Score: {train_scores} \n\n Eval Score: {eval_scores} \n\n Best Score: {self.state_configs.best_score} \n\n Epochs Without Improvement: {self.state_configs.epochs_without_improvement}')
+            self.logger.log(f'Train Score: {train_scores} \n\n Eval Score: {eval_scores} \n\n Best Score: {self.state_configs.best_score} \n\n Epochs Without Improvement: {self.state_configs.epochs_without_improvement}')
             save_model(self.model, self.configs)
             self.state_configs.edit('epoch', epoch + 1)
             write_json_configs(self.state_configs, os.path.join(self.logger.dir, self.configs.logs.files.state))
-
-            if self.state_configs.epochs_without_improvement >= self.configs.train.patience:
-                break
 
     @abstractmethod
     def summarize_scores(self, scores):
