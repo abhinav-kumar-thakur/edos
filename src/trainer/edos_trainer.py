@@ -1,12 +1,12 @@
 from tqdm import tqdm
 from sklearn.metrics import classification_report
-import torch
 
 from src.trainer.trainer import Trainer
 
-class TweetTrainer(Trainer):
-    def __init__(self, get_model_func, configs, device, logger) -> None:
-        super().__init__(get_model_func, configs, device, logger)
+
+class EDOSTrainer(Trainer):
+    def __init__(self, configs, state_configs, model, train_dataloader, eval_dataloader, device, logger) -> None:
+        super().__init__(configs, state_configs, model, train_dataloader, eval_dataloader, device, logger)
 
     def train(self, train_dataloader):
         self.model.train()
@@ -28,9 +28,8 @@ class TweetTrainer(Trainer):
             actual_labels.extend(batch['label_sexist'])
             predicted_labels.extend(pred)
             predictions.extend(zip(batch['text'], pred, batch['label_sexist']))
-        
-        scores = classification_report(actual_labels, predicted_labels, output_dict=True)
 
+        scores = classification_report(actual_labels, predicted_labels, output_dict=True)
         return scores, predictions
 
     def predict(self, dataset):

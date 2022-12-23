@@ -3,7 +3,7 @@ from torch.optim import Adam
 from transformers import AutoModel
 
 
-class BertTweetClassifier(t.nn.Module):
+class BertClassifier(t.nn.Module):
     def __init__(self, configs, device='cpu') -> None:
         super().__init__()
 

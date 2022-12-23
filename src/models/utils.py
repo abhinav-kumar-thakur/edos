@@ -2,7 +2,7 @@ import os
 
 import torch
 
-from src.models.bertweet_classifier import BertTweetClassifier
+from src.models.bert import BertClassifier
 from src.models.unifiedQA import UnifiedQAClassifier
 
 
@@ -11,7 +11,7 @@ def get_classification_model_from_state(configs, state_configs, device):
     model_name = configs.model.type
 
     if model_name == 'bert':
-        model = BertTweetClassifier(configs, device)
+        model = BertClassifier(configs, device)
     elif model_name == 'unifiedQA':
         model = UnifiedQAClassifier(configs, device)
     else:
@@ -33,7 +33,7 @@ def get_model(configs, filepath, device):
     model_name = configs.model.type
 
     if model_name == 'bert':
-        model = BertTweetClassifier(configs, device)
+        model = BertClassifier(configs, device)
     elif model_name == 'unifiedQA':
         model = UnifiedQAClassifier(configs, device)
     else:
