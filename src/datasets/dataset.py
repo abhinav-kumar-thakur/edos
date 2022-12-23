@@ -19,11 +19,10 @@ class EDOSDataset(Dataset):
         self.tokenizer = AutoTokenizer.from_pretrained(configs.model.bert.name, use_fast=False)
         self.text_max_length = configs.model.bert.max_length
 
-
     def get_kth_fold_dataset(self, k):
         train_data = []
         test_data = []
-        train_set, test_set =  self.k_splits[k]
+        train_set, test_set = self.k_splits[k]
 
         for i in train_set:
             train_data.append(self.data[i])
@@ -58,9 +57,6 @@ class EDOSDataset(Dataset):
         for label, data in label_sexist_data.items():
             self.data += data
 
-
-        
-
     def summarize(self):
         # Create dict counter for each label
         label_sexist_counter = defaultdict(int)
@@ -93,16 +89,15 @@ class EDOSDataset(Dataset):
                 item['text'],
                 add_special_tokens=True,
                 max_length=self.text_max_length,
-                truncation= True,
+                truncation=True,
                 return_token_type_ids=False,
-                padding = 'max_length',
+                padding='max_length',
                 return_attention_mask=True,
                 return_tensors='pt',
             )
 
-            
-            item['input_ids'] =  encoding['input_ids'].flatten()
-            item['attention_mask'] =  encoding['attention_mask'].flatten()
+            item['input_ids'] = encoding['input_ids'].flatten()
+            item['attention_mask'] = encoding['attention_mask'].flatten()
 
         if self.configs.model.type == 'unifiedQA':
             sexism_definition = f'Sexism: any abuse or negative sentiment that is directed towards women based on their gender, or based on their gender combined with one or more other identity attributes.'
@@ -111,8 +106,8 @@ class EDOSDataset(Dataset):
             evidence = item['text']
             unifiedQA_question = f'{question}\n{options}\n{evidence}\n{sexism_definition}'
             item['question'] = unifiedQA_question
-        
-        return item 
+
+        return item
 
 
 class TrainDataset(EDOSDataset):
@@ -122,8 +117,9 @@ class TrainDataset(EDOSDataset):
             reader = csv.DictReader(csvfile)
             for row in reader:
                 data.append(row)
-        
+
         super().__init__('train', configs, data)
+
 
 class PredictionDataset(EDOSDataset):
     def __init__(self, configs):
@@ -132,5 +128,5 @@ class PredictionDataset(EDOSDataset):
             reader = csv.DictReader(csvfile)
             for row in tqdm(reader, desc='Loading eval dataset'):
                 data.append(row)
-        
+
         super().__init__('pred', configs, data)
