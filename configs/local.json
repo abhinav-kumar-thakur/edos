@@ -8,7 +8,7 @@
         "train_batch_size": 8,
         "eval_batch_size": 32,
         "epochs": 30,
-        "patience": 2
+        "patience": 3
     },
     "predict": {
         "file": "data/raw/dev_task_a_entries.csv",
@@ -16,6 +16,12 @@
     },
     "datasets": {
         "name": "edos",
+        "preprocess":{
+            "preprocess":null,
+            "oversampling_strategy": "back_translate",
+            "oversampled_data_dir": "data/preprocessed/oversampled",
+            "oversampled_data_file":"oversampled_training_task_a.csv"
+        },
         "label_sexist": {
             "not sexist": 10602,
             "sexist": 3398

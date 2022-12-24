@@ -40,8 +40,8 @@ if __name__ == "__main__":
 
     data = TrainDataset(configs)
 
-    if "preprocess" in configs.datasets:
-        if "oversampling_strategy" in configs.datasets.preprocess:
+    if "preprocess" in configs.configs.datasets:
+        if "oversampling_strategy" in configs.configs.datasets.preprocess:
             if configs.datasets.oversampling_strategy: 
                 augmented_data = oversample(configs.datasets.preprocess.oversampling_strategy,data)
                 save_oversampled_data(augmented_data)
