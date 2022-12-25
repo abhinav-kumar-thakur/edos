@@ -1,6 +1,7 @@
 from tqdm import tqdm
 from sklearn.metrics import classification_report
 
+from src.optimizer.utils import get_optimizer
 from src.trainer.trainer import Trainer
 
 
@@ -11,10 +12,14 @@ class EDOSTrainer(Trainer):
     def train(self, train_dataloader):
         self.model.train()
         total_loss = 0
+        optimizer = get_optimizer(self.model, self.configs)
 
         for batch in tqdm(train_dataloader):
+            optimizer.zero_grad()
             _, loss = self.model(batch)
-            total_loss += loss
+            total_loss += loss.item()
+            loss.backward()
+            optimizer.step()
 
         return total_loss / len(train_dataloader)
 

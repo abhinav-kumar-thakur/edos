@@ -1,14 +1,17 @@
 {
     "seed": 42,
     "title": "bertweet",
-    "task": "local",
+    "task": "A",
     "train": {
         "file": "data/raw/train_all_tasks.csv",
         "k_fold": 6,
         "train_batch_size": 8,
         "eval_batch_size": 32,
         "epochs": 30,
-        "patience": 2
+        "patience": 5,
+        "optimizer": {
+            "name": "Adafactor"
+        }
     },
     "predict": {
         "file": "data/raw/dev_task_a_entries.csv",
@@ -65,9 +68,6 @@
             "name": "vinai/bertweet-base",
             "max_length": 128,
             "dimentions": 768
-        },
-        "unifiedQA": {
-            "model_size": "small"
         }
-    }   
+    }
 }

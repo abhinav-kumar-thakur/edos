@@ -1,7 +1,5 @@
 import torch as t
-from transformers import Adafactor
 from transformers import T5Tokenizer, T5ForConditionalGeneration
-from transformers.optimization import AdafactorSchedule
 
 
 class UnifiedQAClassifier(t.nn.Module):
@@ -13,8 +11,6 @@ class UnifiedQAClassifier(t.nn.Module):
         self.model_name = f'allenai/unifiedqa-v2-t5-{configs.model.unifiedQA.model_size}-1251000'
         self.tokenizer = T5Tokenizer.from_pretrained(self.model_name)
         self.model = T5ForConditionalGeneration.from_pretrained(self.model_name)
-        self.optimizer = Adafactor(self.model.parameters(), scale_parameter=True, relative_step=True, warmup_init=True, lr=None)
-        self.lr_scheduler = AdafactorSchedule(self.optimizer)
         self.model.to(device)
 
     def forward(self, input, train=True):
@@ -29,18 +25,13 @@ class UnifiedQAClassifier(t.nn.Module):
 
             labels = t.tensor(labels)
             labels[labels == self.tokenizer.pad_token_id] = -100
-            
+
             loss = self.model(input_ids=input_ids.to(self.device), attention_mask=attention_mask.to(self.device), labels=labels.to(self.device)).loss
-            loss.backward()
-            
-            self.optimizer.step()
-            self.lr_scheduler.step()
-            self.optimizer.zero_grad()
         else:
             res = self.model.generate(input_ids.to(self.device))
             predictions = self.tokenizer.batch_decode(res, skip_special_tokens=True)
-        
-        return predictions, loss.item() if loss else None
+
+        return predictions, loss
 
     def predict(self, input):
         encoding = self.tokenizer(input['question'], padding="longest", max_length=512, truncation=True, return_tensors="pt")
