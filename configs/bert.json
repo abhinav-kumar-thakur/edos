@@ -1,14 +1,14 @@
 {
     "seed": 42,
     "title": "bert-base-uncased",
-    "task": "frozen",
+    "task": "Adafactor",
     "train": {
         "file": "data/raw/train_all_tasks.csv",
         "k_fold": 6,
         "train_batch_size": 8,
         "eval_batch_size": 32,
         "epochs": 30,
-        "patience": 5,
+        "patience": 2,
         "optimizer": {
             "name": "Adafactor"
         }
