@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 
 from src.config_reader import write_json_configs
 from src.models.utils import get_classification_model_from_state
+from src.optimizer.utils import get_optimizer
 from src.trainer.edos_trainer import EDOSTrainer
 
 
@@ -24,7 +25,8 @@ class CrossValidation:
             model = get_classification_model_from_state(self.configs, self.state_configs, self.device)
             train_dataloader = DataLoader(train_set, batch_size=self.configs.train.train_batch_size, shuffle=True)
             eval_dataloader = DataLoader(eval_set, batch_size=self.configs.train.eval_batch_size, shuffle=False)
-            trainer = EDOSTrainer(self.configs, self.state_configs, model, train_dataloader, eval_dataloader, self.device, self.logger)
+            optimizer = get_optimizer(model, self.configs)
+            trainer = EDOSTrainer(self.configs, self.state_configs, model, train_dataloader, eval_dataloader, optimizer, self.device, self.logger)
             trainer.run()
 
             self.state_configs.edit('epoch', 0)

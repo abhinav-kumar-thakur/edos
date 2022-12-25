@@ -9,12 +9,13 @@ from src.models.utils import save_model
 
 
 class Trainer(ABC):
-    def __init__(self, configs, state_configs, model, train_dataloader, eval_dataloader, device, logger) -> None:
+    def __init__(self, configs, state_configs, model, train_dataloader, eval_dataloader, optimizer, device, logger) -> None:
         self.state_configs = state_configs
         self.configs = configs
         self.model = model
         self.train_dataloader = train_dataloader
         self.eval_dataloader = eval_dataloader
+        self.optimizer = optimizer
         self.device = device
         self.logger: Logger = logger
         self.model_save_dir = os.path.join(configs.logs.dir, configs.title + '-' + configs.task, configs.logs.files.models)
