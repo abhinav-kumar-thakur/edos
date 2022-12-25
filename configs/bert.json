@@ -8,7 +8,10 @@
         "train_batch_size": 8,
         "eval_batch_size": 32,
         "epochs": 30,
-        "patience": 5
+        "patience": 5,
+        "optimizer": {
+            "name": "Adafactor"
+        }
     },
     "predict": {
         "file": "data/raw/dev_task_a_entries.csv",
@@ -65,9 +68,6 @@
             "name": "bert-base-uncased",
             "max_length": 128,
             "dimentions": 768
-        },
-        "unifiedQA": {
-            "model_size": "small"
         }
-    }   
+    }
 }
