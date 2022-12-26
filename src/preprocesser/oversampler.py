@@ -10,7 +10,7 @@ from src.config_reader import read_json_configs
 from src.datasets.dataset import TrainDataset
 
 def oversample(strategy:str, data:list):
-    print("Strategy".strategy)
+    print("Strategy",strategy)
     if strategy == "duplicate":
         data = duplicate_oversample(data)
     
