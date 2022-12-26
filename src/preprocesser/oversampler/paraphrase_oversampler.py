@@ -17,6 +17,7 @@ random_state(1234)
 '''
 
 def no_paraphrase(paraphrases):
+  if paraphrases is None: return True
   if len(paraphrases) == 1:
     if paraphrases[0][-1] == 0:
       return True
