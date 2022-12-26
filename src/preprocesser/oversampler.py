@@ -5,6 +5,7 @@ import csv
 
 from oversampler.duplicate_oversampler import duplicate_oversample
 from oversampler.back_translate_oversampler import back_translate_oversample
+from oversampler.paraphrase_oversampler import paraphraser
 from src.config_reader import read_json_configs
 from src.datasets.dataset import TrainDataset
 
@@ -15,6 +16,9 @@ def oversample(strategy:str, data:list):
     elif strategy == "back_translate":
         data = back_translate_oversample(data)
     
+    elif strategy == "paraphrase":
+        data = paraphraser(data)
+
     else:
         raise ValueError("Incorrect strategy type input")
 
@@ -40,9 +44,9 @@ if __name__ == "__main__":
 
     data = TrainDataset(configs)
 
-    if "preprocess" in configs.configs.datasets:
-        if "oversampling_strategy" in configs.configs.datasets.preprocess:
-            if configs.datasets.oversampling_strategy: 
+    if "preprocess" in configs.configs['datasets']:
+        if "oversampling_strategy" in configs.configs['datasets']['preprocess']:
+            if configs.datasets.preprocess.oversampling_strategy: 
                 augmented_data = oversample(configs.datasets.preprocess.oversampling_strategy,data)
                 save_oversampled_data(augmented_data)
             

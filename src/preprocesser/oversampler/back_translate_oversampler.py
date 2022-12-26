@@ -3,6 +3,7 @@ from translate.exceptions import TranslationError
 from random import SystemRandom
 from collections import defaultdict
 from math import ceil
+from tqdm import tqdm
 
 LANGUAGES = ["es", "de", "fr", "ar", "te", "hi", "ja", "fa", "sq", "bg", "nl", "gu", "ig", "kk", "mt", "ps"]
 
@@ -15,8 +16,9 @@ def back_translate(english_translator:Translator, sample, augmentation_multiplie
         try:
             translated_text = random_translator.translate(sample['text'])
             augmented_text = english_translator.translate(translated_text)
-        except TranslationError:
-            # Error Log
+        except Exception as e:
+            print(i,sample['text'],e)
+            raise Exception(e)
             pass
 
         augmented_sample = sample
@@ -41,7 +43,7 @@ def back_translate_oversample(data:list):
         augemented_sample_list = []
         
         if augmentation_multiplier: #* Will be 0 if label is the majority label
-            for sample in data:
+            for sample in tqdm(data,desc="Augmentation Progress"):
                 if sample['label_sexist'] == label:
                     augemented_samples= back_translate(english_translator, sample, augmentation_multiplier)
                     augemented_sample_list.extend(augemented_samples)
