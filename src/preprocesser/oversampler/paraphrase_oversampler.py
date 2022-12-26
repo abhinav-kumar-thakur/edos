@@ -32,7 +32,7 @@ def generate_paraphrases(parrot,sample,zero_augmentation_patience):
   if no_paraphrase(paraphrases):
     while patience_counter<zero_augmentation_patience:
       try:
-        paraphrases = parrot.augment(input_phrase=sample, use_gpu=torch.cuda.is_available())
+        paraphrases = parrot.augment(input_phrase=sample['text'], use_gpu=torch.cuda.is_available())
       except Exception as e:
         print(sample, "\nPatience ",patience_counter)
         raise Exception(e)
