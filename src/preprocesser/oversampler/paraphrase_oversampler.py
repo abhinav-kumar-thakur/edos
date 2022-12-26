@@ -23,16 +23,20 @@ def no_paraphrase(paraphrases):
   return False
 
 def generate_paraphrases(parrot,sample,zero_augmentation_patience):
+  try:
     paraphrases = parrot.augment(input_phrase=sample, use_gpu=torch.cuda.is_available())
-    patience_counter = 0
-    if no_paraphrase(paraphrases):
-      while patience_counter<zero_augmentation_patience:
-        paraphrases = parrot.augment(input_phrase=sample, use_gpu=torch.cuda.is_available())
-        if not no_paraphrase(paraphrases): break
-        patience_counter += 1
-    
-    if no_paraphrase(paraphrases): return None
-    return [paraphrase for paraphrase, l in paraphrases]
+  except Exception as e:
+    print(e)
+    raise Exception(e)
+  patience_counter = 0
+  if no_paraphrase(paraphrases):
+    while patience_counter<zero_augmentation_patience:
+      paraphrases = parrot.augment(input_phrase=sample, use_gpu=torch.cuda.is_available())
+      if not no_paraphrase(paraphrases): break
+      patience_counter += 1
+  
+  if no_paraphrase(paraphrases): return None
+  return [paraphrase for paraphrase, l in paraphrases]
 
 def paraphraser(data:list):
   #Init models (make sure you init ONLY once if you integrate this to your code)
