@@ -24,7 +24,7 @@ def no_paraphrase(paraphrases):
 
 def generate_paraphrases(parrot,sample,zero_augmentation_patience):
   try:
-    paraphrases = parrot.augment(input_phrase=sample, use_gpu=torch.cuda.is_available())
+    paraphrases = parrot.augment(input_phrase=sample['text'], use_gpu=torch.cuda.is_available())
   except Exception as e:
     print(e)
     raise Exception(e)
