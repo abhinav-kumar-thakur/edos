@@ -5,6 +5,7 @@ warnings.filterwarnings("ignore")
 from collections import defaultdict
 from math import ceil
 from tqdm import tqdm
+from src.datasets.dataset import TrainDataset
 
 ''' 
 uncomment to get reproducable paraphrase generations
@@ -48,7 +49,7 @@ def generate_paraphrases(parrot,sample,zero_augmentation_patience):
     augmented_samples.append(augmented_sample)
   return augmented_samples
 
-def paraphraser(data:list):
+def paraphraser(data:TrainDataset):
   #Init models (make sure you init ONLY once if you integrate this to your code)
   parrot = Parrot(model_tag="prithivida/parrot_paraphraser_on_T5")
   label_sexist_counter = defaultdict(int)
@@ -68,6 +69,6 @@ def paraphraser(data:list):
           augemented_samples = generate_paraphrases(parrot,sample,2)
           if augemented_samples is not None: augemented_sample_list.extend(augemented_samples)
 
-      if len(augemented_sample_list)!=0: data.extend(augemented_sample_list)
+      if len(augemented_sample_list)!=0: data.data.extend(augemented_sample_list)
     
   return data
