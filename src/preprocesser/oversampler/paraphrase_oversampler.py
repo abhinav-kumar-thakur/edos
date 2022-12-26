@@ -36,7 +36,12 @@ def generate_paraphrases(parrot,sample,zero_augmentation_patience):
       patience_counter += 1
   
   if no_paraphrase(paraphrases): return None
-  return [paraphrase for paraphrase, l in paraphrases]
+  augmented_samples = []
+  for paraphrase, l in paraphrases:
+    augmented_sample = sample
+    augmented_sample['text'] = paraphrase
+    augmented_samples.append(augmented_sample)
+  return augmented_samples
 
 def paraphraser(data:list):
   #Init models (make sure you init ONLY once if you integrate this to your code)
