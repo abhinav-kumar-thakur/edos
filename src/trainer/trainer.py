@@ -32,7 +32,7 @@ class Trainer(ABC):
                 break
 
             avg_loss = self.train(self.train_dataloader)
-            train_scores, train_predictions = self.eval(self.train_dataloader)
+            train_scores, _ = self.eval(self.train_dataloader)
             eval_scores, eval_predictions = self.eval(self.eval_dataloader)
             eval_metric = self.summarize_scores(eval_scores)
             if self.state_configs.best_score is None or eval_metric > self.state_configs.best_score:
