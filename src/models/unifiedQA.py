@@ -36,6 +36,10 @@ class UnifiedQAClassifier(t.nn.Module):
                 'sexist': pred[0],
                 'category': pred[1],
                 'vector': pred[2]
+            } if len(pred) == 3 else {
+                'sexist': pred[0],
+                'category': 'none',
+                'vector': 'none'
             }
 
         return predictions, loss
