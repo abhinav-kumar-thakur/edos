@@ -3,7 +3,7 @@
     "title": "unifiedQA",
     "task": "M-E1",
     "train": {
-        "file": "data/raw/train_all_tasks_50p_p1.csv",
+        "file": "data/raw/train_all_tasks.csv",
         "k_fold": 6,
         "train_batch_size": 8,
         "eval_batch_size": 32,
@@ -20,7 +20,7 @@
             "preprocess":null,
             "oversampling_strategy": "paraphrase",
             "oversampled_data_dir": "/content/drive/MyDrive/EDOS/data/preprocessed/oversampled",
-            "oversampled_data_file":"oversampled_training_task_a_50p_p1.csv",
+            "oversampled_data_file":"oversampled_training_task_a.csv",
             "oversampling_data_limit":7000
         },
         "label_sexist": {
