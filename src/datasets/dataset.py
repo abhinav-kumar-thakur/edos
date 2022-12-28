@@ -101,11 +101,25 @@ class EDOSDataset(Dataset):
 
         if self.configs.model.type == 'unifiedQA':
             sexism_definition = f'Sexism: any abuse or negative sentiment that is directed towards women based on their gender, or based on their gender combined with one or more other identity attributes.'
-            question = f'Is the following sentence sexist?'
-            options = ' '.join(['(A) sexist', '(B) not sexist'])
+            question = f'Detect sexism and classify into category?'
+            options = ' '.join([
+                '(A) not sexist | none | none', 
+                '(B) sexist | 1. threats, plans to harm and incitement | 1.1 threats of harm',
+                '(B) sexist | 1. threats, plans to harm and incitement | 1.2 incitement and encouragement of harm',
+                '(B) sexist | 2. derogation | 2.1 descriptive attacks',
+                '(B) sexist | 2. derogation | 2.2 aggressive and emotive attacks',
+                '(B) sexist | 2. derogation | 2.3 dehumanising attacks & overt sexual objectification',
+                '(B) sexist | 3. animosity | 3.1 casual use of gendered slurs, profanities, and insults',
+                '(B) sexist | 3. animosity | 3.2 immutable gender differences and gender stereotypes',
+                '(B) sexist | 3. animosity | 3.3 backhanded gendered compliments',
+                '(B) sexist | 3. animosity | 3.4 condescending explanations or unwelcome advice',
+                '(B) sexist | 4. prejudiced discussions | 4.1 supporting mistreatment of individual women',
+                '(B) sexist | 4. prejudiced discussions | 4.2 supporting systemic discrimination against women as a group'
+            ])
             evidence = item['text']
             unifiedQA_question = f'{question}\n{options}\n{evidence}\n{sexism_definition}'
             item['question'] = unifiedQA_question
+            item['answer'] = f'{item["label_sexist"]} | {item["label_category"]} | {item["label_vector"]}'
 
         return item
 

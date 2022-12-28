@@ -18,9 +18,9 @@ class UnifiedQAClassifier(t.nn.Module):
         input_ids, attention_mask = encoding.input_ids, encoding.attention_mask
 
         loss = None
-        predictions = None
+        predictions = {}
         if train:
-            target_encoding = self.tokenizer(input['label_sexist'], padding="longest", max_length=10, truncation=True)
+            target_encoding = self.tokenizer(input['answer'], padding="longest", max_length=60, truncation=True)
             labels = target_encoding.input_ids
 
             labels = t.tensor(labels)
@@ -28,8 +28,15 @@ class UnifiedQAClassifier(t.nn.Module):
 
             loss = self.model(input_ids=input_ids.to(self.device), attention_mask=attention_mask.to(self.device), labels=labels.to(self.device)).loss
         else:
-            res = self.model.generate(input_ids.to(self.device))
-            predictions = self.tokenizer.batch_decode(res, skip_special_tokens=True)
+            res = self.model.generate(input_ids.to(self.device), max_length=60)
+            out = self.tokenizer.batch_decode(res, skip_special_tokens=True)
+            for i in range(len(out)):
+                pred = out[i].split(' | ')
+                predictions[input['rewire_id'][i]] = {
+                'sexist': pred[0],
+                'category': pred[1],
+                'vector': pred[2]
+            }
 
         return predictions, loss
 
