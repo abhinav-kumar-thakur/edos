@@ -1,7 +1,7 @@
 {
     "seed": 42,
-    "title": "bert-base-uncased",
-    "task": "Adafactor",
+    "title": "bert-large-uncased",
+    "task": "all-tasks",
     "train": {
         "file": "data/raw/train_all_tasks.csv",
         "k_fold": 6,
