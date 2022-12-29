@@ -9,15 +9,11 @@ from src.config_reader import read_json_configs
 from src.models.utils import get_model
 from src.logger import Logger
 from src.datasets.dataset import PredictionDataset
+from src.utils import get_args
 
 
 if __name__ == '__main__':
-    arg_parser = ArgumentParser()
-    arg_parser.add_argument('--config', default='dev.json', required=True, help='Config file from ./configs')
-    arg_parser.add_argument('--device', default='cpu', required=True, help='Supported devices: mps/cpu/cuda')
-
-    args = arg_parser.parse_args()
-
+    args = get_args()
     configs = read_json_configs(os.path.join('./configs', args.config))
 
     logger = Logger(configs)
@@ -45,4 +41,4 @@ if __name__ == '__main__':
             label = Counter(pred).most_common(1)[0][0]
             f.write(f'{rew_id},{label}\n')
 
-    print("Done loading dataset")
+    print("Done generating submission file!")

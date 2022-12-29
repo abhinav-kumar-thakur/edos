@@ -1,22 +1,16 @@
 import os
-from argparse import ArgumentParser
 
 import torch
 import random
 
 from src.config_reader import read_json_configs, read_dict_configs
-from src.models.utils import get_classification_model
+from src.datasets.dataset import TrainDataset
 from src.logger import Logger
-from src.trainer.tweet_trainer import TweetTrainer
-
+from src.strategies.cross_validation import CrossValidation
+from src.utils import get_args
 
 if __name__ == '__main__':
-    arg_parser = ArgumentParser()
-    arg_parser.add_argument('--config', default='dev.json', required=True, help='Config file from ./configs')
-    arg_parser.add_argument('--device', default='cpu', required=True, help='Supported devices: mps/cpu/cuda')
-
-    args = arg_parser.parse_args()
-
+    args = get_args()
     configs = read_json_configs(os.path.join('./configs', args.config))
 
     logger = Logger(configs)
@@ -27,12 +21,13 @@ if __name__ == '__main__':
         state_configs = read_dict_configs({'kth_fold': 0,
                                            'epoch': 0,
                                            'best_score': None,
-                                           'epochs_without_improvement': 0, 'kth_fold_metrics': []})
+                                           'epochs_without_improvement': 0,
+                                           'kth_fold_metrics': []})
 
     torch.manual_seed(configs.seed)
     random.seed(configs.seed)
 
-    trainer = TweetTrainer(state_configs, configs, args.device, logger)
-    trainer.train_kfold()
+    dataset = TrainDataset(configs)
+    CrossValidation(configs, state_configs, dataset, logger, args.device).run()
 
-    print("Done loading dataset")
+    print("Finished training with cross validation")
