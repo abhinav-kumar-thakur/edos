@@ -8,9 +8,10 @@ from tqdm import tqdm
 
 
 class EDOSDataset(Dataset):
-    def __init__(self, name, configs, data):
+    def __init__(self, name, configs, data, oversampled_data):
         self.name = name
         self.data = data
+        self.oversampled_data = oversampled_data
         self.k_fold = configs.train.k_fold
         self.kf = KFold(n_splits=self.k_fold, shuffle=True, random_state=42)
         self.k_splits = list(self.kf.split(self.data))
@@ -26,6 +27,10 @@ class EDOSDataset(Dataset):
 
         for i in train_set:
             train_data.append(self.data[i])
+        print(f"K_fold {k} train data count {len(train_data)}")
+        for os_row in self.oversampled_data:
+            if os_row['rewire_id'] in train_data['rewire_id']: train_data.append(os_row)
+        print(f"K_fold {k} train data count with oversampled added {len(train_data)}")
         for i in test_set:
             test_data.append(self.data[i])
 
@@ -131,8 +136,14 @@ class TrainDataset(EDOSDataset):
             reader = csv.DictReader(csvfile)
             for row in reader:
                 data.append(row)
+        
+        oversampled_data = []
+        with open(configs.train.oversampled_data_file, new_line = '', encoding="utf8") as osfile:
+            reader = csv.DictReader(osfile)
+            for row in reader:
+                oversampled_data.append(row)
 
-        super().__init__('train', configs, data)
+        super().__init__('train', configs, data, oversampled_data)
 
 class AdditionalTrainDataset(EDOSDataset):
     def __init__(self, configs):

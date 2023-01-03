@@ -13,7 +13,8 @@
         "optimizer": {
             "name": "AdamW",
             "lr": 0.001
-        }
+        },
+        "oversampled_data_file":"data/preprocessed/oversampled/oversampled_paraphrased_data.csv"
     },
     "predict": {
         "file": "data/raw/dev_task_a_entries.csv",
