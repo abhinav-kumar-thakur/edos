@@ -132,4 +132,5 @@ dmypy.json
 
 # Raw data files
 data/raw/*
+data/preprocessed/*
 logs/*
