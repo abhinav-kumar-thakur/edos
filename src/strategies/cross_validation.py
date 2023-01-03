@@ -18,6 +18,10 @@ class CrossValidation:
 
     def run(self):
         for kth_fold in range(self.state_configs.kth_fold, self.configs.train.k_fold):
+            if kth_fold not in self.configs.train.run_folds:
+                print(f'Fold {kth_fold} is not in run_folds, skipping')
+                continue
+
             train_set, eval_set = self.dataset.get_kth_fold_dataset(kth_fold)
             self.logger.log_file(self.configs.logs.files.data, train_set.summarize())
             self.logger.log_file(self.configs.logs.files.data, eval_set.summarize())
