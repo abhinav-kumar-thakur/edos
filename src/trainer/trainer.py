@@ -46,7 +46,8 @@ class Trainer(ABC):
             else:
                 self.state_configs.edit('epochs_without_improvement', self.state_configs.epochs_without_improvement + 1)
 
-            self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": self.state_configs.kth_fold, "Epoch": epoch, 'train': train_scores, 'loss': avg_loss})
+            train_scores['loss'] = avg_loss
+            self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": self.state_configs.kth_fold, "Epoch": epoch, 'train': train_scores})
             self.logger.log_file(self.configs.logs.files.train, {"Kth Fold": self.state_configs.kth_fold, "Epoch": epoch, 'eval': eval_scores})
             self.logger.log(f'Train Score: {train_scores} \n\n Eval Score: {eval_scores} \n\n Best Score: {self.state_configs.best_score} \n\n Epochs Without Improvement: {self.state_configs.epochs_without_improvement}')
             save_model(self.model, self.configs)
