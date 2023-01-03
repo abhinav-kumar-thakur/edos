@@ -138,7 +138,7 @@ class TrainDataset(EDOSDataset):
                 data.append(row)
         
         oversampled_data = []
-        with open(configs.train.oversampled_data_file, new_line = '', encoding="utf8") as osfile:
+        with open(configs.train.oversampled_data_file, newline = '', encoding="utf8") as osfile:
             reader = csv.DictReader(osfile)
             for row in reader:
                 oversampled_data.append(row)
