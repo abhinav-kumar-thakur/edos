@@ -1,7 +1,7 @@
 {
     "seed": 42,
     "title": "bertweet",
-    "task": "freeze-10-layers",
+    "task": "freeze-10-layers-lr-1e-5",
     "train": {
         "file": "data/raw/train_all_tasks.csv",
         "k_fold": 6,
@@ -12,7 +12,7 @@
         "patience": 10,
         "optimizer": {
             "name": "AdamW",
-            "lr": 0.001
+            "lr": 0.00001
         }
     },
     "predict": {
