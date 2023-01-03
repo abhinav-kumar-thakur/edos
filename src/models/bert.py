@@ -29,6 +29,15 @@ class BertClassifier(t.nn.Module):
         self.head_b = t.nn.Linear(configs.model.bert.dimentions, len(self.label2idx_b)).to(device)
         self.head_c = t.nn.Linear(configs.model.bert.dimentions, len(self.label2idx_c)).to(device)
 
+        if self.configs.model !=0:
+            print("Freeze transformer weights")
+            freeze_lower_layers = self.configs.model.bert.freeze_lower_layers
+            
+            for layer in self.bert.encoder.layer[:freeze_lower_layers]:
+                for param in layer.parameters():
+                    param.requires_grad = False
+
+
     def get_label_index_a(self):
         return {x: y['id'] for x, y in self.configs.datasets.labels.configs.items()}
 
@@ -85,3 +94,15 @@ class BertClassifier(t.nn.Module):
             }
 
         return labels, loss
+
+    def get_trainable_parameters(self):
+        no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
+        optimizer_parameters = [
+            {'params': [p for n, p in self.bert.named_parameters() if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01, 'lr': self.configs.train.optimizer.lr * 0.1},
+            {'params': [p for n, p in self.bert.named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0, 'lr': self.configs.train.optimizer.lr * 0.1},
+            {'params': [p for n, p in self.head_a.named_parameters()], 'weight_decay': 0.01, 'lr': self.configs.train.optimizer.lr},
+            {'params': [p for n, p in self.head_b.named_parameters()], 'weight_decay': 0.01, 'lr': self.configs.train.optimizer.lr},
+            {'params': [p for n, p in self.head_c.named_parameters()], 'weight_decay': 0.01, 'lr': self.configs.train.optimizer.lr},
+        ] 
+        
+        return optimizer_parameters

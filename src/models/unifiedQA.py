@@ -51,3 +51,6 @@ class UnifiedQAClassifier(t.nn.Module):
 
         output = self.model.generate(input_ids=input_ids.to(self.device), attention_mask=attention_mask.to(self.device), max_length=4)
         return self.tokenizer.decode(output[0], skip_special_tokens=True)
+
+    def get_trainable_parameters(self):
+        return self.model.parameters()

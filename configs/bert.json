@@ -5,12 +5,14 @@
     "train": {
         "file": "data/raw/train_all_tasks.csv",
         "k_fold": 6,
+        "run_folds": [0],
         "train_batch_size": 8,
         "eval_batch_size": 32,
         "epochs": 30,
         "patience": 2,
         "optimizer": {
-            "name": "Adafactor"
+            "name": "AdamW",
+            "lr": 0.001
         }
     },
     "predict": {
@@ -111,7 +113,8 @@
         "bert": {
             "name": "bert-base-uncased",
             "max_length": 128,
-            "dimentions": 768
+            "dimentions": 768,
+            "freeze_lower_layers": 10
         }
     }
 }
