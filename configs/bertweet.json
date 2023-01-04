@@ -1,15 +1,15 @@
 {
     "seed": 42,
     "title": "bertweet",
-    "task": "freeze-10-layers-lr-1e-4-cosine-scheduler-with-warmup",
+    "task": "freeze-9-layers-lr-1e-4-cosine-scheduler-with-warmup-all-folds",
     "train": {
         "file": "data/raw/train_all_tasks.csv",
         "k_fold": 6,
-        "run_folds": [3],
+        "run_folds": [0, 1, 2, 3, 4, 5],
         "train_batch_size": 4,
         "eval_batch_size": 32,
-        "epochs": 50,
-        "patience": 5,
+        "epochs": 20,
+        "patience": 6,
         "optimizer": {
             "name": "AdamW",
             "lr": 0.0001,
