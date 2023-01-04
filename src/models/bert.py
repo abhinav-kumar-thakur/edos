@@ -67,19 +67,24 @@ class BertClassifier(t.nn.Module):
         pred_a = self.head_a(x)
         pred_b = self.head_b(x)
         pred_c = self.head_c(x)
-
-        loss = None
+        
+        loss = 0
         if train:
-            actual_a = t.tensor([self.label2idx_a[l] for l in batch['label_sexist']]).to(self.device)
-            loss_a = self.loss_a(pred_a, actual_a)
+            if 'a' in self.configs.train.task:
+                actual_a = t.tensor([self.label2idx_a[l] for l in batch['label_sexist']]).to(self.device)
+                loss_a = self.loss_a(pred_a, actual_a)
+                loss += loss_a
+            
+            if 'b' in self.configs.train.task:
+                actual_b = t.tensor([self.label2idx_b[l] for l in batch['label_category']]).to(self.device)
+                loss_b = self.loss_b(pred_b, actual_b)
+                loss += loss_b
 
-            actual_b = t.tensor([self.label2idx_b[l] for l in batch['label_category']]).to(self.device)
-            loss_b = self.loss_b(pred_b, actual_b)
+            if 'c' in self.configs.train.task:
+                actual_c = t.tensor([self.label2idx_c[l] for l in batch['label_vector']]).to(self.device)
+                loss_c = self.loss_c(pred_c, actual_c)
+                loss += loss_c
 
-            actual_c = t.tensor([self.label2idx_c[l] for l in batch['label_vector']]).to(self.device)
-            loss_c = self.loss_c(pred_c, actual_c)
-
-            loss = loss_a + loss_b + loss_c
 
         pred_a_ids = t.argmax(pred_a, dim=1)
         pred_b_ids = t.argmax(pred_b, dim=1)
