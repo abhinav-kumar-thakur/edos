@@ -17,8 +17,9 @@ class EDOSTrainer(Trainer):
             _, loss = self.model(batch)
             total_loss += loss.item()
             loss.backward()
-            self.optimizer.step()
+            self.optimizer.step_optimizer()
 
+        self.optimizer.step_scheduler()
         return total_loss / len(train_dataloader)
 
     def eval(self, eval_dataloader):
@@ -45,7 +46,7 @@ class EDOSTrainer(Trainer):
                 if batch['label_sexist'][i] == 'sexist':
                     actual_b.append(batch['label_category'][i])
                     actual_c.append(batch['label_vector'][i])
-                    
+
                     predicted_b.append(pred[rewire_id]['category'])
                     predicted_c.append(pred[rewire_id]['vector'])
 
