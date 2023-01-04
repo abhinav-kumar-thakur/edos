@@ -3,7 +3,9 @@
     "title": "bert-base-uncased",
     "task": "freeze-10-layers-lr-1e-4-cosine-scheduler-with-warmup",
     "train": {
+        "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
+        "additional_file": "data/raw/SD_dataset_FINAL.csv",
         "k_fold": 6,
         "run_folds": [3],
         "train_batch_size": 4,

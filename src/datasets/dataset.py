@@ -134,6 +134,29 @@ class TrainDataset(EDOSDataset):
 
         super().__init__('train', configs, data)
 
+class AdditionalTrainDataset(EDOSDataset):
+    def __init__(self, configs):
+        data = []
+        with open(configs.train.additional_file,  newline='', encoding="utf-8-sig") as csvfile:
+            reader = csv.DictReader(csvfile)
+            rows = list(reader)
+            sexist = 0
+            non_sexist = 0
+            prefix = 'sd'
+            for i, row in enumerate(rows):
+                row['rewire_id'] = f'{prefix}_{i}'
+                row['label_category'] = 'none'
+                row['label_vector'] = 'none'
+                if row['label_sexist']=='1':
+                    sexist += 1
+                    row['label_sexist'] = 'sexist'
+                else:
+                    non_sexist += 1
+                    row['label_sexist'] = 'not sexist'
+
+                data.append(row)
+
+        super().__init__('train', configs, data)
 
 class PredictionDataset(EDOSDataset):
     def __init__(self, configs):

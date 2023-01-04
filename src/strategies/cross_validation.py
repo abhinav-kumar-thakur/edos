@@ -1,6 +1,6 @@
 import os
 
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, ConcatDataset
 
 from src.config_reader import write_json_configs
 from src.models.utils import get_classification_model_from_state
@@ -9,12 +9,13 @@ from src.trainer.edos_trainer import EDOSTrainer
 
 
 class CrossValidation:
-    def __init__(self, configs, state_configs, dataset, logger, device):
+    def __init__(self, configs, state_configs, dataset, additional_dataset, logger, device):
         self.configs = configs
         self.state_configs = state_configs
         self.logger = logger
         self.device = device
         self.dataset = dataset
+        self.additional_dataset = additional_dataset
 
     def run(self):
         for kth_fold in range(self.state_configs.kth_fold, self.configs.train.k_fold):
@@ -29,7 +30,7 @@ class CrossValidation:
             self.logger.log_file(self.configs.logs.files.data, eval_set.summarize())
 
             model = get_classification_model_from_state(self.configs, self.state_configs, self.device)
-            train_dataloader = DataLoader(train_set, batch_size=self.configs.train.train_batch_size, shuffle=True)
+            train_dataloader = DataLoader(ConcatDataset([train_set,self.additional_dataset]) , batch_size=self.configs.train.train_batch_size, shuffle=True)
             eval_dataloader = DataLoader(eval_set, batch_size=self.configs.train.eval_batch_size, shuffle=False)
             optimizer = get_optimizer(model, self.configs)
             trainer = EDOSTrainer(self.configs, self.state_configs, model, train_dataloader, eval_dataloader, optimizer, self.device, self.logger)
