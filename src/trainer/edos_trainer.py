@@ -43,7 +43,7 @@ class EDOSTrainer(Trainer):
                 actual_a.append(batch['label_sexist'][i])
                 predicted_a.append(pred[rewire_id]['sexist'])
 
-                if batch['label_sexist'][i] == 'sexist' and 'b' in self.configs.train_config['task'] and 'c' in self.configs.train_config['task']:
+                if batch['label_sexist'][i] == 'sexist' and 'b' in self.configs.train.task and 'c' in self.configs.train.task:
 
                     actual_b.append(batch['label_category'][i])
                     actual_c.append(batch['label_vector'][i])
@@ -52,7 +52,8 @@ class EDOSTrainer(Trainer):
                     predicted_c.append(pred[rewire_id]['vector'])
 
         scores_a = classification_report(actual_a, predicted_a, output_dict=True)
-        if 'b' in self.configs.train_config['task'] and 'c' in self.configs.train_config['task']:   
+        scores_b, scores_c = None, None
+        if 'b' in self.configs.train.task and 'c' in self.configs.train.task:   
             scores_b = classification_report(actual_b, predicted_b, output_dict=True)
             scores_c = classification_report(actual_c, predicted_c, output_dict=True)
 
