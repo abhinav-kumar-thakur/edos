@@ -3,7 +3,9 @@
     "title": "bertweet",
     "task": "A",
     "train": {
+        "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
+        "additional_file": "data/raw/SD_dataset_FINAL.csv",
         "k_fold": 6,
         "run_folds": [3],
         "train_batch_size": 4,
