@@ -10,6 +10,6 @@ def get_optimizer(model, configs):
     elif optimizer_name == 'Adafactor':
         return AdaFactorOptimizer(model, None)
     elif optimizer_name == 'AdamW':
-        return AdamWOptimizer(model, configs.train.optimizer.lr)
+        return AdamWOptimizer(model, configs)
     else:
         raise ValueError(f'Optimizer {optimizer_name} is not supported')

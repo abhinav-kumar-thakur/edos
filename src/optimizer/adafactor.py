@@ -5,11 +5,17 @@ from src.optimizer.optimizer import Optimizer
 
 
 class AdaFactorOptimizer(Optimizer):
+    def step_scheduler(self) -> None:
+        pass
+
+    def get_lr(self) -> None:
+        pass
+
     def __init__(self, model, lr=None) -> None:
         self.optimizer = Adafactor(model.parameters(), scale_parameter=True, relative_step=True, warmup_init=True, lr=lr)
         self.lr_scheduler = AdafactorSchedule(self.optimizer)
 
-    def step(self) -> None:
+    def step_optimizer(self) -> None:
         self.optimizer.step()
         self.lr_scheduler.step()
 

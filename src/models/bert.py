@@ -9,17 +9,17 @@ class BertClassifier(t.nn.Module):
         self.device = device
         self.configs = configs
 
-        task_a_loss_weights = t.FloatTensor([1, 3]).to(device)
+        task_a_loss_weights = t.FloatTensor(self.configs.model.bert.heads.a.loss_weights).to(device)
         self.loss_a = t.nn.CrossEntropyLoss(weight=task_a_loss_weights)
         self.label2idx_a = self.get_label_index_a()
         self.idx2label_a = {v: k for k, v in self.label2idx_a.items()}
 
-        task_b_loss_weights = t.FloatTensor([0.2, 1, 1, 1, 1]).to(device)
+        task_b_loss_weights = t.FloatTensor(self.configs.model.bert.heads.b.loss_weights).to(device)
         self.loss_b = t.nn.CrossEntropyLoss(weight=task_b_loss_weights)
         self.label2idx_b = self.get_label_index_b()
         self.idx2label_b = {v: k for k, v in self.label2idx_b.items()}
 
-        task_c_loss_weights = t.FloatTensor([0.2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]).to(device)
+        task_c_loss_weights = t.FloatTensor(self.configs.model.bert.heads.c.loss_weights).to(device)
         self.loss_c = t.nn.CrossEntropyLoss(weight=task_c_loss_weights)
         self.label2idx_c = self.get_label_index_c()
         self.idx2label_c = {v: k for k, v in self.label2idx_c.items()}

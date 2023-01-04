@@ -5,14 +5,15 @@
     "train": {
         "file": "data/raw/train_all_tasks.csv",
         "k_fold": 6,
-        "run_folds": [0],
-        "train_batch_size": 8,
+        "run_folds": [3],
+        "train_batch_size": 4,
         "eval_batch_size": 32,
-        "epochs": 30,
-        "patience": 2,
+        "epochs": 50,
+        "patience": 5,
         "optimizer": {
             "name": "AdamW",
-            "lr": 0.001
+            "lr": 0.0001,
+            "num_warmup_steps": 5
         }
     },
     "predict": {
@@ -114,7 +115,21 @@
             "name": "bert-large-uncased",
             "max_length": 128,
             "dimentions": 1024,
-            "freeze_lower_layers": 10
+            "freeze_lower_layers": 20,
+            "heads": {
+                "a": {
+                    "dimentions": 2,
+                    "loss_weights": [1, 3]   
+                },
+                "b": {
+                    "dimentions": 5,
+                    "loss_weights": [0.1, 1, 1, 1, 1]
+                },
+                "c": {
+                    "dimentions": 12,
+                    "loss_weights": [0.1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                }
+            }
         }
     }
 }
