@@ -25,9 +25,9 @@ class BertClassifier(t.nn.Module):
         self.idx2label_c = {v: k for k, v in self.label2idx_c.items()}
 
         self.bert = AutoModel.from_pretrained(configs.model.bert.name).to(device)
-        self.head_a = t.nn.Linear(configs.model.bert.dimentions, len(self.label2idx_a)).to(device)
-        self.head_b = t.nn.Linear(configs.model.bert.dimentions, len(self.label2idx_b)).to(device)
-        self.head_c = t.nn.Linear(configs.model.bert.dimentions, len(self.label2idx_c)).to(device)
+        self.head_a = t.nn.Linear(configs.model.bert.dimensions, len(self.label2idx_a)).to(device)
+        self.head_b = t.nn.Linear(configs.model.bert.dimensions, len(self.label2idx_b)).to(device)
+        self.head_c = t.nn.Linear(configs.model.bert.dimensions, len(self.label2idx_c)).to(device)
 
         if self.configs.model !=0:
             print("Freeze transformer weights")

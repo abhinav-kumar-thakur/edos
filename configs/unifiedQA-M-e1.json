@@ -76,7 +76,7 @@
         "bert": {
             "name": "vinai/bertweet-base",
             "max_length": 128,
-            "dimentions": 768,
+            "dimensions": 768,
             "freeze_lower_layers": 10
         },
         "unifiedQA": {

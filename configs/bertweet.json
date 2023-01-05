@@ -116,19 +116,19 @@
         "bert": {
             "name": "vinai/bertweet-base",
             "max_length": 128,
-            "dimentions": 768,
+            "dimensions": 768,
             "freeze_lower_layers": 9,
             "heads": {
                 "a": {
-                    "dimentions": 2,
+                    "dimensions": 2,
                     "loss_weights": [1, 3]   
                 },
                 "b": {
-                    "dimentions": 5,
+                    "dimensions": 5,
                     "loss_weights": [0.1, 1, 1, 1, 1]
                 },
                 "c": {
-                    "dimentions": 12,
+                    "dimensions": 12,
                     "loss_weights": [0.1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
                 }
             }
