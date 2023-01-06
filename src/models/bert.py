@@ -29,8 +29,7 @@ class BertClassifier(t.nn.Module):
         self.head_b = t.nn.Linear(configs.model.bert.dimensions, len(self.label2idx_b)).to(device)
         self.head_c = t.nn.Linear(configs.model.bert.dimensions, len(self.label2idx_c)).to(device)
 
-        if self.configs.model !=0:
-            print("Freeze transformer weights")
+        if self.configs.model.bert.freeze_lower_layers != 0:
             freeze_lower_layers = self.configs.model.bert.freeze_lower_layers
             
             for layer in self.bert.encoder.layer[:freeze_lower_layers]:
