@@ -137,7 +137,7 @@ class TrainDataset(EDOSDataset):
 class AdditionalTrainDataset(EDOSDataset):
     def __init__(self, configs):
         data = []
-        with open(configs.train.additional_file,  newline='', encoding="utf-8-sig") as csvfile:
+        with open(configs.train.additional_files.sd,  newline='', encoding="utf-8-sig") as csvfile:
             reader = csv.DictReader(csvfile)
             rows = list(reader)
             sexist = 0
@@ -167,3 +167,26 @@ class PredictionDataset(EDOSDataset):
                 data.append(row)
 
         super().__init__('pred', configs, data)
+
+class MamiDataset(EDOSDataset):
+    def __init__(self, configs):
+        data = []
+        prefix = 'mami'
+        with open(configs.train.additional_files.mami, newline='', encoding="utf-8-sig") as csvfile:
+            reader = csv.DictReader(csvfile, delimiter='\t')
+            for row in reader:
+                row['rewire_id'] = f'{prefix}_{row["file_name"]}'
+                row['text'] = row['Text Transcription']
+                row['label_category'] = 'none'
+                row['label_vector'] = 'none'
+                if row['misogynous'] == '1':
+                    row['label_sexist'] = 'sexist'
+                else:
+                    row['label_sexist'] = 'not sexist'
+
+                for key in ['file_name', 'Text Transcription', 'misogynous', 'shaming', 'stereotype', 'objectification', 'violence']:
+                    del row[key]
+
+                data.append(row)
+
+        super().__init__('train', configs, data)
