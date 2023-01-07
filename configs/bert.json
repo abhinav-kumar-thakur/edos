@@ -1,17 +1,20 @@
 {
     "seed": 42,
-    "title": "bert-base-uncased",
-    "task": "freeze-10-layers-lr-1e-4-cosine-scheduler-with-warmup",
+    "title": "bert-base",
+    "task": "freeze-9-layers-lr-1e-4-cosine-scheduler-with-warmup-fall-task-a",
     "train": {
         "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
-        "additional_file": "data/raw/SD_dataset_FINAL.csv",
+        "additional_files": {
+            "sd": "data/raw/SD_dataset_FINAL.csv",
+            "mami": "data/raw/training.csv"
+        },
         "k_fold": 6,
-        "run_folds": [3],
+        "run_folds": [0, 1, 2, 3, 4, 5],
         "train_batch_size": 4,
-        "eval_batch_size": 32,
-        "epochs": 50,
-        "patience": 5,
+        "eval_batch_size": 16,
+        "epochs": 20,
+        "patience": 6,
         "optimizer": {
             "name": "AdamW",
             "lr": 0.0001,
@@ -20,7 +23,7 @@
     },
     "predict": {
         "file": "data/raw/dev_task_a_entries.csv",
-        "batch_size": 32
+        "batch_size": 16
     },
     "datasets": {
         "name": "edos",
@@ -99,7 +102,7 @@
         }
     },
     "logs": {
-        "dir": "/content/drive/MyDrive/EDOS/logs",
+        "dir": "logs",
         "files": {
             "train": "train.log",
             "event": "events.log",
@@ -115,7 +118,7 @@
         "type": "bert",
         "bert": {
             "name": "bert-base-uncased",
-            "max_length": 128,
+            "max_length": 512,
             "dimensions": 768,
             "freeze_lower_layers": 9,
             "heads": {
