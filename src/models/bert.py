@@ -9,18 +9,15 @@ class BertClassifier(t.nn.Module):
         self.device = device
         self.configs = configs
 
-        task_a_loss_weights = t.FloatTensor(self.configs.model.bert.heads.a.loss_weights).to(device)
-        self.loss_a = t.nn.CrossEntropyLoss(weight=task_a_loss_weights)
+        self.loss_a = t.nn.CrossEntropyLoss()
         self.label2idx_a = self.get_label_index_a()
         self.idx2label_a = {v: k for k, v in self.label2idx_a.items()}
 
-        task_b_loss_weights = t.FloatTensor(self.configs.model.bert.heads.b.loss_weights).to(device)
-        self.loss_b = t.nn.CrossEntropyLoss(weight=task_b_loss_weights)
+        self.loss_b = t.nn.CrossEntropyLoss()
         self.label2idx_b = self.get_label_index_b()
         self.idx2label_b = {v: k for k, v in self.label2idx_b.items()}
 
-        task_c_loss_weights = t.FloatTensor(self.configs.model.bert.heads.c.loss_weights).to(device)
-        self.loss_c = t.nn.CrossEntropyLoss(weight=task_c_loss_weights)
+        self.loss_c = t.nn.CrossEntropyLoss()
         self.label2idx_c = self.get_label_index_c()
         self.idx2label_c = {v: k for k, v in self.label2idx_c.items()}
 
@@ -90,15 +87,17 @@ class BertClassifier(t.nn.Module):
 
 
         pred_a_ids = t.argmax(pred_a, dim=1)
-        pred_b_ids = t.argmax(pred_b, dim=1)
-        pred_c_ids = t.argmax(pred_c, dim=1)
+        pred_b_ids = t.argmax(pred_b[:, 1:], dim=1)
+        pred_c_ids = t.argmax(pred_c[:, 1:], dim=1)
 
         labels = {}
         for i in range(len(pred_a_ids)):
+            sexist_label = self.idx2label_a[pred_a_ids[i].item()]
+
             labels[batch['rewire_id'][i]] = {
-                'sexist': self.idx2label_a[pred_a_ids[i].item()],
-                'category': self.idx2label_b[pred_b_ids[i].item()],
-                'vector': self.idx2label_c[pred_c_ids[i].item()]
+                'sexist': sexist_label,
+                'category': self.idx2label_b[pred_b_ids[i].item() + 1],
+                'vector': self.idx2label_c[pred_c_ids[i].item() + 1]
             }
 
         return labels, loss

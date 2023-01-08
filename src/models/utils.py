@@ -18,8 +18,6 @@ def get_classification_model_from_state(configs, state_configs, device):
         model = BertClassifier_fl(configs, device)
     elif model_name == 'unifiedQA':
         model = UnifiedQAClassifier(configs, device)
-    elif model_name == 'bm1':
-        model = BM1(configs, device)
     else:
         raise Exception('Invalid model name')
 
@@ -44,8 +42,6 @@ def get_model(configs, filepath, device):
         model = BertClassifier_fl(configs, device)
     elif model_name == 'unifiedQA':
         model = UnifiedQAClassifier(configs, device)
-    elif model_name == 'bm1':
-        model = BM1(configs, device)
     else:
         raise Exception('Invalid model name')
 
