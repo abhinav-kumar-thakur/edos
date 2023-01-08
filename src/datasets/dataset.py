@@ -84,7 +84,7 @@ class EDOSDataset(Dataset):
     def __getitem__(self, index):
         item = self.data[index]
 
-        if self.configs.model.type == 'bert':
+        if self.configs.model.type in ['bert', 'bert_fl']:
             encoding = self.tokenizer.encode_plus(
                 item['text'],
                 add_special_tokens=True,
