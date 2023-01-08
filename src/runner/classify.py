@@ -28,7 +28,11 @@ if __name__ == '__main__':
     random.seed(configs.seed)
 
     dataset = TrainDataset(configs)
-    additional_datasets = []
-    CrossValidation(configs, state_configs, dataset, additional_datasets, logger, args.device).run()
+    additional_datasets = [
+        # TODO: Disable additional dataset from configuration
+        # AdditionalTrainDataset(configs)
+        # MamiDataset(configs)
+    ]
 
+    CrossValidation(configs, state_configs, dataset, additional_datasets, logger, args.device).run()
     print("Finished training with cross validation")

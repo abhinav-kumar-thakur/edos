@@ -33,7 +33,7 @@ if __name__ == '__main__':
         for batch in tqdm(prediction_dataloader):
             pred, loss = model(batch, train=False)
             for rewire_id in batch['rewire_id']:
-                predictions[rewire_id].append(pred['rewire_id']['sexist']'])
+                predictions[rewire_id].append(pred[rewire_id]['sexist'])
 
     with open(os.path.join(logger.dir, configs.logs.files.submission), 'w') as f:
         f.write('rewire_id,label_pred\n')
