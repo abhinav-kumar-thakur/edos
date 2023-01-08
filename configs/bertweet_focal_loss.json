@@ -1,0 +1,140 @@
+{
+    "seed": 42,
+    "title": "bertweet_fl",
+    "task": "freeze-9-layers-lr-1e-4-cosine-scheduler-with-warmup-additional-dataset",
+    "train": {
+        "task": ["a"],
+        "file": "data/raw/train_all_tasks.csv",
+        "additional_files": {
+            "sd": "data/raw/SD_dataset_FINAL.csv",
+            "mami": "data/raw/training.csv"
+        },
+        "k_fold": 6,
+        "run_folds": [0, 1],
+        "train_batch_size": 4,
+        "eval_batch_size": 32,
+        "epochs": 20,
+        "patience": 6,
+        "optimizer": {
+            "name": "AdamW",
+            "lr": 0.0001,
+            "num_warmup_steps": 5
+        }
+    },
+    "predict": {
+        "file": "data/raw/dev_task_a_entries.csv",
+        "batch_size": 32
+    },
+    "datasets": {
+        "name": "edos",
+        "labels": {
+            "not sexist": {
+                "id": 0,
+                "categories": {
+                    "none": {
+                        "id": 0,
+                        "vectors": {
+                            "none": {
+                                "id": 0
+                            }
+                        }
+                    }
+                }
+            },
+            "sexist": {
+                "id": 1,
+                "categories": {
+                    "1. threats, plans to harm and incitement": {
+                        "id": 0,
+                        "vectors": {
+                            "1.1 threats of harm": {
+                                "id": 0
+                            },
+                            "1.2 incitement and encouragement of harm": {
+                                "id": 1
+                            }
+                        }
+                    },
+                    "2. derogation": {
+                        "id": 1,
+                        "vectors": {
+                            "2.1 descriptive attacks": {
+                                "id": 0
+                            },
+                            "2.2 aggressive and emotive attacks": {
+                                "id": 1
+                            },
+                            "2.3 dehumanising attacks & overt sexual objectification": {
+                                "id": 2
+                            }
+                        }
+                    },
+                    "3. animosity": {
+                        "id": 2,
+                        "vectors": {
+                            "3.1 casual use of gendered slurs, profanities, and insults": {
+                                "id": 0
+                            },
+                            "3.2 immutable gender differences and gender stereotypes": {
+                                "id": 1
+                            },
+                            "3.3 backhanded gendered compliments": {
+                                "id": 2
+                            },
+                            "3.4 condescending explanations or unwelcome advice": {
+                                "id": 3
+                            }
+                        }
+                    },
+                    "4. prejudiced discussions": {
+                        "id": 3,
+                        "vectors": {
+                            "4.1 supporting mistreatment of individual women": {
+                                "id": 0
+                            },
+                            "4.2 supporting systemic discrimination against women as a group": {
+                                "id": 1
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "logs": {
+        "dir": "/content/drive/MyDrive/EDOS/logs",
+        "files": {
+            "train": "train.log",
+            "event": "events.log",
+            "best": "best.log",
+            "predictions": "predictions.csv",
+            "data": "data.log",
+            "models": "models",
+            "state": "state.json",
+            "submission": "submission.csv"
+        }
+    },
+    "model": {
+        "type": "bert_fl",
+        "bert": {
+            "name": "vinai/bertweet-base",
+            "max_length": 128,
+            "dimensions": 768,
+            "freeze_lower_layers": 9,
+            "heads": {
+                "a": {
+                    "dimensions": 2,
+                    "loss_weights": [1, 3]   
+                },
+                "b": {
+                    "dimensions": 5,
+                    "loss_weights": [0.1, 1, 1, 1, 1]
+                },
+                "c": {
+                    "dimensions": 12,
+                    "loss_weights": [0.1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                }
+            }
+        }
+    }
+}
