@@ -4,7 +4,6 @@ import torch
 
 from src.models.bert import BertClassifier
 from src.models.bert_focal_loss import BertClassifier_fl
-from src.models.bm1 import BertClassifier as BM1
 from src.models.unifiedQA import UnifiedQAClassifier
 
 
