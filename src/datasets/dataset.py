@@ -8,9 +8,14 @@ from tqdm import tqdm
 
 
 class EDOSDataset(Dataset):
-    def __init__(self, name, configs, data):
+    def __init__(self, name, configs, data, oversampled_data=None):
         self.name = name
         self.data = data
+        if oversampled_data is not None:
+            self.oversampled_data = oversampled_data
+            self.oversampled_rewire_id_map = defaultdict(list)
+            for os_row in oversampled_data:
+                self.oversampled_rewire_id_map[os_row['rewire_id']].append(os_row)
         self.k_fold = configs.train.k_fold
         self.kf = KFold(n_splits=self.k_fold, shuffle=True, random_state=42)
         self.k_splits = list(self.kf.split(self.data))
@@ -26,10 +31,13 @@ class EDOSDataset(Dataset):
 
         for i in train_set:
             train_data.append(self.data[i])
+            if self.data[i]['rewire_id'] in self.oversampled_rewire_id_map.keys(): 
+                train_data.extend(self.oversampled_rewire_id_map[self.data[i]['rewire_id']])
+        print(f"K Fold #{k} Train Length with Oversampling {len(train_data)}")
         for i in test_set:
             test_data.append(self.data[i])
 
-        return EDOSDataset(f'train_{k}', self.configs, train_data), EDOSDataset(f'eval_{k}', self.configs, test_data)
+        return EDOSDataset(f'train_{k}', self.configs, train_data, None), EDOSDataset(f'eval_{k}', self.configs, test_data, None)
 
     def oversample_the_dataset(self):
         # Create dict counter for each label
@@ -131,8 +139,14 @@ class TrainDataset(EDOSDataset):
             reader = csv.DictReader(csvfile)
             for row in reader:
                 data.append(row)
+        
+        oversampled_data = []
+        with open(configs.train.oversampled_data_file, newline = '', encoding="utf8") as osfile:
+            reader = csv.DictReader(osfile)
+            for row in reader:
+                oversampled_data.append(row)
 
-        super().__init__('train', configs, data)
+        super().__init__('train', configs, data, oversampled_data)
 
 class AdditionalTrainDataset(EDOSDataset):
     def __init__(self, configs):
