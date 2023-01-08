@@ -1,7 +1,7 @@
 {
     "seed": 42,
     "title": "bertweet",
-    "task": "freeze-9-layers-lr-1e-4-cosine-scheduler-with-warmup-fall-task-a",
+    "task": "leaky",
     "train": {
         "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",

@@ -32,35 +32,30 @@ class EDOSTrainer(Trainer):
             for i, rewire_id in enumerate(batch['rewire_id']):
                 predictions.append((
                     rewire_id, batch['text'][i],
-                    pred[rewire_id]['sexist'],
-                    pred[rewire_id]['category'],
-                    pred[rewire_id]['vector'],
+                    pred[rewire_id]['sexist'] if 'a' in self.configs.train.task else '-',
+                    pred[rewire_id]['category'] if 'b' in self.configs.train.task else '-',
+                    pred[rewire_id]['vector'] if 'c' in self.configs.train.task else '-',
                     batch['label_sexist'][i],
                     batch['label_category'][i],
                     batch['label_vector'][i]
                 ))
 
-                actual_a.append(batch['label_sexist'][i])
-                predicted_a.append(pred[rewire_id]['sexist'])
+                if 'a' in self.configs.train.task:
+                    actual_a.append(batch['label_sexist'][i])
+                    predicted_a.append(pred[rewire_id]['sexist'])
 
-                if batch['label_sexist'][i] == 'sexist' and 'b' in self.configs.train.task and 'c' in self.configs.train.task:
-
+                if batch['label_sexist'][i] == 'sexist' and 'b' in self.configs.train.task:
                     actual_b.append(batch['label_category'][i])
-                    actual_c.append(batch['label_vector'][i])
-
                     predicted_b.append(pred[rewire_id]['category'])
+
+                if batch['label_sexist'][i] == 'sexist' and 'c' in self.configs.train.task:
+                    actual_c.append(batch['label_vector'][i])
                     predicted_c.append(pred[rewire_id]['vector'])
 
-        scores_a = classification_report(actual_a, predicted_a, output_dict=True)
-        scores_b, scores_c = None, None
-        if 'b' in self.configs.train.task and 'c' in self.configs.train.task:   
-            scores_b = classification_report(actual_b, predicted_b, output_dict=True)
-            scores_c = classification_report(actual_c, predicted_c, output_dict=True)
-
         scores = {
-            'a': scores_a,
-            'b': scores_b,
-            'c': scores_c
+            'a': classification_report(actual_a, predicted_a, output_dict=True) if 'a' in self.configs.train.task else None,
+            'b': classification_report(actual_b, predicted_b, output_dict=True) if 'b' in self.configs.train.task else None,
+            'c': classification_report(actual_c, predicted_c, output_dict=True) if 'c' in self.configs.train.task else None
         }
 
         return scores, predictions
@@ -69,4 +64,14 @@ class EDOSTrainer(Trainer):
         pass
 
     def summarize_scores(self, scores):
-        return scores['a']['macro avg']['f1-score']
+        score = 1
+        if "a" in self.configs.train.task:
+            return score * scores['a']['macro avg']['f1-score']
+        
+        if "b" in self.configs.train.task:
+            return score * scores['b']['macro avg']['f1-score']
+        
+        if "c" in self.configs.train.task:
+            return score * scores['c']['macro avg']['f1-score']
+
+        return score

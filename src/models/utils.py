@@ -4,6 +4,7 @@ import torch
 
 from src.models.bert import BertClassifier
 from src.models.bert_focal_loss import BertClassifier_fl
+from src.models.bm1 import BertClassifier as BM1
 from src.models.unifiedQA import UnifiedQAClassifier
 
 
@@ -17,6 +18,8 @@ def get_classification_model_from_state(configs, state_configs, device):
         model = BertClassifier_fl(configs, device)
     elif model_name == 'unifiedQA':
         model = UnifiedQAClassifier(configs, device)
+    elif model_name == 'bm1':
+        model = BM1(configs, device)
     else:
         raise Exception('Invalid model name')
 
@@ -37,8 +40,12 @@ def get_model(configs, filepath, device):
 
     if model_name == 'bert':
         model = BertClassifier(configs, device)
+    elif model_name == 'bert_fl':
+        model = BertClassifier_fl(configs, device)
     elif model_name == 'unifiedQA':
         model = UnifiedQAClassifier(configs, device)
+    elif model_name == 'bm1':
+        model = BM1(configs, device)
     else:
         raise Exception('Invalid model name')
 

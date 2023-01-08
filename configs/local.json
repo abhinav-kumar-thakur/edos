@@ -1,17 +1,20 @@
 {
     "seed": 42,
-    "title": "bertweet",
-    "task": "A",
+    "title": "BM1",
+    "task": "dev",
     "train": {
-        "task": ["a"],
+        "task": ["c"],
         "file": "data/raw/train_all_tasks.csv",
-        "additional_file": "data/raw/SD_dataset_FINAL.csv",
+        "additional_files": {
+            "sd": "data/raw/SD_dataset_FINAL.csv",
+            "mami": "data/raw/training.csv"
+        },
         "k_fold": 6,
-        "run_folds": [3],
+        "run_folds": [0 , 1, 2, 3, 4, 5],
         "train_batch_size": 4,
         "eval_batch_size": 32,
         "epochs": 50,
-        "patience": 5,
+        "patience": 10,
         "optimizer": {
             "name": "AdamW",
             "lr": 0.0001,
@@ -112,13 +115,12 @@
         }
     },
     "model": {
-        "type": "bert",
+        "type": "bm1",
         "bert": {
             "name": "vinai/bertweet-base",
             "max_length": 128,
             "dimensions": 768,
             "freeze_lower_layers": 9,
-            "bert_lr_factor": 0.1,
             "heads": {
                 "a": {
                     "dimensions": 2,

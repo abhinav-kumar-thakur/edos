@@ -84,7 +84,7 @@ class EDOSDataset(Dataset):
     def __getitem__(self, index):
         item = self.data[index]
 
-        if self.configs.model.type in ['bert', 'bert_fl']:
+        if self.configs.model.type in ['bert', 'bert_fl', 'bm1']:
             encoding = self.tokenizer.encode_plus(
                 item['text'],
                 add_special_tokens=True,
@@ -130,6 +130,9 @@ class TrainDataset(EDOSDataset):
         with open(configs.train.file, newline='', encoding="utf8") as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
+                if 'a' not in configs.train.task and row['label_sexist'] == 'not sexist':
+                    continue
+
                 data.append(row)
 
         super().__init__('train', configs, data)
