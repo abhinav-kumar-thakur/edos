@@ -13,9 +13,3 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
         pt = torch.exp(-ce_loss)
         focal_loss = ((1-pt)**self.gamma * ce_loss).mean()
         return focal_loss
-
-
-
-
-
-

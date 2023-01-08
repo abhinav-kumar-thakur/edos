@@ -115,7 +115,7 @@
         }
     },
     "model": {
-        "type": "bm1",
+        "type": "bert",
         "bert": {
             "name": "vinai/bertweet-base",
             "max_length": 128,
