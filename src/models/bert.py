@@ -1,6 +1,7 @@
 import torch as t
 from transformers import AutoModel
 
+from src.lossFunctions.focal_loss import FocalLoss
 
 class BertClassifier(t.nn.Module):
     def __init__(self, configs, device='cpu') -> None:
@@ -9,15 +10,18 @@ class BertClassifier(t.nn.Module):
         self.device = device
         self.configs = configs
 
-        self.loss_a = t.nn.CrossEntropyLoss()
+        task_a_loss_weights = t.FloatTensor(self.configs.model.bert.heads.a.loss_weights).to(device)
+        self.loss_a = FocalLoss(alpha=task_a_loss_weights, gamma=2)
         self.label2idx_a = self.get_label_index_a()
         self.idx2label_a = {v: k for k, v in self.label2idx_a.items()}
 
-        self.loss_b = t.nn.CrossEntropyLoss()
+        task_b_loss_weights = t.FloatTensor(self.configs.model.bert.heads.b.loss_weights).to(device)
+        self.loss_b = FocalLoss(alpha=task_b_loss_weights)
         self.label2idx_b = self.get_label_index_b()
         self.idx2label_b = {v: k for k, v in self.label2idx_b.items()}
 
-        self.loss_c = t.nn.CrossEntropyLoss()
+        task_c_loss_weights = t.FloatTensor(self.configs.model.bert.heads.c.loss_weights).to(device)
+        self.loss_c = FocalLoss(alpha=task_c_loss_weights)
         self.label2idx_c = self.get_label_index_c()
         self.idx2label_c = {v: k for k, v in self.label2idx_c.items()}
 
