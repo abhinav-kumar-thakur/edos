@@ -1,7 +1,7 @@
 {
     "seed": 42,
     "title": "bertweet",
-    "task": "e2",
+    "task": "b",
     "train": {
         "task": ["b"],
         "file": "data/raw/train_all_tasks.csv",
@@ -11,8 +11,8 @@
         },
         "k_fold": 6,
         "run_folds": [0 , 1, 2, 3, 4, 5],
-        "train_batch_size": 2,
-        "eval_batch_size": 2,
+        "train_batch_size": 4,
+        "eval_batch_size": 32,
         "epochs": 150,
         "patience": 30,
         "optimizer": {
@@ -103,7 +103,7 @@
         }
     },
     "logs": {
-        "dir": "logs",
+        "dir": "/content/drive/MyDrive/EDOS/logs",
         "files": {
             "train": "train.log",
             "event": "events.log",

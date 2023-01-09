@@ -1,7 +1,7 @@
 {
     "seed": 42,
     "title": "bertweet",
-    "task": "leaky",
+    "task": "b",
     "train": {
         "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
@@ -13,13 +13,14 @@
         "run_folds": [0 , 1, 2, 3, 4, 5],
         "train_batch_size": 4,
         "eval_batch_size": 32,
-        "epochs": 20,
-        "patience": 6,
+        "epochs": 40,
+        "patience": 10,
         "optimizer": {
             "name": "AdamW",
             "lr": 0.0001,
             "num_warmup_steps": 5
-        }
+        },
+        "loss": "ce"
     },
     "predict": {
         "file": "data/raw/dev_task_a_entries.csv",
@@ -102,7 +103,7 @@
         }
     },
     "logs": {
-        "dir": "logs",
+        "dir": "/content/drive/MyDrive/EDOS/logs",
         "files": {
             "train": "train.log",
             "event": "events.log",
@@ -124,15 +125,15 @@
             "heads": {
                 "a": {
                     "dimensions": 2,
-                    "loss_weights": [1, 3]   
+                    "loss_weights": [1, 1]   
                 },
                 "b": {
                     "dimensions": 5,
-                    "loss_weights": [0.1, 1, 1, 1, 1]
+                    "loss_weights": [1, 1, 1, 1, 1]
                 },
                 "c": {
                     "dimensions": 12,
-                    "loss_weights": [0.1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                    "loss_weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
                 }
             }
         }
