@@ -66,12 +66,12 @@ class EDOSTrainer(Trainer):
     def summarize_scores(self, scores):
         score = 1
         if "a" in self.configs.train.task:
-            return score * scores['a']['macro avg']['f1-score']
+            score *= scores['a']['macro avg']['f1-score']
         
         if "b" in self.configs.train.task:
-            return score * scores['b']['macro avg']['f1-score']
+            score *= scores['b']['macro avg']['f1-score']
         
         if "c" in self.configs.train.task:
-            return score * scores['c']['macro avg']['f1-score']
+            score *= scores['c']['macro avg']['f1-score']
 
         return score

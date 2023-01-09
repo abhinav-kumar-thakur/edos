@@ -11,17 +11,17 @@ class BertClassifier(t.nn.Module):
         self.configs = configs
 
         task_a_loss_weights = t.FloatTensor(self.configs.model.bert.heads.a.loss_weights).to(device)
-        self.loss_a = FocalLoss(alpha=task_a_loss_weights, gamma=2)
+        self.loss_a = FocalLoss(alpha=task_a_loss_weights, gamma=2) if self.configs.train.loss == 'fl'else t.nn.CrossEntropyLoss()
         self.label2idx_a = self.get_label_index_a()
         self.idx2label_a = {v: k for k, v in self.label2idx_a.items()}
 
         task_b_loss_weights = t.FloatTensor(self.configs.model.bert.heads.b.loss_weights).to(device)
-        self.loss_b = FocalLoss(alpha=task_b_loss_weights)
+        self.loss_b = FocalLoss(alpha=task_b_loss_weights) if self.configs.train.loss == 'fl'else t.nn.CrossEntropyLoss()
         self.label2idx_b = self.get_label_index_b()
         self.idx2label_b = {v: k for k, v in self.label2idx_b.items()}
 
         task_c_loss_weights = t.FloatTensor(self.configs.model.bert.heads.c.loss_weights).to(device)
-        self.loss_c = FocalLoss(alpha=task_c_loss_weights)
+        self.loss_c = FocalLoss(alpha=task_c_loss_weights) if self.configs.train.loss == 'fl'else t.nn.CrossEntropyLoss()
         self.label2idx_c = self.get_label_index_c()
         self.idx2label_c = {v: k for k, v in self.label2idx_c.items()}
 
@@ -89,15 +89,12 @@ class BertClassifier(t.nn.Module):
                 loss_c = self.loss_c(pred_c, actual_c)
                 loss += loss_c
 
-
+        labels = {}
         pred_a_ids = t.argmax(pred_a, dim=1)
         pred_b_ids = t.argmax(pred_b[:, 1:], dim=1)
         pred_c_ids = t.argmax(pred_c[:, 1:], dim=1)
-
-        labels = {}
         for i in range(len(pred_a_ids)):
             sexist_label = self.idx2label_a[pred_a_ids[i].item()]
-
             labels[batch['rewire_id'][i]] = {
                 'sexist': sexist_label,
                 'category': self.idx2label_b[pred_b_ids[i].item() + 1],
