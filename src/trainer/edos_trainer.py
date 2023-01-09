@@ -26,18 +26,29 @@ class EDOSTrainer(Trainer):
         self.model.eval()
         actual_a, actual_b, actual_c = [], [], []
         predicted_a, predicted_b, predicted_c = [], [], []
-        predictions = [('rewire_id', 'text', 'pred_a', 'pred_b', 'pred_c', 'actual_a', 'actual_b', 'actual_c')]
+        predictions = [(
+            'rewire_id', 'text',
+            'actual_a', 'pred_a', 'confidence_a', 'uncertainity_a',
+            'actual_b', 'pred_b', 'confidence_b', 'uncertainity_b',
+            'pred_c', 'actual_c', 'confidence_c', 'uncertainity_c'
+        )]
         for batch in tqdm(eval_dataloader):
             pred, _ = self.model(batch, train=False)
             for i, rewire_id in enumerate(batch['rewire_id']):
                 predictions.append((
                     rewire_id, batch['text'][i],
                     pred[rewire_id]['sexist'] if 'a' in self.configs.train.task else '-',
-                    pred[rewire_id]['category'] if 'b' in self.configs.train.task else '-',
-                    pred[rewire_id]['vector'] if 'c' in self.configs.train.task else '-',
                     batch['label_sexist'][i],
+                    pred[rewire_id]['confidence']['sexist'] if 'a' in self.configs.train.task else '-',
+                    pred[rewire_id]['uncertainity']['sexist'] if 'a' in self.configs.train.task else '-',
+                    pred[rewire_id]['category'] if 'b' in self.configs.train.task else '-',
                     batch['label_category'][i],
-                    batch['label_vector'][i]
+                    pred[rewire_id]['confidence']['category'] if 'b' in self.configs.train.task else '-',
+                    pred[rewire_id]['uncertainity']['category'] if 'b' in self.configs.train.task else '-',
+                    pred[rewire_id]['vector'] if 'c' in self.configs.train.task else '-',
+                    batch['label_vector'][i],
+                    pred[rewire_id]['confidence']['vector'] if 'c' in self.configs.train.task else '-',
+                    pred[rewire_id]['uncertainity']['vector'] if 'c' in self.configs.train.task else '-'
                 ))
 
                 if 'a' in self.configs.train.task:
