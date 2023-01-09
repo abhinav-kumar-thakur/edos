@@ -3,6 +3,10 @@ from transformers import AutoModel
 
 from src.lossFunctions.focal_loss import FocalLoss
 
+# min max normalize tensor
+def min_max_normalize(x, dim=0):
+    return (x - x.min(dim=dim, keepdim=True)[0]) / (x.max(dim=dim, keepdim=True)[0] - x.min(dim=dim, keepdim=True)[0])
+
 class BertClassifier(t.nn.Module):
     def __init__(self, configs, device='cpu') -> None:
         super().__init__()
@@ -96,9 +100,24 @@ class BertClassifier(t.nn.Module):
         for i in range(len(pred_a_ids)):
             sexist_label = self.idx2label_a[pred_a_ids[i].item()]
             labels[batch['rewire_id'][i]] = {
-                'sexist': sexist_label,
-                'category': self.idx2label_b[pred_b_ids[i].item() + 1],
-                'vector': self.idx2label_c[pred_c_ids[i].item() + 1]
+                'sexist': sexist_label if 'a' in self.configs.train.task else None,
+                'category': self.idx2label_b[pred_b_ids[i].item() + 1] if 'b' in self.configs.train.task else None,
+                'vector': self.idx2label_c[pred_c_ids[i].item() + 1] if 'c' in self.configs.train.task else None,
+                'scores': {
+                    'sexist': {k: v.item() for k, v in zip(self.idx2label_a.values(), pred_a[i])}  if 'a' in self.configs.train.task else None,
+                    'category': {k: v.item() for k, v in zip(self.idx2label_b.values(), pred_b[i])} if 'b' in self.configs.train.task else None,
+                    'vector': {k: v.item() for k, v in zip(self.idx2label_c.values(), pred_c[i])} if 'c' in self.configs.train.task else None
+                },
+                'confidence': {
+                    'sexist': t.abs(t.diff(t.topk(min_max_normalize(pred_a[i]), 2)[0])).item() if 'a' in self.configs.train.task else None,
+                    'category': t.abs(t.diff(t.topk(min_max_normalize(pred_b[i]), 2)[0])).item() if 'b' in self.configs.train.task else None,
+                    'vector': t.abs(t.diff(t.topk(min_max_normalize(pred_c[i]), 2)[0])).item() if 'c' in self.configs.train.task else None
+                },
+                'uncertainity': {
+                    'sexist': -t.sum(t.softmax(pred_a[i], dim=0) * t.log_softmax(pred_a[i], dim=0)).item() if 'a' in self.configs.train.task else None,
+                    'category': -t.sum(t.softmax(pred_b[i], dim=0) * t.log_softmax(pred_b[i], dim=0)).item() if 'b' in self.configs.train.task else None,
+                    'vector': -t.sum(t.softmax(pred_c[i], dim=0) * t.log_softmax(pred_c[i], dim=0)).item() if 'c' in self.configs.train.task else None
+                }
             }
 
         return labels, loss
