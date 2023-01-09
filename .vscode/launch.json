@@ -27,6 +27,18 @@
                 "PYTHONPATH": "${cwd}"
             },
             "args": ["--config", "bert.json", "--device", "cuda:0"]
+        },
+        {
+            "name": "Pretrainer",
+            "type": "python",
+            "request": "launch",
+            "program": "${cwd}/src/strategies/bert_pretrain.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${cwd}"
+            },
+            "args": ["--config", "configs/bert_pretrain.json"]
         }
     ]
 }

@@ -8,6 +8,7 @@ import csv
 from typing import Dict
 import logging
 import json
+from tqdm import tqdm
 logging.basicConfig(filename='logs/bert_pretrain_log.log', format='%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG, filemode='w')
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -16,10 +17,14 @@ class PreTrainDataset(Dataset):
 
     def __init__(self, tokenizer, data, block_size) -> None:
         super().__init__()
-
+        logger.info("Initializing Dataset")
+        temp_t = time()
         batch_encoding = tokenizer(data, add_special_tokens=True, truncation=True, max_length=block_size)
-        self.samples = batch_encoding["input_ids"]
-        self.samples = [{"input_ids": torch.tensor(e, dtype=torch.long, device=DEVICE)} for e in self.samples]
+        logger.info(f"Tokenized in {time()-temp_t} seconds")
+        self.samples = []
+        for e in tqdm(batch_encoding["input_ids"]):
+            new_ip = {"input_ids": torch.tensor(e,device=DEVICE)}
+            self.samples.append(new_ip)
         logger.info(f"Custom Dataset Initialized with device {DEVICE}")
 
     def __len__(self):
@@ -32,12 +37,13 @@ def pretrain(data:list):
     logger.info(f"GPU {'' if torch.cuda.is_available() else 'not'} available")
     tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=True, mlm_probability=0.15)
-    dataset = PreTrainDataset(tokenizer=tokenizer, data=data, block_size=128)
+    dataset = PreTrainDataset(tokenizer=tokenizer, data=data, block_size=config['tokenizer_batch_size'])
 
-    config = BertConfig(vocab_size=50000, hidden_size=768, num_hidden_layers=6, 
+    bert_config = BertConfig(vocab_size=50000, hidden_size=768, num_hidden_layers=6, 
         num_attention_heads=12, max_position_embeddings=512
     )
-    model = BertForMaskedLM(config=config)
+    model = BertForMaskedLM(config=bert_config)
+    model.to(DEVICE)
 
     training_args = TrainingArguments(
         output_dir = config['training_args']['output_dir'],
