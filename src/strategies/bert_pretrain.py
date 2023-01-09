@@ -3,7 +3,7 @@ from transformers import BertTokenizer, BertConfig, BertForMaskedLM, DataCollato
     Trainer, TrainingArguments
 from torch.utils.data import Dataset
 from argparse import ArgumentParser
-from time import time()
+from time import time
 import csv
 from typing import Dict
 import logging
