@@ -5,7 +5,8 @@ from src.lossFunctions.focal_loss import FocalLoss
 
 # min max normalize tensor
 def min_max_normalize(x, dim=0):
-    return (x - x.min(dim=dim, keepdim=True)[0]) / (x.max(dim=dim, keepdim=True)[0] - x.min(dim=dim, keepdim=True)[0])
+    y = (x - x.min(dim=dim, keepdim=True)[0])
+    return y / t.sum(y)
 
 class BertClassifier(t.nn.Module):
     def __init__(self, configs, device='cpu') -> None:
@@ -110,13 +111,18 @@ class BertClassifier(t.nn.Module):
                 },
                 'confidence': {
                     'sexist': t.abs(t.diff(t.topk(min_max_normalize(pred_a[i]), 2)[0])).item() if 'a' in self.configs.train.task else None,
-                    'category': t.abs(t.diff(t.topk(min_max_normalize(pred_b[i]), 2)[0])).item() if 'b' in self.configs.train.task else None,
-                    'vector': t.abs(t.diff(t.topk(min_max_normalize(pred_c[i]), 2)[0])).item() if 'c' in self.configs.train.task else None
+                    'category': t.abs(t.diff(t.topk(min_max_normalize(pred_b[i, 1:]), 2)[0])).item() if 'b' in self.configs.train.task else None,
+                    'vector': t.abs(t.diff(t.topk(min_max_normalize(pred_c[i, 1:]), 2)[0])).item() if 'c' in self.configs.train.task else None
+                },
+                'confidence_s': {
+                    'sexist': t.abs(t.diff(t.topk(t.softmax(pred_a[i], dim=0), 2)[0])).item() if 'a' in self.configs.train.task else None,
+                    'category': t.abs(t.diff(t.topk(t.softmax(pred_b[i, 1:], dim=0), 2)[0])).item() if 'b' in self.configs.train.task else None,
+                    'vector': t.abs(t.diff(t.topk(t.softmax(pred_c[i, 1:], dim=0), 2)[0])).item() if 'c' in self.configs.train.task else None
                 },
                 'uncertainity': {
                     'sexist': -t.sum(t.softmax(pred_a[i], dim=0) * t.log_softmax(pred_a[i], dim=0)).item() if 'a' in self.configs.train.task else None,
-                    'category': -t.sum(t.softmax(pred_b[i], dim=0) * t.log_softmax(pred_b[i], dim=0)).item() if 'b' in self.configs.train.task else None,
-                    'vector': -t.sum(t.softmax(pred_c[i], dim=0) * t.log_softmax(pred_c[i], dim=0)).item() if 'c' in self.configs.train.task else None
+                    'category': -t.sum(t.softmax(pred_b[i, 1:], dim=0) * t.log_softmax(pred_b[i, 1:], dim=0)).item() if 'b' in self.configs.train.task else None,
+                    'vector': -t.sum(t.softmax(pred_c[i, 1:], dim=0) * t.log_softmax(pred_c[i, 1:], dim=0)).item() if 'c' in self.configs.train.task else None
                 }
             }
 
