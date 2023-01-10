@@ -1,7 +1,7 @@
 {
     "seed": 42,
     "title": "bertweet",
-    "task": "b",
+    "task": "a-confidence-analysis",
     "train": {
         "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
