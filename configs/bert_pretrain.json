@@ -1,0 +1,14 @@
+{
+    "file_paths":["data/raw/gab_1M_unlabelled.csv","data/raw/reddit_1M_unlabelled.csv"],
+    "save_combined_data":true,
+    "pretrained_model_output_path":"src/models/pretraining/model",
+    "tokenizer_batch_size":4,
+    "training_args":{
+        "output_dir":"src/models/pretraining/model/",
+        "overwrite_output_dir":true,
+        "num_train_epochs":7,
+        "per_device_train_batch_size":8,
+        "save_steps":10000,
+        "save_total_limit":2
+    }
+}
