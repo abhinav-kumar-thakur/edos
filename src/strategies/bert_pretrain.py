@@ -9,7 +9,7 @@ from typing import Dict
 import logging
 import json
 from tqdm import tqdm
-logging.basicConfig(filename='logs/bert_pretrain_log.log', format='%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG, filemode='w')
+import os
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
@@ -35,7 +35,7 @@ class PreTrainDataset(Dataset):
 
 def pretrain(data:list):
     logger.info(f"GPU {'' if torch.cuda.is_available() else 'not'} available")
-    tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+    tokenizer = BertTokenizer.from_pretrained(config['language_model'])
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=True, mlm_probability=0.15)
     dataset = PreTrainDataset(tokenizer=tokenizer, data=data, block_size=config['tokenizer_batch_size'])
 
@@ -46,7 +46,7 @@ def pretrain(data:list):
     model.to(DEVICE)
 
     training_args = TrainingArguments(
-        output_dir = config['training_args']['output_dir'],
+        output_dir = os.path.join(log_path, 'model'),
         overwrite_output_dir = config['training_args']['overwrite_output_dir'],
         num_train_epochs = config['training_args']['num_train_epochs'],
         per_device_train_batch_size = config['training_args']['per_device_train_batch_size'],
@@ -105,7 +105,13 @@ if __name__ == "__main__":
     config = read_configs(args.config)
     
     assert len(config['file_paths']) > 0, "No File Paths Provided"
+    
+    log_path = os.path.join(config['log_path'], config['language_model'])
+    if not os.path.exists(log_path):
+        os.makedirs(log_path,exist_ok=True)
+        os.makedirs(os.path.join(log_path, 'model'), exist_ok=True)
 
+    logging.basicConfig(filename=log_path, format='%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG, filemode='w')
     logger = logging.getLogger()
 
     pretrain_data = get_all_data()
