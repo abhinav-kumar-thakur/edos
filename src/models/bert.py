@@ -139,3 +139,57 @@ class BertClassifier(t.nn.Module):
         ] 
         
         return optimizer_parameters
+    
+    def get_trainable_parameters_with_LLRD(self, init_lr, llrd_factor):
+        """
+        * init_lr: max lr, to be used in classifiaction heads and bert pooler layer
+        * llrd_decay: Layer-wise Learning Rate Decay factor, (should be smaller than one, e.g. 0.8)
+        """
+        # Layer-wise Laerning Rate Decay (LLRD)
+        optimizer_params = []
+        model_params = list(self.named_parameters())
+        no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
+        lr = init_lr
+        # ===  Classification heads and Bert Pooler layer ======================================================  
+        pool_and_clf_layers = ["pooler","head_a","head_b","head_c","hidden_layer"]
+        params_0 = [p for n,p in model_params if any(nd in n for nd in pool_and_clf_layers) 
+                    and any(nd in n for nd in no_decay)]
+        params_1 = [p for n,p in model_params if any(nd in n for nd in pool_and_clf_layers)
+                    and not any(nd in n for nd in no_decay)]
+        
+        head_params = {"params": params_0, "lr": lr, "weight_decay": 0.0}    
+        optimizer_params.append(head_params)
+            
+        head_params = {"params": params_1, "lr": lr, "weight_decay": 0.01}    
+        optimizer_params.append(head_params)
+                    
+        # === 12 Hidden layers of Bert ==========================================================
+        
+        for layer in range(11,-1,-1):        
+            params_0 = [p for n,p in model_params if f"encoder.layer.{layer}." in n 
+                        and any(nd in n for nd in no_decay)]
+            params_1 = [p for n,p in model_params if f"encoder.layer.{layer}." in n 
+                        and not any(nd in n for nd in no_decay)]
+            
+            layer_params = {"params": params_0, "lr": lr, "weight_decay": 0.0}
+            optimizer_params.append(layer_params)   
+                                
+            layer_params = {"params": params_1, "lr": lr, "weight_decay": 0.01}
+            optimizer_params.append(layer_params)       
+            
+            lr *= llrd_factor     
+            
+        # === Embeddings layer of Bert ==========================================================
+        
+        params_0 = [p for n,p in model_params if "embeddings" in n 
+                    and any(nd in n for nd in no_decay)]
+        params_1 = [p for n,p in model_params if "embeddings" in n
+                    and not any(nd in n for nd in no_decay)]
+        
+        embed_params = {"params": params_0, "lr": lr, "weight_decay": 0.0} 
+        optimizer_params.append(embed_params)
+            
+        embed_params = {"params": params_1, "lr": lr, "weight_decay": 0.01} 
+        optimizer_params.append(embed_params)  
+
+        return optimizer_params
