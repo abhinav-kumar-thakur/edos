@@ -106,7 +106,7 @@ if __name__ == "__main__":
     
     assert len(config['file_paths']) > 0, "No File Paths Provided"
     
-    log_path = os.path.join(config['log_path'], config['language_model'])
+    log_path = os.path.join(config['log_path'], 'pretraining-'+config['language_model'])
     if not os.path.exists(log_path):
         os.makedirs(log_path,exist_ok=True)
         os.makedirs(os.path.join(log_path, 'model'), exist_ok=True)
