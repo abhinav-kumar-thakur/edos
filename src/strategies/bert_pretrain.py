@@ -107,8 +107,9 @@ if __name__ == "__main__":
     assert len(config['file_paths']) > 0, "No File Paths Provided"
     
     log_path = os.path.join(config['log_path'], 'pretraining-'+config['language_model'])
+    print(log_path+'/pretrain.log')
     if not os.path.exists(log_path):
-        os.makedirs(log_path,exist_ok=True)
+        os.makedirs(log_path+'/pretrain.log',exist_ok=True)
         os.makedirs(os.path.join(log_path, 'model'), exist_ok=True)
 
     logging.basicConfig(filename=log_path, format='%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG, filemode='w')
