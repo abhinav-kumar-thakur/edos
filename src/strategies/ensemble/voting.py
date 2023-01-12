@@ -10,7 +10,7 @@ from src.datasets.dataset import DevDataset
 from src.models.utils import get_model
 from .ensemble import Ensemble
 
-class Voting(Ensemble):
+class Voting(Ensemble, torch.nn.Module):
     def __init__(self, config, logger, device='cpu'):
         self.device = device
         self.models = []

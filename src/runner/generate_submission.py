@@ -10,6 +10,7 @@ from src.models.utils import get_model
 from src.logger import Logger
 from src.datasets.dataset import PredictionDataset, DevDataset
 from src.utils import get_args
+from src.strategies.ensemble.utils import get_ensemble_model
 from src.strategies.ensemble.voting import Voting
 
 
@@ -20,7 +21,7 @@ if __name__ == '__main__':
     logger = Logger(configs)
     dev_data = DevDataset(configs)
     
-    voting_model = Voting(configs, logger, args.device)
+    voting_model = get_ensemble_model(configs, logger, args.device)
     prediction_dataloader = torch.utils.data.DataLoader(dev_data, batch_size=configs.predict.batch_size, shuffle=False, num_workers=0)
     
     predictions = {}

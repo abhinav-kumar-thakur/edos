@@ -212,7 +212,7 @@ class DevDataset(EDOSDataset):
                 'label_vector': 'none'
             })
             
-        super().__init__('dev', configs, dev_data_a[:20])
+        super().__init__('dev', configs, dev_data_a)
 
 class MamiDataset(EDOSDataset):
     def __init__(self, configs):

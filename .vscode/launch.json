@@ -27,7 +27,7 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "bertweet-task-a.json", "--device", "cuda:0"]
+            "args": ["--config", "0-bertweet-task-a.json", "--device", "cuda:0"]
         },
         {
             "name": "Pretrainer",
