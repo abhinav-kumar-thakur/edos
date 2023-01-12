@@ -164,12 +164,14 @@ class AdditionalTrainDataset(EDOSDataset):
 class PredictionDataset(EDOSDataset):
     def __init__(self, configs):
         data = []
-        with open(configs.predict.file, newline='') as csvfile:
+        with open(configs.predict.file, newline='', encoding="utf8") as csvfile:
             reader = csv.DictReader(csvfile)
             for row in tqdm(reader, desc='Loading eval dataset'):
                 data.append(row)
 
         super().__init__('pred', configs, data)
+
+
 
 class UnlabelledDataset(EDOSDataset):
     def __init__(self, configs):
@@ -185,6 +187,33 @@ class UnlabelledDataset(EDOSDataset):
         
         super().__init__('unlabelled', configs, data)
         
+
+class DevDataset(EDOSDataset):
+    def __init__(self, configs):
+        dev_a_text = {}
+        dev_a_labels = {}
+        dev_data_a = []
+        with open(configs.datasets.files.dev_a_text, newline='', encoding="utf8") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                dev_a_text[row['rewire_id']] = row['text']
+
+        with open(configs.datasets.files.dev_a_label, newline='', encoding="utf8") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                dev_a_labels[row['rewire_id']] = row['label']
+        
+        for key in dev_a_text:
+            dev_data_a.append({
+                'rewire_id': key,
+                'text': dev_a_text[key],
+                'label_sexist': dev_a_labels[key],
+                'label_category': 'none',
+                'label_vector': 'none'
+            })
+            
+        super().__init__('dev', configs, dev_data_a[:20])
+
 class MamiDataset(EDOSDataset):
     def __init__(self, configs):
         data = []

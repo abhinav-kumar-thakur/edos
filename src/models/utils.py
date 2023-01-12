@@ -44,5 +44,5 @@ def get_model(configs, filepath, device):
     else:
         raise Exception('Invalid model name')
 
-    model.load_state_dict(torch.load(filepath))
+    model.load_state_dict(torch.load(filepath, map_location=device))
     return model
