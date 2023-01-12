@@ -1,7 +1,7 @@
 {
     "seed": 42,
-    "title": "bertweet",
-    "task": "b",
+    "title": "bert",
+    "task": "e1",
     "train": {
         "task": ["b"],
         "file": "data/raw/train_all_tasks.csv",
@@ -11,14 +11,14 @@
         },
         "k_fold": 6,
         "run_folds": [0 , 1, 2, 3, 4, 5],
-        "train_batch_size": 4,
-        "eval_batch_size": 32,
+        "train_batch_size": 2,
+        "eval_batch_size": 2,
         "epochs": 150,
         "patience": 30,
         "optimizer": {
             "name": "AdamW",
             "lr": 0.0001,
-            "num_warmup_steps": 10
+            "num_warmup_steps": 5
         },
         "loss": "ce"
     },
@@ -103,7 +103,7 @@
         }
     },
     "logs": {
-        "dir": "/content/drive/MyDrive/EDOS/logs",
+        "dir": "logs",
         "files": {
             "train": "train.log",
             "event": "events.log",
@@ -118,7 +118,7 @@
     "model": {
         "type": "bert",
         "bert": {
-            "name": "vinai/bertweet-base",
+            "name": "bert-base-uncased",
             "max_length": 128,
             "dimensions": 768,
             "freeze_lower_layers": 9,

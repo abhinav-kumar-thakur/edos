@@ -1,9 +1,9 @@
 {
     "seed": 42,
-    "title": "bertweet",
-    "task": "e2",
+    "title": "bertweet-task-a",
+    "task": "llrd",
     "train": {
-        "task": ["b"],
+        "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
         "additional_files": {
             "sd": "data/raw/SD_dataset_FINAL.csv",
@@ -11,14 +11,14 @@
         },
         "k_fold": 6,
         "run_folds": [0 , 1, 2, 3, 4, 5],
-        "train_batch_size": 2,
-        "eval_batch_size": 2,
-        "epochs": 150,
-        "patience": 30,
+        "train_batch_size": 4,
+        "eval_batch_size": 32,
+        "epochs": 40,
+        "patience": 10,
         "optimizer": {
             "name": "AdamW",
             "lr": 0.0001,
-            "num_warmup_steps": 10
+            "num_warmup_steps": 5
         },
         "loss": "ce"
     },

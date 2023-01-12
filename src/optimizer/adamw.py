@@ -1,12 +1,13 @@
 from transformers import AdamW, get_cosine_schedule_with_warmup
 
-from src.optimizer.optimizer import Optimizer
+from .optimizer import Optimizer
+from .scheduler import get_scheduler
 
 
 class AdamWOptimizer(Optimizer):
     def __init__(self, model, configs) -> None:
         self.optimizer = AdamW(model.get_trainable_parameters(), lr=configs.train.optimizer.lr)
-        self.scheduler = get_cosine_schedule_with_warmup(self.optimizer, num_warmup_steps=configs.train.optimizer.num_warmup_steps, num_training_steps=configs.train.epochs)
+        self.scheduler = get_scheduler(self.optimizer, configs)
 
     def step_optimizer(self):
         self.optimizer.step()
