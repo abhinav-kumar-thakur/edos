@@ -4,9 +4,9 @@ import torch
 import random
 
 from src.config_reader import read_json_configs, read_dict_configs
-from src.datasets.dataset import TrainDataset, AdditionalTrainDataset, MamiDataset
+from src.datasets.dataset import TrainDataset, UnlabelledDataset
 from src.logger import Logger
-from src.strategies.training.cross_validation import CrossValidation
+from src.strategies.training.ssl import SemiSupervisedLearning
 from src.utils import get_args
 
 if __name__ == '__main__':
@@ -28,11 +28,9 @@ if __name__ == '__main__':
     random.seed(configs.seed)
 
     dataset = TrainDataset(configs)
-    additional_datasets = [
-        # TODO: Disable additional dataset from configuration
-        # AdditionalTrainDataset(configs)
-        # MamiDataset(configs)
-    ]
+    unlabelled_dataset = UnlabelledDataset(configs)
+    validation_dataset = dataset
 
-    CrossValidation(configs, state_configs, dataset, additional_datasets, logger, args.device).run()
-    print("Finished training with cross validation")
+    ssl = SemiSupervisedLearning(configs, state_configs, dataset, unlabelled_dataset, validation_dataset, logger, 'cuda')
+    ssl.run()
+    print("Finished training with Semi supervised learning")
