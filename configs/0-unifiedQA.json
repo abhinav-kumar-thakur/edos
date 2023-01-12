@@ -13,6 +13,11 @@
         "optimizer": {
             "name": "AdamW",
             "lr": 0.001
+        },
+        "scheduler": {
+            "name": "cosine_with_hard_restarts",
+            "num_warmup_steps": 5,
+            "num_cycles": 4
         }
     },
     "predict": {
