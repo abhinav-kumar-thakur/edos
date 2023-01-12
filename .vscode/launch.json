@@ -14,7 +14,8 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "bertweet-task-a-scheduler-hard-resets.json", "--device", "cuda:1"]
+            "args": ["--config", "local.json", "--device", "cuda:2"]
+
         },
         {
             "name": "Generate Submission",
@@ -26,7 +27,7 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "local.json", "--device", "cuda:0"]
+            "args": ["--config", "bertweet-task-a.json", "--device", "cuda:0"]
         },
         {
             "name": "Pretrainer",

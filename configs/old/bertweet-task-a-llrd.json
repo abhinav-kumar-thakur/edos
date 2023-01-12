@@ -28,6 +28,14 @@
     },
     "datasets": {
         "name": "edos",
+        "files": {
+            "dev_a_text": "data/raw/dev_task_a_entries.csv",
+            "dev_b_text": "data/raw/dev_task_b_entries.csv",
+            "dev_c_text": "data/raw/dev_task_c_entries.csv",
+            "dev_a_label": "data/raw/dev_task_a_labels.csv",
+            "dev_b_label": "data/raw/dev_task_b_labels.csv",
+            "dev_c_label": "data/raw/dev_task_b_labels.csv"
+        },
         "labels": {
             "not sexist": {
                 "id": 0,
