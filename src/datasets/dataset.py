@@ -171,6 +171,20 @@ class PredictionDataset(EDOSDataset):
 
         super().__init__('pred', configs, data)
 
+class UnlabelledDataset(EDOSDataset):
+    def __init__(self, configs):
+        data = []
+        count = 0
+        prefix = 'unlabelled'
+        with open(configs.ssl.unlabelled_file, newline='', encoding="utf8") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                row['rewire_id'] = f'{prefix}_{count}'
+                data.append(row)
+                count += 1
+        
+        super().__init__('unlabelled', configs, data)
+        
 class MamiDataset(EDOSDataset):
     def __init__(self, configs):
         data = []
