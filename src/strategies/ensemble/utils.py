@@ -6,12 +6,14 @@ from .random_forest_ensemble import RandomForestEnsemble
 def get_ensemble_model(configs, logger, device):
     model_name = configs.model.ensemble.name
 
-    if model_name == 'voting':
+    if model_name is None:
+        raise Warning('No ensemble model specified')
+    elif model_name == 'voting':
         model = Voting(configs, logger, device)
     elif model_name == 'meta-classifier':
         model = MetaClassifier(configs, logger, device)
     elif model_name == 'bagging_random_forest':
-        model = RandomForestEnsemble(configs, logger, device)
+        model = RandomForestEnsembler(configs = configs, logger= logger, device= device)
     else:
         raise Exception('Invalid ensemble name')
 
