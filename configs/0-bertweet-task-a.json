@@ -26,9 +26,9 @@
         },
         "loss": "ce"
     },
-    "predict": {
-        "file": "data/raw/dev_task_a_entries.csv",
-        "batch_size": 32
+    "submission": {
+        "task": "a",
+        "dataset": "dev"
     },
     "datasets": {
         "name": "edos",
@@ -38,7 +38,8 @@
             "dev_c_text": "data/raw/dev_task_c_entries.csv",
             "dev_a_label": "data/raw/dev_task_a_labels.csv",
             "dev_b_label": "data/raw/dev_task_b_labels.csv",
-            "dev_c_label": "data/raw/dev_task_b_labels.csv"
+            "dev_c_label": "data/raw/dev_task_b_labels.csv",
+            "test_a_text": "data/raw/test_task_a_entries.csv"
         },
         "labels": {
             "not sexist": {

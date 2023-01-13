@@ -6,6 +6,6 @@ def get_ensemble_model(configs, logger, device):
     if model_name == 'voting':
         model = Voting(configs, logger, device)
     else:
-        raise Exception('Invalid model name')
+        raise Exception('Invalid ensemble name')
 
     return model
