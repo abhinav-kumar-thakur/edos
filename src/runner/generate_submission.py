@@ -1,9 +1,8 @@
 import os
-from argparse import ArgumentParser
-from collections import defaultdict, Counter
 
 import torch
 from tqdm import tqdm
+from sklearn.metrics import classification_report
 
 from src.config_reader import read_json_configs
 from src.models.utils import get_model
@@ -19,10 +18,10 @@ if __name__ == '__main__':
     configs = read_json_configs(os.path.join('./configs', args.config))
 
     logger = Logger(configs)
-    dev_data = DevDataset(configs)
+    dataset = DevDataset(configs) if configs.submission.dataset == 'dev' else PredictionDataset(configs)
     
     voting_model = get_ensemble_model(configs, logger, args.device)
-    prediction_dataloader = torch.utils.data.DataLoader(dev_data, batch_size=configs.predict.batch_size, shuffle=False, num_workers=0)
+    prediction_dataloader = torch.utils.data.DataLoader(dataset, batch_size=configs.train.eval_batch_size, shuffle=False, num_workers=0)
     
     predictions = {}
     for batch in tqdm(prediction_dataloader):
@@ -30,6 +29,16 @@ if __name__ == '__main__':
         for rew_id, labels in pred.items():
             predictions[rew_id] = labels
 
+    actual_labels = []
+    prediction_labels = []
+    if configs.submission.dataset == 'dev':
+        for data in dataset:
+            rew_id = data['rewire_id']
+            actual_labels.append(data['sexist'])
+            prediction_labels.append(predictions[rew_id])
+
+        print(classification_report(actual_labels, prediction_labels))
+    
     with open(os.path.join(logger.dir, configs.logs.files.submission), 'w') as f:
         f.write('rewire_id,label_pred\n')
         for rew_id, pred in predictions.items():
