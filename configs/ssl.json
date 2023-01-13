@@ -1,7 +1,12 @@
 {
     "seed": 42,
     "title": "bertweet",
-    "task": "a-confidence-analysis",
+    "task": "ssl-task-a",
+    "ssl": {
+        "unlabelled_file": "data/raw/gab_1M_unlabelled.csv",
+        "k_fold": 50,
+        "additions": 4000
+    },
     "train": {
         "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
@@ -12,8 +17,8 @@
         "k_fold": 6,
         "run_folds": [0 , 1, 2, 3, 4, 5],
         "train_batch_size": 4,
-        "eval_batch_size": 1,
-        "epochs": 40,
+        "eval_batch_size": 8,
+        "epochs": 25,
         "patience": 10,
         "optimizer": {
             "name": "AdamW",
