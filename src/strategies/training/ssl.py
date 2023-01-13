@@ -20,13 +20,13 @@ class SemiSupervisedLearning:
         prediction_model = model
         for fold in range(self.configs.ssl.k_fold):
             _, unlabeled_dataset = self.unlabeled_dataset.get_kth_fold_dataset(fold)
-            unlabeled_dataloader = DataLoader(unlabeled_dataset, batch_size=self.configs.ssl.unlabeled_batch_size, shuffle=False)
+            unlabeled_dataloader = DataLoader(unlabeled_dataset, batch_size=self.configs.train.eval_batch_size, shuffle=False)
             pred_data = []
             for batch in unlabeled_dataloader:
-                pred_data.append(prediction_model.predict(batch))
+                pred, _ = prediction_model(batch)
+                pred_data.append(pred)
 
             self.predicted_datasets.append(pred_data)
-
             train_dataset = ConcatDataset([self.ground_truth_dataset, pred_data])
             train_dataloader = DataLoader(train_dataset, batch_size=self.configs.ssl.labeled_batch_size, shuffle=True)
             eval_dataloader = DataLoader(self.validation_dataset, batch_size=self.configs.ssl.validation_batch_size, shuffle=False)
