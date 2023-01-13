@@ -54,6 +54,9 @@ class Trainer(ABC):
             self.state_configs.edit('epoch', epoch + 1)
             write_json_configs(self.state_configs, os.path.join(self.logger.dir, self.configs.logs.files.state))
 
+    def get_best_model(self):
+        return torch.load(os.path.join(self.model_save_dir, f'best_model_{self.state_configs.kth_fold}.pt'))
+
     @abstractmethod
     def summarize_scores(self, scores):
         pass
