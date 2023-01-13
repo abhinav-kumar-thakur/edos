@@ -78,6 +78,18 @@
                 "PYTHONPATH": "${cwd}"
             },
             "args": ["--config", "random-forest-ensembler.json","--device","cpu"]
+        },
+        {
+            "name": "SSL",
+            "type": "python",
+            "request": "launch",
+            "program": "${cwd}/src/runner/ssl.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${cwd}"
+            },
+            "args": ["--config", "ssl.json", "--device", "cuda:2"]
         }
     ]
 }
