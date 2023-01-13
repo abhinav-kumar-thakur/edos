@@ -90,6 +90,18 @@
                 "PYTHONPATH": "${cwd}"
             },
             "args": ["--config", "ssl.json", "--device", "cuda:2"]
+        },
+        {
+            "name": "Random Forest Ensembler",
+            "type": "python",
+            "request": "launch",
+            "program": "${cwd}/src/runner/train_frozen_ensembler.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${cwd}"
+            },
+            "args": ["--config", "random-forest-ensembler.json","--device","cpu"]
         }
     ]
 }

@@ -2,6 +2,8 @@
     "seed": 42,
     "title": "bertweet-ensemble",
     "task": "random-forest-ensemble",
+    "title": "bertweet-ensemble",
+    "task": "random-forest-ensemble",
     "train": {
         "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
