@@ -4,9 +4,10 @@ import torch
 import random
 
 from src.config_reader import read_json_configs, read_dict_configs
-from src.datasets.dataset import TrainDataset, UnlabelledDataset
+from src.datasets.dataset import TrainDataset, UnlabelledDataset, DevDataset
 from src.logger import Logger
 from src.strategies.training.ssl import SemiSupervisedLearning
+from src.strategies.ensemble.utils import get_ensemble_model
 from src.utils import get_args
 
 if __name__ == '__main__':
@@ -29,8 +30,9 @@ if __name__ == '__main__':
 
     dataset = TrainDataset(configs)
     unlabelled_dataset = UnlabelledDataset(configs)
-    validation_dataset = dataset
+    validation_dataset = DevDataset(configs)
 
-    ssl = SemiSupervisedLearning(configs, state_configs, dataset, unlabelled_dataset, validation_dataset, logger, 'cuda')
-    ssl.run()
+    ensemble_model = get_ensemble_model(configs, logger, args.device)
+    ssl = SemiSupervisedLearning(configs, state_configs, dataset, unlabelled_dataset, validation_dataset, logger, args.device)
+    ssl.run(ensemble_model)
     print("Finished training with Semi supervised learning")

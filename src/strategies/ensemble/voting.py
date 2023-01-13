@@ -20,7 +20,7 @@ class Voting(Ensemble):
         self.model_dir = os.path.join(self.logger.dir, self.configs.logs.files.models)
         for file in os.listdir(self.model_dir):
             if 'best_model' in file:
-                model = get_model(self.configs, os.path.join(self.model_dir, file), 'cpu')
+                model = get_model(self.configs, os.path.join(self.model_dir, file), self.device)
                 self.models.append(model)
         
     def forward(self, batch, train=False):
@@ -29,12 +29,18 @@ class Voting(Ensemble):
             model.eval()
             pred, loss = model(batch, train=False)
             for rewire_id in batch['rewire_id']:
-                predictions[rewire_id].append(pred[rewire_id]['sexist'])
+                predictions[rewire_id].append((pred[rewire_id]['sexist'], pred[rewire_id]['confidence_s']['sexist']))
 
         labels = {}
         for rew_id, pred in predictions.items():
-            label = Counter(pred).most_common(1)[0][0]
-            labels[rew_id] = label
+            voting_score = defaultdict(lambda: 0)
+            for label, confidence in pred:
+                voting_score[label] += confidence
+
+            label = max(voting_score.items(), key=lambda x: x[1])[0]
+            confidence = max(voting_score.items(), key=lambda x: x[1])[1] / len(self.models)
+            
+            labels[rew_id] = {'sexist': label, 'confidence_s': {'sexist': confidence}}
 
         return labels, None
 

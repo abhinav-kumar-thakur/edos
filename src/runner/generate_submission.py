@@ -25,9 +25,9 @@ if __name__ == '__main__':
     
     predictions = {}
     for batch in tqdm(prediction_dataloader):
-        pred, _ = voting_model.forward(batch, train=False)
-        for rew_id, labels in pred.items():
-            predictions[rew_id] = labels
+        pred, _ = voting_model(batch, train=False)
+        for rew_id, pred in pred.items():
+            predictions[rew_id] = pred['sexist']
 
     actual_labels = []
     prediction_labels = []

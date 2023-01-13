@@ -8,10 +8,10 @@ from tqdm import tqdm
 
 
 class EDOSDataset(Dataset):
-    def __init__(self, name, configs, data):
+    def __init__(self, name, configs, data, k_fold):
         self.name = name
         self.data = data
-        self.k_fold = configs.train.k_fold
+        self.k_fold = k_fold
         self.kf = KFold(n_splits=self.k_fold, shuffle=True, random_state=42)
         self.k_splits = list(self.kf.split(self.data))
         self.configs = configs
@@ -29,7 +29,7 @@ class EDOSDataset(Dataset):
         for i in test_set:
             test_data.append(self.data[i])
 
-        return EDOSDataset(f'train_{k}', self.configs, train_data), EDOSDataset(f'eval_{k}', self.configs, test_data)
+        return EDOSDataset(f'train_{k}', self.configs, train_data, self.configs.train.k_fold), EDOSDataset(f'eval_{k}', self.configs, test_data, self.configs.train.k_fold)
 
     def oversample_the_dataset(self):
         # Create dict counter for each label
@@ -135,7 +135,7 @@ class TrainDataset(EDOSDataset):
 
                 data.append(row)
 
-        super().__init__('train', configs, data)
+        super().__init__('train', configs, data, configs.train.k_fold)
 
 class AdditionalTrainDataset(EDOSDataset):
     def __init__(self, configs):
@@ -159,7 +159,7 @@ class AdditionalTrainDataset(EDOSDataset):
 
                 data.append(row)
 
-        super().__init__('train', configs, data)
+        super().__init__('train', configs, data, configs.train.k_fold)
 
 class PredictionDataset(EDOSDataset):
     def __init__(self, configs):
@@ -169,7 +169,7 @@ class PredictionDataset(EDOSDataset):
             for row in tqdm(reader, desc='Loading eval dataset'):
                 data.append(row)
 
-        super().__init__('pred', configs, data)
+        super().__init__('pred', configs, data, configs.train.k_fold)
 
 
 
@@ -185,7 +185,7 @@ class UnlabelledDataset(EDOSDataset):
                 data.append(row)
                 count += 1
         
-        super().__init__('unlabelled', configs, data)
+        super().__init__('unlabelled', configs, data, configs.ssl.k_fold)
         
 
 class DevDataset(EDOSDataset):
@@ -212,7 +212,7 @@ class DevDataset(EDOSDataset):
                 'label_vector': 'none'
             })
             
-        super().__init__('dev', configs, dev_data_a)
+        super().__init__('dev', configs, dev_data_a, configs.train.k_fold)
 
 class MamiDataset(EDOSDataset):
     def __init__(self, configs):
@@ -235,4 +235,4 @@ class MamiDataset(EDOSDataset):
 
                 data.append(row)
 
-        super().__init__('train', configs, data)
+        super().__init__('train', configs, data, configs.train.k_fold)
