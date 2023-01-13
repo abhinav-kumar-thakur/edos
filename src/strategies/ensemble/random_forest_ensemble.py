@@ -2,35 +2,60 @@ from sklearn.ensemble import RandomForestClassifier
 import random
 from typing import List
 from src.trainer.edos_trainer import EDOSTrainer
+from src.models.utils import get_model
+from .ensemble import Ensemble
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+from collections import defaultdict
+import os
 ## Create a Random Forest Ensembler from multiple BERT model outputs
-class RandomForestEnsembler:
-    def __init__(self, n_estimators=100, max_depth=5, random_state=42,bootstrap=False,
-                    use_frozen=True, classifiers:List[EDOSTrainer]=[]):
-        self.random_state = random_state
-        self.clf = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, random_state=random_state)
-        self.bootstrap = bootstrap
-        self.classifiers = classifiers
-        self.use_frozen = use_frozen
+class RandomForestEnsembler(Ensemble):
+    def __init__(self, configs, logger, device='cpu'):
+        super().__init__()
+
+        self.device = device
+        self.model_dir = os.path.join(self.logger.dir, self.configs.logs.files.models)
+        self.logger = logger
+        self.configs = configs
+        
+        self.classifiers:List[EDOSTrainer] = []
+        for file in os.listdir(self.model_dir):
+            if 'best_model' in file:
+                model = get_model(self.configs, os.path.join(self.model_dir, file), self.device)
+                self.classifiers.append(model)
+        
+        self.rf_parameters = self.configs.model.ensemble.parameters
+        self.random_state = self.rf_parameters['random_state']
+        self.clf = RandomForestClassifier()
+        self.clf.set_params(**self.rf_parameters)
+
+        self.use_frozen = self.configs.model.ensemble.use_frozen
+        self.bootstrap = self.configs.model.ensemble.bootstrap_data
     
-    def fit(self, X, y):
-        if self.use_frozen:
-            data = DataLoader(X, batch_size=self.configs.train.eval_batch_size, shuffle=False)
-            # 'pred_a', 'confidence_a', 'uncertainity_a'
-            classifier_outputs = [[pred[3:6] for pred in classifier.eval(data)[1][1:]] for classifier in tqdm(self.classifiers)]
-            classifier_outputs = [sum(op,[]) for op in zip(*classifier_outputs)]
-            self.clf.fit(classifier_outputs, y)
+    def fit(self, dataloader:DataLoader):
+        for batch in tqdm(dataloader, desc='Fitting Random Forest'):
+            self.forward(batch, train=True)
     
-    def predict(self, X):
-        if self.use_frozen:
-            data = DataLoader(X, batch_size=self.configs.train.eval_batch_size, shuffle=False)
-            classifier_outputs = [[pred[3:6] for pred in classifier.eval(data)[1][1:]] for classifier in tqdm(self.classifiers)]
-            classifier_outputs = [sum(op,[]) for op in zip(*classifier_outputs)]
-            return self.clf.predict(X)
-        return
+    def forward(self, batch, train=False):
+        predictions = defaultdict(list)
+        y = []
+        for model in self.classifiers:
+            model.eval()
+            pred, loss = model(batch, train=train)
+            for i, rewire_id in enumerate(batch['rewire_id']):
+                predictions[rewire_id].append((
+                    pred[rewire_id]['sexist'] if 'a' in self.configs.train.task else '-',
+                    pred[rewire_id]['confidence']['sexist'] if 'a' in self.configs.train.task else '-',
+                    pred[rewire_id]['uncertainity']['sexist'] if 'a' in self.configs.train.task else '-'))
+                if train: y.append(batch['label_sexist'][i])
+        
+        rf_input = [sum(cl_ops,()) for cl_ops in tqdm(predictions.values(), desc='Reformatting Batch')]
+        if train: self.clf.fit(rf_input, y)
+        else: return self.clf.predict(rf_input)
     
-    def bootstrap_data(X, n:int, bootstrap_frac:float=0.75):
+    def bootstrap_data(self, X):
+        n = self.bootstrap['n']
+        bootstrap_frac = self.bootstrap['bootstrap_frac']
         return [random.sample(X, len(X)*bootstrap_frac) for _ in range(n)]
 
 # Path: src\strategies\ensemble\ensemble.py
