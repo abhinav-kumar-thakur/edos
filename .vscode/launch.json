@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Classifier",
+            "name": "K-fold",
             "type": "python",
             "request": "launch",
             "program": "${cwd}/src/runner/classify.py",
@@ -14,7 +14,20 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "local.json", "--device", "cuda:2"]
+            "args": ["--config", "ssl.json", "--device", "cuda:2"]
+
+        },
+        {
+            "name": "Train",
+            "type": "python",
+            "request": "launch",
+            "program": "${cwd}/src/runner/train_all_data.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${cwd}"
+            },
+            "args": ["--config", "0-bertweet-task-a.json", "--device", "cuda:2"]
 
         },
         {
@@ -27,7 +40,7 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "0-bertweet-task-a.json", "--device", "cuda:0"]
+            "args": ["--config", "ssl.json", "--device", "cuda:1"]
         },
         {
             "name": "Pretrainer",
@@ -40,6 +53,18 @@
                 "PYTHONPATH": "${cwd}"
             },
             "args": ["--config", "configs/bert_pretrain.json"]
+        },
+        {
+            "name": "SSL",
+            "type": "python",
+            "request": "launch",
+            "program": "${cwd}/src/runner/ssl.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${cwd}"
+            },
+            "args": ["--config", "ssl.json", "--device", "cuda:2"]
         }
     ]
 }
