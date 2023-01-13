@@ -19,14 +19,13 @@ class Voting(Ensemble, torch.nn.Module):
         self.model_dir = os.path.join(self.logger.dir, self.configs.logs.files.models)
         for file in os.listdir(self.model_dir):
             if 'best_model' in file:
-                self.models.append(file)
+                model = get_model(self.configs, os.path.join(self.model_dir, file), 'cpu')
+                self.models.append(model)
         
     def forward(self, batch, train=False):
         predictions = defaultdict(list)
-        logger = Logger(self.configs)
 
-        for model_path in self.models:
-            model = get_model(self.configs, os.path.join(self.model_dir, model_path), 'cpu')
+        for model in self.models:
             model.eval()
             pred, loss = model(batch, train=False)
             for rewire_id in batch['rewire_id']:

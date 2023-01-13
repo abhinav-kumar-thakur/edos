@@ -1,7 +1,7 @@
 {
     "seed": 42,
     "title": "bertweet",
-    "task": "a-confidence-analysis",
+    "task": "a-meta-classifier",
     "train": {
         "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
@@ -13,8 +13,8 @@
         "run_folds": [0 , 1, 2, 3, 4, 5],
         "train_batch_size": 4,
         "eval_batch_size": 1,
-        "epochs": 40,
-        "patience": 10,
+        "epochs": 30,
+        "patience": 8,
         "optimizer": {
             "name": "AdamW",
             "lr": 0.0001
