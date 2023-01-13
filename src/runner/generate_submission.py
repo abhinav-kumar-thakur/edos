@@ -34,7 +34,7 @@ if __name__ == '__main__':
     if configs.submission.dataset == 'dev':
         for data in dataset:
             rew_id = data['rewire_id']
-            actual_labels.append(data['sexist'])
+            actual_labels.append(data['label_sexist'])
             prediction_labels.append(predictions[rew_id])
 
         print(classification_report(actual_labels, prediction_labels))
