@@ -10,8 +10,9 @@ from src.datasets.dataset import DevDataset
 from src.models.utils import get_model
 from .ensemble import Ensemble
 
-class Voting(Ensemble, torch.nn.Module):
+class Voting(Ensemble):
     def __init__(self, config, logger, device='cpu'):
+        super().__init__()
         self.device = device
         self.models = []
         self.configs = config
@@ -24,7 +25,6 @@ class Voting(Ensemble, torch.nn.Module):
         
     def forward(self, batch, train=False):
         predictions = defaultdict(list)
-
         for model in self.models:
             model.eval()
             pred, loss = model(batch, train=False)
