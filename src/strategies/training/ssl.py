@@ -26,7 +26,7 @@ class SemiSupervisedLearning:
             
             pred_data = []
             for batch in tqdm(unlabeled_dataloader):
-                pred, _ = prediction_model(batch)
+                pred, _ = prediction_model(batch, train=False)
                 for i, rewire_id in enumerate(batch['rewire_id']):
                     pred_data.append({
                         'rewire_id': rewire_id,
