@@ -125,7 +125,7 @@
             "data": "data.log",
             "models": "models",
             "state": "state.json",
-            "ensemble": "ensemble.json",
+            "ensemble": "ensemble.log",
             "submission": "submission.csv"
         }
     },
