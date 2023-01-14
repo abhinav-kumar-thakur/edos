@@ -11,6 +11,7 @@ from src.models.bert import BertClassifier
 from src.models.bert_focal_loss import BertClassifier_fl
 from src.models.unifiedQA import UnifiedQAClassifier
 
+
 def get_model(configs, filepath, device):
     model_name = configs.model.type
 
@@ -26,16 +27,17 @@ def get_model(configs, filepath, device):
     model.load_state_dict(t.load(filepath, map_location=device))
     return model
 
+
 class MetaClassifier(Ensemble):
-    def __init__(self, config, logger, device='cpu') -> None:
+    def __init__(self, config, device='cpu') -> None:
         super().__init__()
         self.device = device
         self.models = []
         self.configs = config
-        self.logger = logger
 
         for model_config in self.configs.model.meta_classifier.models:
-            c = read_json_configs(os.path.join('./configs', model_config['config']))
+            c = read_json_configs(os.path.join(
+                './configs', model_config['config']))
             model = get_model(c, model_config['path'], self.device)
             self.models.append(model)
 
@@ -45,7 +47,7 @@ class MetaClassifier(Ensemble):
         self.loss_a = t.nn.CrossEntropyLoss()
         n1 = len(self.models)*3
         n2 = math.ceil((len(self.models)*3)/2)
-        self.l1 = t.nn.Linear( n1, n2).to(self.device)
+        self.l1 = t.nn.Linear(n1, n2).to(self.device)
         self.l2 = t.nn.Linear(n2, 2).to(self.device)
 
     def forward(self, batch, train=True):
@@ -55,7 +57,7 @@ class MetaClassifier(Ensemble):
             pred, loss = model(batch, train=False)
             for rewire_id in batch['rewire_id']:
                 label = self.label2idx_a[pred[rewire_id]['sexist']]
-                
+
                 predictions[rewire_id] += [label, pred[rewire_id]['confidence_s']['sexist'], pred[rewire_id]['uncertainity']['sexist']]
 
         x = t.relu(self.l1(t.tensor(list(predictions.values())).to(self.device)))
@@ -67,13 +69,36 @@ class MetaClassifier(Ensemble):
                 actual_a = t.tensor([self.label2idx_a[l] for l in batch['label_sexist']]).to(self.device)
                 loss_a = self.loss_a(pred_a, actual_a)
                 loss += loss_a
-        
+
         labels = {}
         pred_a_ids = t.argmax(pred_a, dim=1)
         for i in range(len(pred_a_ids)):
             sexist_label = self.idx2label_a[pred_a_ids[i].item()]
-            labels[batch['rewire_id'][i]] = {'sexist': sexist_label if 'a' in self.configs.train.task else None}
-            
+            labels[batch['rewire_id'][i]] = {
+                'sexist': sexist_label if 'a' in self.configs.train.task else None,
+                'category': None,
+                'vector': None,
+                'scores': {
+                    'sexist': None,
+                    'category': None,
+                    'vector': None
+                },
+                'confidence': {
+                    'sexist': None,
+                    'category': None,
+                    'vector': None
+                },
+                'confidence_s': {
+                    'sexist': None,
+                    'category': None,
+                    'vector': None
+                },
+                'uncertainity': {
+                    'sexist': None,
+                    'category': None,
+                    'vector': None
+                }
+            }
 
         return labels, loss
 
@@ -105,6 +130,3 @@ class MetaClassifier(Ensemble):
         ] 
         
         return optimizer_parameters
-
-
-        
