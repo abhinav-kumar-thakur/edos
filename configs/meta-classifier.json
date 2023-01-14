@@ -1,7 +1,7 @@
 {
     "seed": 42,
     "title": "bertweet",
-    "task": "a-meta-classifier",
+    "task": "all-data",
     "train": {
         "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
@@ -13,8 +13,8 @@
         "run_folds": [0 , 1, 2, 3, 4, 5],
         "train_batch_size": 4,
         "eval_batch_size": 1,
-        "epochs": 30,
-        "patience": 8,
+        "epochs": 40,
+        "patience": 10,
         "optimizer": {
             "name": "AdamW",
             "lr": 0.0001
@@ -38,7 +38,7 @@
             "dev_c_text": "data/raw/dev_task_c_entries.csv",
             "dev_a_label": "data/raw/dev_task_a_labels.csv",
             "dev_b_label": "data/raw/dev_task_b_labels.csv",
-            "dev_c_label": "data/raw/dev_task_b_labels.csv",
+            "dev_c_label": "data/raw/dev_task_c_labels.csv",
             "test_a_text": "data/raw/test_task_a_entries.csv"
         },
         "labels": {
@@ -129,8 +129,21 @@
         }
     },
     "model": {
-        "type": "bert",
-        "ensemble": "voting",
+        "type": "meta-classifier",
+        "meta_classifier": {
+            "models": [
+                {
+                    "type": "bert",
+                    "path": "logs\\bertweet-a-confidence-analysis\\models\\best_model_0.pt",
+                    "config": "0-bertweet-task-a.json"
+                },
+                {
+                    "type": "bert",
+                    "path": "logs\\bertweet-a-confidence-analysis\\models\\best_model_1.pt",
+                    "config": "0-bertweet-task-a.json"
+                }
+            ]
+        },
         "bert": {
             "name": "vinai/bertweet-base",
             "max_length": 128,
