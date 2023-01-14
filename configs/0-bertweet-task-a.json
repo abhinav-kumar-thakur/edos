@@ -130,7 +130,6 @@
     },
     "model": {
         "type": "bert",
-        "ensemble": "voting",
         "bert": {
             "name": "vinai/bertweet-base",
             "max_length": 128,

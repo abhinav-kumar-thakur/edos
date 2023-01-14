@@ -5,6 +5,7 @@ import torch
 from src.models.bert import BertClassifier
 from src.models.bert_focal_loss import BertClassifier_fl
 from src.models.unifiedQA import UnifiedQAClassifier
+from src.strategies.ensemble.meta_classifier import MetaClassifier
 
 
 def get_classification_model_from_state(configs, state_configs, device):
@@ -17,6 +18,8 @@ def get_classification_model_from_state(configs, state_configs, device):
         model = BertClassifier_fl(configs, device)
     elif model_name == 'unifiedQA':
         model = UnifiedQAClassifier(configs, device)
+    elif model_name == 'meta-classifier':
+        model = MetaClassifier(configs, device)
     else:
         raise Exception('Invalid model name')
 
