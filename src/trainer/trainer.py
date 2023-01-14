@@ -5,7 +5,7 @@ import torch
 
 from src.config_reader import write_json_configs
 from src.logger import Logger
-from src.models.utils import save_model
+from src.models.utils import save_model, get_model
 
 
 class Trainer(ABC):
@@ -55,7 +55,8 @@ class Trainer(ABC):
             write_json_configs(self.state_configs, os.path.join(self.logger.dir, self.configs.logs.files.state))
 
     def get_best_model(self):
-        return torch.load(os.path.join(self.model_save_dir, f'best_model_{self.state_configs.kth_fold}.pt'))
+        model_path = os.path.join(self.model_save_dir, f'best_model_{self.state_configs.kth_fold}.pt')
+        return get_model(self.configs, model_path, self.device)
 
     @abstractmethod
     def summarize_scores(self, scores):
