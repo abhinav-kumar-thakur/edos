@@ -35,8 +35,8 @@ def save_model(model, configs):
     saved_model_path = os.path.join(configs.logs.dir, configs.title + '-' + configs.task, configs.logs.files.models, f'saved_model_state.pt')
     torch.save(model.state_dict(), saved_model_path)
 
-def get_model(configs, filepath, device):
-    model_name = configs.model.type
+def get_model(configs, filepath, device, model_name=None):
+    if model_name is None: model_name = configs.model.type
 
     if model_name == 'bert':
         model = BertClassifier(configs, device)

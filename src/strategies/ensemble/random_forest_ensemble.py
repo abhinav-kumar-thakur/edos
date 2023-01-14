@@ -18,15 +18,21 @@ class RandomForestEnsembler(Ensemble):
         self.device = device
         self.logger = logger
         self.configs = configs
-        self.model_dir = os.path.join(self.logger.dir, self.configs.logs.files.models)
+        self.model_dirs = [os.path.join(configs.logs.dir,classifier_dir) for classifier_dir in configs.model.ensemble.classifier_dirs]
+        self.model_types = configs.model.ensemble.classifier_types
+        # self.model_dir = os.path.join(self.logger.dir, self.configs.logs.files.models)
+        self.logger.log(str(self.model_dirs))
         self.log_file = self.configs.logs.files.ensemble
         
         self.classifiers:List[EDOSTrainer] = []
-        for file in os.listdir(self.model_dir):
-            if 'best_model' in file:
-                model = get_model(self.configs, os.path.join(self.model_dir, file), self.device)
-                self.logger.log(f"Clasifier loaded from {os.path.join(self.model_dir, file)}")
-                self.classifiers.append(model)
+        for classifier_dir, classifier_type in zip(self.model_dirs, self.model_types):
+            models_dir = os.path.join(classifier_dir,'models')
+            for file in os.listdir(models_dir):
+                if 'best_model' in file:
+                    model_dir = os.path.join(models_dir, file)
+                    model = get_model(self.configs, model_dir, self.device, classifier_type)
+                    self.logger.log(f"Best Classifier Model loaded from {models_dir}/{file}")
+                    self.classifiers.append(model)
         
         self.rf_parameters = self.configs.model.ensemble.parameters.configs
         self.random_state = self.rf_parameters['random_state']
