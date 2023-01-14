@@ -4,9 +4,9 @@
     "task": "ssl-task-a",
     "ssl": {
         "unlabelled_file": "data/raw/gab_1M_unlabelled.csv",
-        "k_fold": 50,
+        "k_fold": 10,
         "additions": {
-            "sexist": 4500,
+            "sexist": 6000,
             "not_sexist": 1500
         }
     },
@@ -20,7 +20,7 @@
         "k_fold": 6,
         "run_folds": [0 , 1, 2, 3, 4, 5],
         "train_batch_size": 4,
-        "eval_batch_size": 8,
+        "eval_batch_size": 16,
         "epochs": 25,
         "patience": 6,
         "optimizer": {
@@ -36,7 +36,7 @@
     },
     "submission": {
         "task": "a",
-        "dataset": "test"
+        "dataset": "dev"
     },
     "datasets": {
         "name": "edos",
