@@ -1,7 +1,7 @@
 {
     "seed": 42,
-    "title": "unifiedQA",
-    "task": "all-data-adafactor",
+    "title": "roberta-base",
+    "task": "all-data",
     "train": {
         "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
@@ -13,10 +13,10 @@
         "run_folds": [0 , 1, 2, 3, 4, 5],
         "train_batch_size": 4,
         "eval_batch_size": 1,
-        "epochs": 15,
-        "patience": 5,
+        "epochs": 40,
+        "patience": 10,
         "optimizer": {
-            "name": "Adafactor",
+            "name": "AdamW",
             "lr": 0.0001
         },
         "scheduler": {
@@ -129,9 +129,9 @@
         }
     },
     "model": {
-        "type": "unifiedQA",
+        "type": "bert",
         "bert": {
-            "name": "vinai/bertweet-base",
+            "name": "roberta-base",
             "max_length": 128,
             "dimensions": 768,
             "freeze_lower_layers": 9,
@@ -149,9 +149,6 @@
                     "loss_weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
                 }
             }
-        },
-        "unifiedQA": {
-            "model_size": "small"
         }
     }
 }

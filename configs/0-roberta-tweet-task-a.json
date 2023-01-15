@@ -1,7 +1,7 @@
 {
     "seed": 42,
-    "title": "unifiedQA",
-    "task": "all-data-adafactor",
+    "title": "roberta-tweet",
+    "task": "all-data",
     "train": {
         "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
@@ -13,11 +13,12 @@
         "run_folds": [0 , 1, 2, 3, 4, 5],
         "train_batch_size": 4,
         "eval_batch_size": 1,
-        "epochs": 15,
-        "patience": 5,
+        "epochs": 40,
+        "patience": 10,
         "optimizer": {
-            "name": "Adafactor",
-            "lr": 0.0001
+            "name": "AdamW",
+            "lr": 0.0004,
+            "weight_decay": 0.01
         },
         "scheduler": {
             "name": "cosine",
@@ -129,10 +130,10 @@
         }
     },
     "model": {
-        "type": "unifiedQA",
+        "type": "bert",
         "bert": {
-            "name": "vinai/bertweet-base",
-            "max_length": 128,
+            "name": "cardiffnlp/twitter-roberta-base-2021-124m",
+            "max_length": 256,
             "dimensions": 768,
             "freeze_lower_layers": 9,
             "heads": {
@@ -149,9 +150,6 @@
                     "loss_weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
                 }
             }
-        },
-        "unifiedQA": {
-            "model_size": "small"
         }
     }
 }

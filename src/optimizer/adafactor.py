@@ -13,11 +13,14 @@ class AdaFactorOptimizer(Optimizer):
 
     def __init__(self, model, lr=None) -> None:
         self.optimizer = Adafactor(model.parameters(), scale_parameter=True, relative_step=True, warmup_init=True, lr=lr)
-        self.lr_scheduler = AdafactorSchedule(self.optimizer)
+        self.scheduler = AdafactorSchedule(self.optimizer)
 
     def step_optimizer(self) -> None:
         self.optimizer.step()
-        self.lr_scheduler.step()
+        self.scheduler.step()
+
+    def step_scheduler(self) -> None:
+        self.scheduler.step()
 
     def zero_grad(self) -> None:
         self.optimizer.zero_grad()

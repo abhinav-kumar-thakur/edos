@@ -1,7 +1,7 @@
 {
     "seed": 42,
-    "title": "bertweet",
-    "task": "all-data",
+    "title": "meta-classifier",
+    "task": "task-a",
     "train": {
         "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
@@ -12,12 +12,12 @@
         "k_fold": 6,
         "run_folds": [0 , 1, 2, 3, 4, 5],
         "train_batch_size": 4,
-        "eval_batch_size": 1,
+        "eval_batch_size": 16,
         "epochs": 40,
         "patience": 10,
         "optimizer": {
             "name": "AdamW",
-            "lr": 0.0001
+            "lr": 0.1
         },
         "scheduler": {
             "name": "cosine",
@@ -134,12 +134,17 @@
             "models": [
                 {
                     "type": "bert",
-                    "path": "logs\\bertweet-a-confidence-analysis\\models\\best_model_0.pt",
+                    "path": "logs/bertweet-ssl-task-a/models/best_model_0.pt",
                     "config": "0-bertweet-task-a.json"
                 },
                 {
                     "type": "bert",
-                    "path": "logs\\bertweet-a-confidence-analysis\\models\\best_model_1.pt",
+                    "path": "logs/bertweet-ssl-task-a/models/best_model_1.pt",
+                    "config": "0-bertweet-task-a.json"
+                },
+                {
+                    "type": "bert",
+                    "path": "logs/bertweet-ssl-task-a/models/best_model_2.pt",
                     "config": "0-bertweet-task-a.json"
                 }
             ]

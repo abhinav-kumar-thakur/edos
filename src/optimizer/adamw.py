@@ -6,7 +6,7 @@ from .scheduler import get_scheduler
 
 class AdamWOptimizer(Optimizer):
     def __init__(self, model, configs) -> None:
-        self.optimizer = AdamW(model.get_trainable_parameters(), lr=configs.train.optimizer.lr)
+        self.optimizer = AdamW(model.get_trainable_parameters(), lr=configs.train.optimizer.lr, weight_decay=configs.train.optimizer.weight_decay)
         self.scheduler = get_scheduler(self.optimizer, configs)
 
     def step_optimizer(self):
