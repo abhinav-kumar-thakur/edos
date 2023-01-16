@@ -135,6 +135,8 @@
             "name": "bert-base-uncased",
             "max_length": 128,
             "dimensions": 768,
+            "layers": 12,
+            "llrd": null,
             "freeze_lower_layers": 9,
             "heads": {
                 "a": {

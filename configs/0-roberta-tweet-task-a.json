@@ -135,6 +135,8 @@
             "name": "cardiffnlp/twitter-roberta-base-2021-124m",
             "max_length": 256,
             "dimensions": 768,
+            "layers": 12,
+            "llrd": null,
             "freeze_lower_layers": 9,
             "heads": {
                 "a": {

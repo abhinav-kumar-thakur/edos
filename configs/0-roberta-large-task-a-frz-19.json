@@ -135,6 +135,8 @@
             "name": "roberta-large",
             "max_length": 256,
             "dimensions": 1024,
+            "layers": 24,
+            "llrd": null,
             "freeze_lower_layers": 19,
             "heads": {
                 "a": {

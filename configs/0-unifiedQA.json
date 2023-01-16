@@ -130,26 +130,6 @@
     },
     "model": {
         "type": "unifiedQA",
-        "bert": {
-            "name": "vinai/bertweet-base",
-            "max_length": 128,
-            "dimensions": 768,
-            "freeze_lower_layers": 9,
-            "heads": {
-                "a": {
-                    "dimensions": 2,
-                    "loss_weights": [1, 1]   
-                },
-                "b": {
-                    "dimensions": 5,
-                    "loss_weights": [1, 1, 1, 1, 1]
-                },
-                "c": {
-                    "dimensions": 12,
-                    "loss_weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                }
-            }
-        },
         "unifiedQA": {
             "model_size": "small"
         }
