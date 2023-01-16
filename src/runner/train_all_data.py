@@ -22,7 +22,7 @@ if __name__ == '__main__':
     if os.path.exists(state_configs_path):
         state_configs = read_json_configs(state_configs_path)
     else:
-        state_configs = read_dict_configs({'kth_fold': 0,
+        state_configs = read_dict_configs({'kth_fold': 'All data',
                                            'epoch': 0,
                                            'best_score': None,
                                            'epochs_without_improvement': 0,
@@ -33,11 +33,11 @@ if __name__ == '__main__':
 
     train_dataset = TrainDataset(configs)
     eval_dataset = DevDataset(configs)
-    train_dataloader = DataLoader(train_dataset , batch_size=configs.train.train_batch_size, shuffle=True)
+    train_dataloader = DataLoader(train_dataset, batch_size=configs.train.train_batch_size, shuffle=True)
     eval_dataloader = DataLoader(eval_dataset, batch_size=configs.train.eval_batch_size, shuffle=False)
     
     model = get_classification_model_from_state(configs, state_configs, args.device)
     optimizer = get_optimizer(model, configs)    
     trainer = EDOSTrainer(configs, state_configs, model, train_dataloader, eval_dataloader, optimizer, args.device, logger)
     trainer.run()
-    print("Finished training with cross validation")
+    print("Finished training with all data")
