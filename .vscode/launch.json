@@ -77,7 +77,7 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "random-forest-ensembler.json","--device","cpu"]
+            "args": ["--config", "random-forest-ensembler.json","--device","cuda"]
         },
         {
             "name": "SSL",

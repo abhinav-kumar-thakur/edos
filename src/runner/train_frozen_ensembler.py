@@ -32,4 +32,4 @@ if __name__ == '__main__':
 
     ensemble_model = get_ensemble_model(configs, logger, args.device)
 
-    ensemble_model.fit(dataset)
+    ensemble_model.fit(dataloader)

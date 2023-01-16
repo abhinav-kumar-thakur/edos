@@ -1,10 +1,10 @@
 from .voting import Voting
 from .meta_classifier import MetaClassifier
 
-from .random_forest_ensemble import RandomForestEnsemble
+from .random_forest_ensemble import RandomForestEnsembler
 
 def get_ensemble_model(configs, logger, device):
-    model_name = configs.model.ensemble.name
+    model_name = configs.model.type
 
     if model_name is None:
         raise Warning('No ensemble model specified')
