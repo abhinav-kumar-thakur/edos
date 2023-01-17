@@ -80,7 +80,6 @@ class EDOSDataset(Dataset):
 
     def __getitem__(self, index):
         item = self.data[index]
-        
         if self.configs.model.type == 'unifiedQA':
             sexism_definition = f'Sexism: any abuse or negative sentiment that is directed towards women based on their gender, or based on their gender combined with one or more other identity attributes.'
             question = f'Detect sexism and classify into category?'
