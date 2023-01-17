@@ -31,6 +31,7 @@ class BertClassifier(t.nn.Module):
         self.idx2label_c = {v: k for k, v in self.label2idx_c.items()}
 
         self.bert = AutoModel.from_pretrained(configs.model.bert.name).to(device)
+        self.bert.encoder.dropout = t.nn.Dropout(0.1)
         self.hidden_layer = t.nn.Linear(configs.model.bert.dimensions, 256).to(device)
         self.head_c = t.nn.Linear(256, len(self.label2idx_c)).to(device)
         self.head_b = t.nn.Linear(len(self.label2idx_c), len(self.label2idx_b)).to(device)

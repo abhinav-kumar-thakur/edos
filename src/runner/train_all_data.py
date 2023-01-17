@@ -22,7 +22,7 @@ if __name__ == '__main__':
     if os.path.exists(state_configs_path):
         state_configs = read_json_configs(state_configs_path)
     else:
-        state_configs = read_dict_configs({'kth_fold': 'All data',
+        state_configs = read_dict_configs({'kth_fold': 'all_data',
                                            'epoch': 0,
                                            'best_score': None,
                                            'epochs_without_improvement': 0,

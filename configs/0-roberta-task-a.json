@@ -1,7 +1,7 @@
 {
     "seed": 42,
     "title": "roberta-base",
-    "task": "all-data",
+    "task": "dropout",
     "train": {
         "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",
@@ -17,7 +17,8 @@
         "patience": 10,
         "optimizer": {
             "name": "AdamW",
-            "lr": 0.0001
+            "lr": 0.0001,
+            "weight_decay": 0.01
         },
         "scheduler": {
             "name": "cosine",
