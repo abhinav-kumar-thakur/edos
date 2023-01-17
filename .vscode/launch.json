@@ -5,17 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "K-fold",
+            "name": "DataPrep",
             "type": "python",
             "request": "launch",
-            "program": "${cwd}/src/runner/classify.py",
+            "program": "${cwd}/src/runner/prep_data.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "ssl.json", "--device", "cuda:2"]
-
+            "args": ["--config", "A1-0-data-prep.json", "--device", "cpu"]
         },
         {
             "name": "Train",
@@ -27,20 +26,19 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "meta-classifier.json", "--device", "cpu"]
-
+            "args": ["--config", "A1-1-roberta-large.json", "--device", "cuda:2"]
         },
         {
-            "name": "DataPrep",
+            "name": "K-fold",
             "type": "python",
             "request": "launch",
-            "program": "${cwd}/src/runner/prep_data.py",
+            "program": "${cwd}/src/runner/classify.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "0-bertweet-task-a.json", "--device", "cpu"]
+            "args": ["--config", "ssl.json", "--device", "cuda:2"]
 
         },
         {
@@ -90,7 +88,7 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "random-forest-ensembler.json","--device","cuda"]
+            "args": ["--config", "random-forest-ensembler.json","--device","cuda:0"]
         },
         {
             "name": "SSL",
