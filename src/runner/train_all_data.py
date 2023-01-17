@@ -1,12 +1,11 @@
 import os
+import random
 
 import torch
 from torch.utils.data import DataLoader
-from torch.utils.data import ConcatDataset
-import random
 
 from src.config_reader import read_json_configs, read_dict_configs
-from src.datasets.dataset import TrainDataset, DevDataset
+from src.datasets.dataset import TrainDataset
 from src.models.utils import get_classification_model_from_state
 from src.optimizer.utils import get_optimizer
 from src.logger import Logger
@@ -31,8 +30,8 @@ if __name__ == '__main__':
     torch.manual_seed(configs.seed)
     random.seed(configs.seed)
 
-    train_dataset = TrainDataset(configs)
-    eval_dataset = DevDataset(configs)
+    train_dataset = TrainDataset(configs, configs.train.files.train)
+    eval_dataset = TrainDataset(configs, configs.train.files.eval)
     train_dataloader = DataLoader(train_dataset, batch_size=configs.train.train_batch_size, shuffle=True)
     eval_dataloader = DataLoader(eval_dataset, batch_size=configs.train.eval_batch_size, shuffle=False)
     

@@ -140,19 +140,11 @@ class EDOSDataset(Dataset):
             for row in self.data:
                 writer.writerow(row)
             
-
-        
-
-
-
-        
-        
-
-
 class TrainDataset(EDOSDataset):
-    def __init__(self, configs):
+    def __init__(self, configs, dataset_path=None, dataset_name='train'):
         data = []
-        with open(configs.train.file, newline='', encoding="utf8") as csvfile:
+        dataset_path = dataset_path if dataset_path else configs.datasets.files.train
+        with open(dataset_path, newline='', encoding="utf8") as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 if 'a' not in configs.train.task and row['label_sexist'] == 'not sexist':
@@ -160,7 +152,7 @@ class TrainDataset(EDOSDataset):
 
                 data.append(row)
 
-        super().__init__('train', configs, data, configs.train.k_fold)
+        super().__init__(dataset_name, configs, data, configs.train.k_fold)
 
 class AdditionalTrainDataset(EDOSDataset):
     def __init__(self, configs):
