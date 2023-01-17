@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABC
+import json
 import os
 
 import torch
@@ -40,6 +41,8 @@ class Trainer(ABC):
                 best_params = {'kth_fold': self.state_configs.kth_fold, 'epoch': epoch, 'eval_metric': eval_scores}
 
                 torch.save(self.model.state_dict(), os.path.join(self.model_save_dir, f'best_model_{self.state_configs.kth_fold}.pt'))
+                json.dump(best_params, open(os.path.join(self.model_save_dir, f'best_metric_{self.state_configs.kth_fold}.json'), 'w'))
+
                 self.logger.log_file(self.configs.logs.files.best, best_params)
                 self.logger.log_csv(f'{self.state_configs.kth_fold}_{epoch}_{self.configs.logs.files.predictions}', eval_predictions)
                 self.state_configs.edit('epochs_without_improvement', 0)
