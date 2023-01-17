@@ -75,9 +75,15 @@ class RandomForestEnsembler(Ensemble):
         self.bootstrap = self.configs.model.bagging_random_forest.bootstrap_data
         self.encoding_map_task_a = {}
     
-    def fit(self, dataloader:DataLoader):       
+    def fit(self, dataloader:DataLoader):     
+        rf_inputs = []
+        y_values = []  
         for batch in tqdm(dataloader, desc='Fitting Random Forest'):
-            self.forward(batch, train=True)
+            rf_input, y = self.forward(batch, train=True)
+            rf_inputs.extend(rf_input)
+            y_values.extend(y)
+        
+        self.clf.fit(rf_inputs, y_values)
         self.logger.log_text(self.log_file,"Random Forest Ensembler Trained")
         self.logger.log("Random Forest Ensembler Trained")
         save_path = os.path.join(self.configs.logs.dir, self.configs.title + '-' + self.configs.task, self.configs.logs.files.models, f'random_forest_ensembler.pickle')
@@ -98,19 +104,53 @@ class RandomForestEnsembler(Ensemble):
                 encoded_pred_label = self.encoding_map_task_a[pred_label]
                 predictions[rewire_id].append((
                     encoded_pred_label if 'a' in self.configs.train.task else '-',
-                    pred[rewire_id]['confidence']['sexist'] if 'a' in self.configs.train.task else '-',
+                    pred[rewire_id]['confidence_s']['sexist'] if 'a' in self.configs.train.task else '-',
                     pred[rewire_id]['uncertainity']['sexist'] if 'a' in self.configs.train.task else '-'))
-                if train: 
-                    label = batch['label_sexist'][i]
-                    if label not in self.encoding_map_task_a:
-                        self.encoding_map_task_a[label] = len(self.encoding_map_task_a)+1
-                    encoded_label = self.encoding_map_task_a[label]
-                    y.append(encoded_label)
+        if train: 
+            for i in range(len(batch['rewire_id'])):    
+                label = batch['label_sexist'][i]
+                if label not in self.encoding_map_task_a:
+                    self.encoding_map_task_a[label] = len(self.encoding_map_task_a)+1
+                encoded_label = self.encoding_map_task_a[label]
+                y.append(encoded_label)
         
         rf_input = [sum(cl_ops,()) for cl_ops in tqdm(predictions.values(), desc='Reformatting Batch', leave=False)]
-        if train: self.clf.fit(rf_input, y)
-        else: return self.clf.predict(rf_input)
-    
+        if train: 
+            return rf_input, y
+        else: 
+            id2labels = {v:k for k,v in self.encoding_map_task_a.items()}
+            pred_a = [id2labels[op] for op in  self.clf.predict(rf_input)]
+            labels = {}
+            for i in range(len(pred_a)):
+                labels[batch['rewire_id'][i]] = {
+                    'sexist': pred_a[i],
+                    'category': None,
+                    'vector': None,
+                    'scores': {
+                        'sexist': None,
+                        'category': None,
+                        'vector': None
+                    },
+                    'confidence': {
+                        'sexist': None,
+                        'category': None,
+                        'vector': None
+                    },
+                    'confidence_s': {
+                        'sexist': None,
+                        'category': None,
+                        'vector': None
+                    },
+                    'uncertainity': {
+                        'sexist': None,
+                        'category': None,
+                        'vector': None
+                    }
+                }
+            
+            return labels, None
+
+
     def bootstrap_data(self, X):
         n = self.bootstrap['n']
         bootstrap_frac = self.bootstrap['bootstrap_frac']

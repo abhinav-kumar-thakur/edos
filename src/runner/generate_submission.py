@@ -20,12 +20,12 @@ if __name__ == '__main__':
     logger = Logger(configs)
     dataset = DevDataset(configs) if configs.submission.dataset == 'dev' else PredictionDataset(configs)
     
-    voting_model = get_ensemble_model(configs, logger, args.device)
+    model = get_ensemble_model(configs, logger, args.device)
     prediction_dataloader = torch.utils.data.DataLoader(dataset, batch_size=configs.train.eval_batch_size, shuffle=False, num_workers=0)
     
     predictions = {}
     for batch in tqdm(prediction_dataloader):
-        pred, _ = voting_model(batch, train=False)
+        pred, _ = model(batch, train=False)
         for rew_id, pred in pred.items():
             predictions[rew_id] = pred['sexist']
 
