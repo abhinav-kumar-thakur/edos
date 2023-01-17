@@ -2,6 +2,7 @@
     "seed": 42,
     "title": "bertweet",
     "task": "all-data",
+    "data_dir": "data",
     "train": {
         "task": ["a"],
         "file": "data/raw/train_all_tasks.csv",

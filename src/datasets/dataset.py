@@ -1,4 +1,6 @@
 import csv
+import os
+import random
 from collections import defaultdict
 
 from torch.utils.data import Dataset
@@ -104,6 +106,48 @@ class EDOSDataset(Dataset):
             item['answer'] = f'{item["label_sexist"]} | {item["label_category"]} | {item["label_vector"]}'
 
         return item
+
+    def merge(self, dataset):
+        merged_data = self.data.copy()
+        for d in dataset.data:
+            merged_data.append(d)
+
+        return EDOSDataset('merged', dataset.configs, merged_data, dataset.configs.train.k_fold)
+
+    def split(self, split_ratio: list):
+        assert sum(split_ratio) == 1, 'split ratio must sum to 1'
+
+        split_data = []
+        split_count = len(split_ratio) 
+        split_size = [int(len(self.data) * ratio) for ratio in split_ratio]
+        random.shuffle(self.data)
+
+        start = 0
+        for i in range(split_count):
+            end = start + split_size[i]
+            split_data.append(EDOSDataset(f'split_{i}', self.configs, self.data[start:end], self.configs.train.k_fold))
+            start = end
+
+        return split_data
+
+    def save(self):
+        path = os.path.join(self.configs.data_dir, 'processed', self.configs.title + '-' + self.configs.task) 
+        if not os.path.exists(path):
+            os.makedirs(path)
+        
+        with open(os.path.join(path, f'{self.name}.csv'), 'w', newline='', encoding='utf8') as f:
+            writer = csv.DictWriter(f, fieldnames=self.data[0].keys())
+            writer.writeheader()
+            for row in self.data:
+                writer.writerow(row)
+            
+
+        
+
+
+
+        
+        
 
 
 class TrainDataset(EDOSDataset):

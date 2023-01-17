@@ -31,6 +31,19 @@
 
         },
         {
+            "name": "DataPrep",
+            "type": "python",
+            "request": "launch",
+            "program": "${cwd}/src/runner/prep_data.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${cwd}"
+            },
+            "args": ["--config", "0-bertweet-task-a.json", "--device", "cpu"]
+
+        },
+        {
             "name": "Generate Submission",
             "type": "python",
             "request": "launch",
