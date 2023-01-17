@@ -43,8 +43,8 @@ class MetaClassifier(Ensemble):
         self.idx2label_a = {v: k for k, v in self.label2idx_a.items()}
 
         self.loss_a = t.nn.CrossEntropyLoss()
-        n1 = len(self.models)*3
-        n2 = math.ceil((len(self.models)*3)/2)
+        n1 = len(self.models)*4
+        n2 = math.ceil(n1/2)
         self.l1 = t.nn.Linear( n1, n2).to(self.device)
         self.l2 = t.nn.Linear(n2, 2).to(self.device)
 
@@ -54,9 +54,10 @@ class MetaClassifier(Ensemble):
             model.eval()
             pred, loss = model(batch, train=False)
             for rewire_id in batch['rewire_id']:
-                label = self.label2idx_a[pred[rewire_id]['sexist']]
-                
-                predictions[rewire_id] += [label, pred[rewire_id]['confidence_s']['sexist'], pred[rewire_id]['uncertainity']['sexist']]
+                # label = self.label2idx_a[pred[rewire_id]['sexist']]
+                logits = list(pred[rewire_id]['scores']['sexist'].values())
+
+                predictions[rewire_id] += logits+ [pred[rewire_id]['confidence_s']['sexist'], pred[rewire_id]['uncertainity']['sexist']]
 
         x = t.relu(self.l1(t.tensor(list(predictions.values())).to(self.device)))
         pred_a = self.l2(x)
