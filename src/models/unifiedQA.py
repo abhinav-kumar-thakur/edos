@@ -36,11 +36,51 @@ class UnifiedQAClassifier(t.nn.Module):
                     predictions[input['rewire_id'][i]] = {
                     'sexist': pred[0],
                     'category': pred[1],
-                    'vector': pred[2]
+                    'vector': pred[2],
+                    'scores': {
+                        'sexist': None,
+                        'category': None,
+                        'vector': None
+                    },
+                    'confidence': {
+                        'sexist': None,
+                        'category': None,
+                        'vector': None
+                    },
+                    'confidence_s': {
+                        'sexist': None,
+                        'category': None,
+                        'vector': None
+                    },
+                    'uncertainity': {
+                        'sexist': None,
+                        'category': None,
+                        'vector': None
+                    }
                 } if len(pred) == 3 else {
                     'sexist': pred[0],
                     'category': 'none',
-                    'vector': 'none'
+                    'vector': 'none',
+                    'scores': {
+                        'sexist': None,
+                        'category': None,
+                        'vector': None
+                    },
+                    'confidence': {
+                        'sexist': None,
+                        'category': None,
+                        'vector': None
+                    },
+                    'confidence_s': {
+                        'sexist': None,
+                        'category': None,
+                        'vector': None
+                    },
+                    'uncertainity': {
+                        'sexist': None,
+                        'category': None,
+                        'vector': None
+                    }
                 }
 
         return predictions, loss

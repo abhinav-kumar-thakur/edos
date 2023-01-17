@@ -44,6 +44,8 @@ def get_model(configs, filepath, device, model_name=None):
         model = BertClassifier_fl(configs, device)
     elif model_name == 'unifiedQA':
         model = UnifiedQAClassifier(configs, device)
+    elif model_name == 'meta-classifier':
+        model = MetaClassifier(configs, device)
     else:
         raise Exception('Invalid model name')
 
