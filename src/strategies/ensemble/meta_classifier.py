@@ -47,7 +47,6 @@ class MetaClassifier(Ensemble):
         n1 = len(self.models)*4
         n2 = math.ceil(n1/2)
         self.l1 = t.nn.Linear( n1, n2).to(self.device)
-
         self.l2 = t.nn.Linear(n2, 2).to(self.device)
 
     def forward(self, batch, train=True):
@@ -57,7 +56,7 @@ class MetaClassifier(Ensemble):
             pred, loss = model(batch, train=False)
             for rewire_id in batch['rewire_id']:
                 logits = list(pred[rewire_id]['scores']['sexist'].values())
-                predictions[rewire_id] += logits+ [pred[rewire_id]['confidence_s']['sexist'], pred[rewire_id]['uncertainity']['sexist']]
+                predictions[rewire_id] += logits + [pred[rewire_id]['confidence_s']['sexist'], pred[rewire_id]['uncertainity']['sexist']]
 
         x = t.relu(self.l1(t.tensor(list(predictions.values())).to(self.device)))
         pred_a = self.l2(x)
@@ -124,8 +123,7 @@ class MetaClassifier(Ensemble):
     def get_trainable_parameters(self):
         optimizer_parameters = [
             {'params': [p for n, p in self.l1.named_parameters()], 'weight_decay': 0.01, 'lr': self.configs.train.optimizer.lr},
-
             {'params': [p for n, p in self.l2.named_parameters()], 'weight_decay': 0.01, 'lr': self.configs.train.optimizer.lr}
-        ] 
+        ]
         
         return optimizer_parameters
