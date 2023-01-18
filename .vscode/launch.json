@@ -88,7 +88,7 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "random-forest-ensembler.json","--device","cuda:0"]
+            "args": ["--config", "0-random-forest-ensembler.json","--device","cuda:0"]
         },
         {
             "name": "SSL",
