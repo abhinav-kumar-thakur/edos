@@ -1,5 +1,6 @@
 import os
 import random
+from pprint import pprint
 
 from sklearn.metrics import classification_report
 import torch
@@ -64,4 +65,4 @@ if __name__ == '__main__':
         actual_labels.append(data['label_sexist'])
         prediction_labels.append(predictions[rew_id])
 
-    print(classification_report(actual_labels, prediction_labels))
+    print(classification_report(actual_labels, prediction_labels, output_dict=True))

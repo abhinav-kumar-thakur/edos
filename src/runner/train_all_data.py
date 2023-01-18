@@ -39,7 +39,8 @@ if __name__ == '__main__':
     if configs.train.ensemble:
         model = get_ensemble_model(configs, logger, args.device)
     else:
-        model = get_ensemble_model(configs, logger, args.device)
+        model = get_classification_model_from_state(configs, state_configs, args.device)
+        
 
     optimizer = get_optimizer(model, configs)    
     trainer = EDOSTrainer(configs, state_configs, model, train_dataloader, eval_dataloader, optimizer, args.device, logger)

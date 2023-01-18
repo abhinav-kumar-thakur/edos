@@ -1,0 +1,164 @@
+{
+    "seed": 2323,
+    "title": "A1",
+    "task": "roberta-base-2323",
+    "train": {
+        "ensemble": false,
+        "task": ["a"],
+        "files": {
+            "train": "data/processed/A1-data-prep/split_0.csv",
+            "eval": "data/processed/A1-data-prep/split_1.csv"
+        },
+        "additional_files": {
+            "sd": "data/raw/SD_dataset_FINAL.csv",
+            "mami": "data/raw/training.csv"
+        },
+        "k_fold": 6,
+        "run_folds": [0, 1, 2, 3, 4, 5],
+        "train_batch_size": 4,
+        "eval_batch_size": 16,
+        "epochs": 40,
+        "patience": 10,
+        "optimizer": {
+            "name": "AdamW",
+            "lr": 0.0001,
+            "weight_decay": 0.01
+        },
+        "scheduler": {
+            "name": "cosine",
+            "num_warmup_steps": 5,
+            "num_cycles": 4
+        },
+        "loss": "ce"
+    },
+    "submission": {
+        "task": "a",
+        "dataset": "dev",
+        "file": "data/processed/A1-data-prep/split_2.csv",
+        "model_path": "logs/A1-roberta-base/models/best_model_all_data.pt"
+    },
+    "datasets": {
+        "name": "edos",
+        "files": {
+            "train": "data/raw/train_all_tasks.csv",
+            "dev_a_text": "data/raw/dev_task_a_entries.csv",
+            "dev_b_text": "data/raw/dev_task_b_entries.csv",
+            "dev_c_text": "data/raw/dev_task_c_entries.csv",
+            "dev_a_label": "data/raw/dev_task_a_labels.csv",
+            "dev_b_label": "data/raw/dev_task_b_labels.csv",
+            "dev_c_label": "data/raw/dev_task_c_labels.csv",
+            "test_a_text": "data/raw/test_task_a_entries.csv"
+        },
+        "labels": {
+            "not sexist": {
+                "id": 0,
+                "categories": {
+                    "none": {
+                        "id": 0,
+                        "vectors": {
+                            "none": {
+                                "id": 0
+                            }
+                        }
+                    }
+                }
+            },
+            "sexist": {
+                "id": 1,
+                "categories": {
+                    "1. threats, plans to harm and incitement": {
+                        "id": 0,
+                        "vectors": {
+                            "1.1 threats of harm": {
+                                "id": 0
+                            },
+                            "1.2 incitement and encouragement of harm": {
+                                "id": 1
+                            }
+                        }
+                    },
+                    "2. derogation": {
+                        "id": 1,
+                        "vectors": {
+                            "2.1 descriptive attacks": {
+                                "id": 0
+                            },
+                            "2.2 aggressive and emotive attacks": {
+                                "id": 1
+                            },
+                            "2.3 dehumanising attacks & overt sexual objectification": {
+                                "id": 2
+                            }
+                        }
+                    },
+                    "3. animosity": {
+                        "id": 2,
+                        "vectors": {
+                            "3.1 casual use of gendered slurs, profanities, and insults": {
+                                "id": 0
+                            },
+                            "3.2 immutable gender differences and gender stereotypes": {
+                                "id": 1
+                            },
+                            "3.3 backhanded gendered compliments": {
+                                "id": 2
+                            },
+                            "3.4 condescending explanations or unwelcome advice": {
+                                "id": 3
+                            }
+                        }
+                    },
+                    "4. prejudiced discussions": {
+                        "id": 3,
+                        "vectors": {
+                            "4.1 supporting mistreatment of individual women": {
+                                "id": 0
+                            },
+                            "4.2 supporting systemic discrimination against women as a group": {
+                                "id": 1
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "logs": {
+        "dir": "logs",
+        "files": {
+            "train": "train.log",
+            "event": "events.log",
+            "best": "best.log",
+            "predictions": "predictions.csv",
+            "data": "data.log",
+            "models": "models",
+            "state": "state.json",
+            "submission": "submission.csv"
+        }
+    },
+    "model": {
+        "type": "bert",
+        "bert": {
+            "name": "roberta-base",
+            "max_length": 128,
+            "dimensions": 768,
+            "layers": 12,
+            "llrd": null,
+            "freeze_lower_layers": 9,
+            "heads": {
+                "a": {
+                    "dimensions": 2,
+                    "loss_weights": [1, 1]   
+                },
+                "b": {
+                    "dimensions": 5,
+                    "loss_weights": [1, 1, 1, 1, 1]
+                },
+                "c": {
+                    "dimensions": 12,
+                    "loss_weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                }
+            }
+        }
+    }
+}
