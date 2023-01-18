@@ -135,23 +135,14 @@
             "models":[
                 {
                     "type": "bert",
-                    "path": "logs/bertweet-ssl-task-a/models/best_model_0.pt",
-                    "config": "0-bertweet-task-a.json"
-                },
-                {
-                    "type": "bert",
-                    "path": "logs/bertweet-ssl-task-a/models/best_model_1.pt",
-                    "config": "0-bertweet-task-a.json"
-                },
-                {
-                    "type": "bert",
-                    "path": "logs/bertweet-ssl-task-a/models/best_model_2.pt",
-                    "config": "0-bertweet-task-a.json"
+                    "path": "logs/roberta-base-dropout/models/best_model_.pt",
+                    "config": "0-bertweet-task-a.json",
+                    "best_metric_file": "logs/roberta-base-dropout/models/best_metric_.json"
                 }
             ],
             "parameters":{
-                "n_estimators": 100,
-                "max_depth": 10,
+                "n_estimators": 500,
+                "max_depth": 20,
                 "min_samples_split": 2,
                 "min_samples_leaf": 1,
                 "bootstrap": false,

@@ -46,19 +46,15 @@ class RandomForestEnsembler(Ensemble):
         self.log_file = self.configs.logs.files.ensemble
         
         self.classifiers:List[EDOSTrainer] = []
-        # for classifier_dir, classifier_type in zip(self.model_dirs, self.model_types):
-        #     models_dir = os.path.join(classifier_dir,'models')
-        #     for file in os.listdir(models_dir):
-        #         if 'best_model' in file:
-        #             model_dir = os.path.join(models_dir, file)
-        #             model = get_model(self.configs, model_dir, self.device)
-        #             self.logger.log(f"Best Classifier Model loaded from {models_dir}/{file}")
-        #             self.classifiers.append(model)
-
+        self.best_metrics = []
+        
         for model_config in self.configs.model.bagging_random_forest.models:
             c = read_json_configs(os.path.join(
                 './configs', model_config['config']))
             model = get_model(c, model_config['path'], 'cuda')
+            best_metric = read_json_configs(model_config['best_metric_file'])
+            best_metric = best_metric.eval_metrics.a.configs
+            self.best_metrics.append(best_metric)
             self.classifiers.append(model)
         
         self.rf_parameters = self.configs.model.bagging_random_forest.parameters.configs
@@ -66,6 +62,7 @@ class RandomForestEnsembler(Ensemble):
         if load_path is None:
             self.clf = RandomForestClassifier()
             self.clf.set_params(**self.rf_parameters)
+            
             self.logger.log_file(self.log_file, f"Random Forest Ensembler Loaded with parameters {self.clf.get_params()}")
         else:
             self.clf:RandomForestClassifier = pickle.load(open(load_path, 'rb'))
@@ -94,7 +91,7 @@ class RandomForestEnsembler(Ensemble):
     def forward(self, batch, train=False):
         predictions = defaultdict(list)
         y = []
-        for model in self.classifiers:
+        for model, best_metrics in zip(self.classifiers, self.best_metrics):
             model.eval()
             pred, loss = model(batch, train= (not self.use_frozen))
             for i, rewire_id in enumerate(batch['rewire_id']):
@@ -102,10 +99,9 @@ class RandomForestEnsembler(Ensemble):
                 if pred_label not in self.encoding_map_task_a:
                     self.encoding_map_task_a[pred_label] = len(self.encoding_map_task_a)+1
                 encoded_pred_label = self.encoding_map_task_a[pred_label]
-                predictions[rewire_id].append((
-                    encoded_pred_label if 'a' in self.configs.train.task else '-',
-                    pred[rewire_id]['confidence_s']['sexist'] if 'a' in self.configs.train.task else '-',
-                    pred[rewire_id]['uncertainity']['sexist'] if 'a' in self.configs.train.task else '-'))
+                predictions[rewire_id].append(
+                    self.format_rf_input(best_metrics, rewire_id, pred, encoded_pred_label)
+                )
         if train: 
             for i in range(len(batch['rewire_id'])):    
                 label = batch['label_sexist'][i]
@@ -156,4 +152,16 @@ class RandomForestEnsembler(Ensemble):
         bootstrap_frac = self.bootstrap['bootstrap_frac']
         return [random.sample(X, len(X)*bootstrap_frac) for _ in range(n)]
 
-# Path: src\strategies\ensemble\ensemble.py
+    def format_rf_input(self, best_metrics, rewire_id, pred, encoded_pred_label):
+        return (encoded_pred_label if 'a' in self.configs.train.task else '-',
+            pred[rewire_id]['confidence_s']['sexist'] if 'a' in self.configs.train.task else '-',
+            pred[rewire_id]['uncertainity']['sexist'] if 'a' in self.configs.train.task else '-',
+            best_metrics['accuracy'] if 'a' in self.configs.train.task else '-',
+            best_metrics['not_sexist']['precision'] if 'a' in self.configs.train.task else '-',
+            best_metrics['not_sexist']['recall'] if 'a' in self.configs.train.task else '-',
+            best_metrics['sexist']['precision'] if 'a' in self.configs.train.task else '-',
+            best_metrics['sexist']['recall'] if 'a' in self.configs.train.task else '-',
+            best_metrics['macro_avg']['precision'] if 'a' in self.configs.train.task else '-',
+            best_metrics['macro_avg']['recall'] if 'a' in self.configs.train.task else '-',
+            best_metrics['weighted avg']['precision'] if 'a' in self.configs.train.task else '-',
+            best_metrics['weighted avg']['recall'] if 'a' in self.configs.train.task else '-')
