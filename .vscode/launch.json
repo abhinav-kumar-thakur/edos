@@ -26,7 +26,20 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "A1-1-roberta-large.json", "--device", "cuda:2"]
+            "args": ["--config", "A1-2-roberta-large.json", "--device", "cuda:2"]
+        },
+        {
+            "name": "Generate Submission",
+            "type": "python",
+            "request": "launch",
+            "program": "${cwd}/src/runner/generate_submission.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${cwd}"
+            },
+
+            "args": ["--config", "A1-2-voting-split1.json", "--device", "cuda:2"]
         },
         {
             "name": "K-fold",
@@ -40,19 +53,6 @@
             },
             "args": ["--config", "ssl.json", "--device", "cuda:2"]
 
-        },
-        {
-            "name": "Generate Submission",
-            "type": "python",
-            "request": "launch",
-            "program": "${cwd}/src/runner/generate_submission.py",
-            "console": "integratedTerminal",
-            "justMyCode": false,
-            "env": {
-                "PYTHONPATH": "${cwd}"
-            },
-
-            "args": ["--config", "0-bertweet-task-a.json", "--device", "cpu"]
         },
         {
             "name": "Pretrainer",

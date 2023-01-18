@@ -1,42 +1,22 @@
 {
     "seed": 42,
-    "title": "bert-large-uncased-frz18",
-    "task": "all-data",
+    "title": "A1-2",
+    "task": "voting-split1",
+    "data_dir": "data",
     "train": {
         "task": ["a"],
-        "files": {
-            "train": "data/processed/A1-data-prep/split_0.csv",
-            "eval": "data/processed/A1-data-prep/split_1.csv"
-        },
-        "additional_files": {
-            "sd": "data/raw/SD_dataset_FINAL.csv",
-            "mami": "data/raw/training.csv"
-        },
         "k_fold": 6,
-        "run_folds": [0 , 1, 2, 3, 4, 5],
-        "train_batch_size": 4,
-        "eval_batch_size": 1,
-        "epochs": 40,
-        "patience": 10,
-        "optimizer": {
-            "name": "AdamW",
-            "lr": 0.0004,
-            "weight_decay": 0.01
-        },
-        "scheduler": {
-            "name": "cosine",
-            "num_warmup_steps": 5,
-            "num_cycles": 4
-        },
-        "loss": "ce"
+        "eval_batch_size": 2
     },
     "submission": {
         "task": "a",
-        "dataset": "dev"
+        "dataset": "dev",
+        "file": "data/processed/A1-data-prep/split_1.csv"
     },
     "datasets": {
         "name": "edos",
         "files": {
+            "train": "data/raw/train_all_tasks.csv",
             "dev_a_text": "data/raw/dev_task_a_entries.csv",
             "dev_b_text": "data/raw/dev_task_b_entries.csv",
             "dev_c_text": "data/raw/dev_task_c_entries.csv",
@@ -133,28 +113,25 @@
         }
     },
     "model": {
-        "type": "bert",
-        "bert": {
-            "name": "bert-large-uncased",
-            "max_length": 256,
-            "dimensions": 1024,
-            "layers": 24,
-            "llrd": null,
-            "freeze_lower_layers": 18,
-            "heads": {
-                "a": {
-                    "dimensions": 2,
-                    "loss_weights": [1, 1]   
+        "type": "voting",
+        "voting": {
+            "models": [
+                {
+                    "type": "bert",
+                    "path": "logs/A1-bertweet-base/models/best_model_all_data.pt",
+                    "config": "A1-1-bertweet-base.json"
                 },
-                "b": {
-                    "dimensions": 5,
-                    "loss_weights": [1, 1, 1, 1, 1]
+                {
+                    "type": "bert",
+                    "path": "logs/A1-roberta-base/models/best_model_all_data.pt",
+                    "config": "A1-1-roberta-base.json"
                 },
-                "c": {
-                    "dimensions": 12,
-                    "loss_weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                {
+                    "type": "bert",
+                    "path": "logs/A1-roberta-large/models/best_model_all_data.pt",
+                    "config": "A1-1-roberta-large.json"
                 }
-            }
+            ]
         }
     }
 }

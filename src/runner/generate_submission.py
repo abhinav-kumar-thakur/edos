@@ -5,7 +5,7 @@ from tqdm import tqdm
 from sklearn.metrics import classification_report
 
 from src.config_reader import read_json_configs
-from src.models.utils import get_model
+from src.strategies.ensemble.utils import get_ensemble_model
 from src.logger import Logger
 from src.datasets.dataset import PredictionDataset, TrainDataset
 from src.utils import get_args
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     dataset = TrainDataset(configs, configs.submission.file) if configs.submission.dataset == 'dev' else PredictionDataset(configs)
     logger.log_text(configs.logs.files.event, f'Generating submission file for {configs.submission.file} dataset')
     
-    model = get_model(configs, configs.submission.model_path, args.device)
+    model = get_ensemble_model(configs, logger, args.device)
     prediction_dataloader = torch.utils.data.DataLoader(dataset, batch_size=configs.train.eval_batch_size, shuffle=False, num_workers=0)
     
     predictions = {}
