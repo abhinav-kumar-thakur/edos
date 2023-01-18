@@ -1,31 +1,12 @@
 import os
 import math
-import itertools
-from collections import defaultdict, Counter
+from collections import defaultdict
 
 import torch as t
 
 from .ensemble import Ensemble
 from src.config_reader import read_json_configs
-from src.models.bert import BertClassifier
-from src.models.bert_focal_loss import BertClassifier_fl
-from src.models.unifiedQA import UnifiedQAClassifier
-
-
-def get_model(configs, filepath, device):
-    model_name = configs.model.type
-
-    if model_name == 'bert':
-        model = BertClassifier(configs, device)
-    elif model_name == 'bert_fl':
-        model = BertClassifier_fl(configs, device)
-    elif model_name == 'unifiedQA':
-        model = UnifiedQAClassifier(configs, device)
-    else:
-        raise Exception('Invalid model name')
-
-    model.load_state_dict(t.load(filepath, map_location=device))
-    return model
+from src.models.utils import get_model
 
 
 class MetaClassifier(Ensemble):
@@ -33,32 +14,50 @@ class MetaClassifier(Ensemble):
         super().__init__()
         self.device = device
         self.models = []
+        self.metrics = []
         self.configs = config
+        self.memoize = {}
 
         for model_config in self.configs.model.meta_classifier.models:
             c = read_json_configs(os.path.join('./configs', model_config['config']))
+            m = read_json_configs(model_config['metrics']).configs
             model = get_model(c, model_config['path'], self.device)
             self.models.append(model)
+            self.metrics.append(m)
 
         self.label2idx_a = self.get_label_index_a()
         self.idx2label_a = {v: k for k, v in self.label2idx_a.items()}
 
         self.loss_a = t.nn.CrossEntropyLoss()
-        n1 = len(self.models)*4
+        n1 = 3 * len(self.models) * (len(self.label2idx_a))
         n2 = math.ceil(n1/2)
-        self.l1 = t.nn.Linear( n1, n2).to(self.device)
+        self.l1 = t.nn.Linear(n1, n2).to(self.device)
         self.l2 = t.nn.Linear(n2, 2).to(self.device)
 
     def forward(self, batch, train=True):
-        predictions = defaultdict(list)
-        for model in self.models:
-            model.eval()
-            pred, loss = model(batch, train=False)
-            for rewire_id in batch['rewire_id']:
-                logits = list(pred[rewire_id]['scores']['sexist'].values())
-                predictions[rewire_id] += logits + [pred[rewire_id]['confidence_s']['sexist'], pred[rewire_id]['uncertainity']['sexist']]
+        features = defaultdict(list)
+        if any([k for k in batch['rewire_id'] if k not in self.memoize]):
+            for i, model in enumerate(self.models):
+                model.eval()
+                pred, loss = model(batch, train=False)
+                metrics = self.metrics[i]
+                for rewire_id in batch['rewire_id']:
+                    logits = list(pred[rewire_id]['scores']['sexist'].values())
+                    models_metrics = []
+                    for k in self.label2idx_a.keys():
+                        models_metrics.append(metrics['eval_metric']['a'][k]['precision'])
+                        models_metrics.append(metrics['eval_metric']['a'][k]['recall'])
+                    
+                    features[rewire_id].extend(logits + models_metrics)
 
-        x = t.relu(self.l1(t.tensor(list(predictions.values())).to(self.device)))
+            for rewire_id in batch['rewire_id']:
+                self.memoize[rewire_id] = features[rewire_id]
+        else:
+            for rewire_id in batch['rewire_id']:
+                features[rewire_id] = self.memoize[rewire_id]
+
+
+        x = t.relu(self.l1(t.tensor(list(features.values())).to(self.device)))
         pred_a = self.l2(x)
 
         loss = 0
@@ -125,5 +124,5 @@ class MetaClassifier(Ensemble):
             {'params': [p for n, p in self.l1.named_parameters()], 'weight_decay': 0.01, 'lr': self.configs.train.optimizer.lr},
             {'params': [p for n, p in self.l2.named_parameters()], 'weight_decay': 0.01, 'lr': self.configs.train.optimizer.lr}
         ]
-        
+
         return optimizer_parameters

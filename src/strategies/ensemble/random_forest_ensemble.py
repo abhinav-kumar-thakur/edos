@@ -49,11 +49,10 @@ class RandomForestEnsembler(Ensemble):
         self.best_metrics = []
         
         for model_config in self.configs.model.bagging_random_forest.models:
-            c = read_json_configs(os.path.join(
-                './configs', model_config['config']))
-            model = get_model(c, model_config['path'], 'cuda')
-            best_metric = read_json_configs(model_config['best_metric_file'])
-            best_metric = best_metric.eval_metrics.a.configs
+            c = read_json_configs(os.path.join('./configs', model_config['config']))
+            model = get_model(c, model_config['path'], self.device)
+            best_metric = read_json_configs(model_config['metrics'])
+            best_metric = best_metric.eval_metric.a.configs
             self.best_metrics.append(best_metric)
             self.classifiers.append(model)
         
@@ -153,15 +152,17 @@ class RandomForestEnsembler(Ensemble):
         return [random.sample(X, len(X)*bootstrap_frac) for _ in range(n)]
 
     def format_rf_input(self, best_metrics, rewire_id, pred, encoded_pred_label):
-        return (encoded_pred_label if 'a' in self.configs.train.task else '-',
+        return (
+            encoded_pred_label if 'a' in self.configs.train.task else '-',
             pred[rewire_id]['confidence_s']['sexist'] if 'a' in self.configs.train.task else '-',
             pred[rewire_id]['uncertainity']['sexist'] if 'a' in self.configs.train.task else '-',
             best_metrics['accuracy'] if 'a' in self.configs.train.task else '-',
-            best_metrics['not_sexist']['precision'] if 'a' in self.configs.train.task else '-',
-            best_metrics['not_sexist']['recall'] if 'a' in self.configs.train.task else '-',
+            best_metrics['not sexist']['precision'] if 'a' in self.configs.train.task else '-',
+            best_metrics['not sexist']['recall'] if 'a' in self.configs.train.task else '-',
             best_metrics['sexist']['precision'] if 'a' in self.configs.train.task else '-',
             best_metrics['sexist']['recall'] if 'a' in self.configs.train.task else '-',
-            best_metrics['macro_avg']['precision'] if 'a' in self.configs.train.task else '-',
-            best_metrics['macro_avg']['recall'] if 'a' in self.configs.train.task else '-',
+            best_metrics['macro avg']['precision'] if 'a' in self.configs.train.task else '-',
+            best_metrics['macro avg']['recall'] if 'a' in self.configs.train.task else '-',
             best_metrics['weighted avg']['precision'] if 'a' in self.configs.train.task else '-',
-            best_metrics['weighted avg']['recall'] if 'a' in self.configs.train.task else '-')
+            best_metrics['weighted avg']['recall'] if 'a' in self.configs.train.task else '-'
+        )

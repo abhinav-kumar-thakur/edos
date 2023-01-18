@@ -39,8 +39,8 @@ if __name__ == '__main__':
     data = dataset.data
     shuffle(data)
 
-    train_dataset = EDOSDataset('train', configs, data[:int(len(data)*0.8)], 5)
-    eval_dataset = EDOSDataset('eval', configs, data[int(len(data)*0.8):], 5)
+    train_dataset = TrainDataset(configs, configs.train.files.train)
+    eval_dataset = TrainDataset(configs, configs.train.files.eval)
 
     print('train:', train_dataset.summarize())
     print('eval:', eval_dataset.summarize())

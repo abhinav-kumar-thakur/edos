@@ -17,8 +17,7 @@ class WeightedVoting(Ensemble):
 
         self.model = None
         for model_config in self.configs.model.weighted_voting.models:
-            c = read_json_configs(os.path.join(
-                './configs', model_config['config']))
+            c = read_json_configs(os.path.join('./configs', model_config['config']))
             m = read_json_configs(model_config['metrics']).configs
             model = get_model(c, model_config['path'], self.device)
             self.models.append(model)

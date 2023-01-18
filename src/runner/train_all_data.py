@@ -11,6 +11,7 @@ from src.optimizer.utils import get_optimizer
 from src.logger import Logger
 from src.utils import get_args
 from src.trainer.edos_trainer import EDOSTrainer
+from src.strategies.ensemble.utils import get_ensemble_model
 
 if __name__ == '__main__':
     args = get_args()
@@ -35,7 +36,11 @@ if __name__ == '__main__':
     train_dataloader = DataLoader(train_dataset, batch_size=configs.train.train_batch_size, shuffle=True)
     eval_dataloader = DataLoader(eval_dataset, batch_size=configs.train.eval_batch_size, shuffle=False)
     
-    model = get_classification_model_from_state(configs, state_configs, args.device)
+    if configs.train.ensemble:
+        model = get_ensemble_model(configs, logger, args.device)
+    else:
+        model = get_ensemble_model(configs, logger, args.device)
+
     optimizer = get_optimizer(model, configs)    
     trainer = EDOSTrainer(configs, state_configs, model, train_dataloader, eval_dataloader, optimizer, args.device, logger)
     trainer.run()
