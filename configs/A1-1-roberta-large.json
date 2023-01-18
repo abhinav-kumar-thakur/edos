@@ -14,8 +14,8 @@
         },
         "k_fold": 6,
         "run_folds": [0 , 1, 2, 3, 4, 5],
-        "train_batch_size": 4,
-        "eval_batch_size": 1,
+        "train_batch_size": 2,
+        "eval_batch_size": 2,
         "epochs": 40,
         "patience": 10,
         "optimizer": {
