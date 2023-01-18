@@ -32,7 +32,9 @@
     },
     "submission": {
         "task": "a",
-        "dataset": "dev"
+        "dataset": "dev",
+        "file": "data/processed/A1-data-prep/split_2.csv",
+        "model_path": "logs/A1-roberta-base/models/best_model_all_data.pt"
     },
     "datasets": {
         "name": "edos",
