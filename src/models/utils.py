@@ -5,7 +5,6 @@ import torch
 from src.models.bert import BertClassifier
 from src.models.bert_focal_loss import BertClassifier_fl
 from src.models.unifiedQA import UnifiedQAClassifier
-from src.strategies.ensemble.meta_classifier import MetaClassifier
 
 
 def get_classification_model_from_state(configs, state_configs, device):
@@ -18,8 +17,6 @@ def get_classification_model_from_state(configs, state_configs, device):
         model = BertClassifier_fl(configs, device)
     elif model_name == 'unifiedQA':
         model = UnifiedQAClassifier(configs, device)
-    elif model_name == 'meta-classifier':
-        model = MetaClassifier(configs, device)
     else:
         raise Exception('Invalid model name')
 
@@ -35,17 +32,14 @@ def save_model(model, configs):
     saved_model_path = os.path.join(configs.logs.dir, configs.title + '-' + configs.task, configs.logs.files.models, f'saved_model_state.pt')
     torch.save(model.state_dict(), saved_model_path)
 
-def get_model(configs, filepath, device, model_name=None):
-    if model_name is None: model_name = configs.model.type
-
+def get_model(configs, filepath, device):
+    model_name = configs.model.type
     if model_name == 'bert':
         model = BertClassifier(configs, device)
     elif model_name == 'bert_fl':
         model = BertClassifier_fl(configs, device)
     elif model_name == 'unifiedQA':
         model = UnifiedQAClassifier(configs, device)
-    elif model_name == 'meta-classifier':
-        model = MetaClassifier(configs, device)
     else:
         raise Exception('Invalid model name')
 

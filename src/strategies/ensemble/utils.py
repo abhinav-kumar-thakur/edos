@@ -15,8 +15,8 @@ def get_ensemble_model(configs, logger, device):
         model = Voting(configs, device)
     elif model_name == 'weighted_voting':
         model = WeightedVoting(configs, device)
-    elif model_name == 'meta-classifier':
-        model = MetaClassifier(configs, logger, device)
+    elif model_name == 'meta_classifier':
+        model = MetaClassifier(configs, device)
     elif model_name == 'bagging_random_forest':
         model = RandomForestEnsembler(configs = configs, logger= logger, device= device)
     else:
