@@ -1,35 +1,12 @@
 {
     "seed": 42,
     "title": "A1-2",
-    "task": "random-forest",
+    "task": "bertweet-base-1869",
+    "data_dir": "data",
     "train": {
         "task": ["a"],
-        "ensemble": true,
-        "files": {
-            "train": "data/processed/A1-data-prep/split_1.csv",
-            "eval": "data/processed/A1-data-prep/split_2.csv"
-        },
-        "additional_files": {
-            "sd": "data/raw/SD_dataset_FINAL.csv",
-            "mami": "data/raw/training.csv"
-        },
         "k_fold": 6,
-        "run_folds": [0 , 1, 2, 3, 4, 5],
-        "train_batch_size": 2,
-        "eval_batch_size": 2,
-        "epochs": 100,
-        "patience": 20,
-        "optimizer": {
-            "name": "AdamW",
-            "lr": 0.0001,
-            "weight_decay": 0.01
-        },
-        "scheduler": {
-            "name": "cosine",
-            "num_warmup_steps": 5,
-            "num_cycles": 4
-        },
-        "loss": "ce"
+        "eval_batch_size": 8
     },
     "submission": {
         "task": "a",
@@ -132,67 +109,19 @@
             "data": "data.log",
             "models": "models",
             "state": "state.json",
-            "ensemble": "ensemble.log",
             "submission": "submission.csv"
         }
     },
     "model": {
-        "type": "bagging_random_forest",
-        "bagging_random_forest":{
+        "type": "individual",
+        "individual": {
             "models": [
                 {
                     "type": "bert",
-                    "path": "logs/A1-bertweet-base/models/best_model_all_data.pt",
-                    "metrics": "logs/A1-bertweet-base/models/best_metric_all_data.json",
-                    "config": "A1-1-bertweet-base.json"
-                },
-                {
-                    "type": "bert",
                     "path": "logs/A1-bertweet-base-1869/models/best_model_all_data.pt",
-                    "metrics": "logs/A1-bertweet-base-1869/models/best_metric_all_data.json",
                     "config": "A1-1-bertweet-base-1869.json"
-                },
-                {
-                    "type": "bert",
-                    "path": "logs/A1-roberta-base/models/best_model_all_data.pt",
-                    "metrics": "logs/A1-roberta-base/models/best_metric_all_data.json",
-                    "config": "A1-1-roberta-base.json"
-                },
-                {
-                    "type": "bert",
-                    "path": "logs/A1-roberta-base-2323/models/best_model_all_data.pt",
-                    "metrics": "logs/A1-roberta-base-2323/models/best_metric_all_data.json",
-                    "config": "A1-1-roberta-base-2323.json"
-                },
-                {
-                    "type": "bert",
-                    "path": "logs/A1-roberta-large/models/best_model_all_data.pt",
-                    "metrics": "logs/A1-roberta-large/models/best_metric_all_data.json",
-                    "config": "A1-1-roberta-large.json"
-                }, 
-                {
-                    "type": "bert",
-                    "path": "logs/A1-roberta-large-llrd-0.3/models/best_model_all_data.pt",
-                    "metrics": "logs/A1-roberta-large-llrd-0.3/models/best_metric_all_data.json",
-                    "config": "A1-1-roberta-large-llrd.json"
                 }
-            ],
-            "parameters":{
-                "n_estimators": 20,
-                "max_depth": 5,
-                "min_samples_split": 2,
-                "min_samples_leaf": 1,
-                "bootstrap": false,
-                "oob_score": false,
-                "n_jobs": 1,
-                "random_state": 42
-            },
-            "bootstrap_data": {
-                "bootstrap":false,
-                "bootstrap_fraction": 0.75,
-                "n": 3
-            },
-            "use_frozen": true
+            ]
         }
     }
 }

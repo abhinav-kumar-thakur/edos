@@ -6,7 +6,7 @@
     "train": {
         "task": ["a"],
         "k_fold": 6,
-        "eval_batch_size": 32
+        "eval_batch_size": 8
     },
     "submission": {
         "task": "a",
