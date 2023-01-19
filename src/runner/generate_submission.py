@@ -37,10 +37,13 @@ if __name__ == '__main__':
 
         print(classification_report(actual_labels, prediction_labels))
         logger.log_file(configs.logs.files.event, classification_report(actual_labels, prediction_labels, output_dict=True))
-        
-    with open(os.path.join(logger.dir, configs.logs.files.submission), 'w') as f:
+    
+    output_file = os.path.join(logger.dir, configs.logs.files.submission)
+
+    assert len(predictions) == len(dataset), f"Expected 4000 predictions, got {len(predictions)}"
+    with open(output_file, 'w') as f:
         f.write('rewire_id,label_pred\n')
         for rew_id, pred in predictions.items():
             f.write(f'{rew_id},{pred}\n')
 
-    print("Done generating submission file!")
+    print(f"Done generating submission file: {output_file}")
