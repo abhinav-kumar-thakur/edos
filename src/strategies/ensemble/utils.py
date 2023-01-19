@@ -3,6 +3,7 @@ from .meta_classifier import MetaClassifier
 from .individual import Individual
 from .weighted_voting import WeightedVoting
 from .random_forest_ensemble import RandomForestEnsembler
+from .xgboost_ensembler import XGBoostEnsembler
 
 def get_ensemble_model(configs, logger, device):
     model_name = configs.model.type
@@ -19,6 +20,8 @@ def get_ensemble_model(configs, logger, device):
         model = MetaClassifier(configs, device)
     elif model_name == 'bagging_random_forest':
         model = RandomForestEnsembler(configs = configs, logger= logger, device= device)
+    elif model_name == 'xgboost_classifier':
+        model = XGBoostEnsembler(configs = configs, logger= logger, device= device)
     else:
         raise Exception('Invalid ensemble name')
 
