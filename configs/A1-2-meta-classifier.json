@@ -137,6 +137,7 @@
         }
     },
     "model": {
+        "mode": "eval",
         "type": "meta_classifier",
         "meta_classifier": {
             "models": [
