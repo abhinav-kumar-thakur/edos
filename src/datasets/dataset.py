@@ -179,9 +179,10 @@ class AdditionalTrainDataset(EDOSDataset):
         super().__init__('train', configs, data, configs.train.k_fold)
 
 class PredictionDataset(EDOSDataset):
-    def __init__(self, configs):
+    def __init__(self, configs, dataset_path=None, dataset_name='pred'):
+        print(f'Using prediction dataset: {dataset_path}')
         data = []
-        with open(configs.datasets.files.test_a_text, newline='', encoding="utf8") as csvfile:
+        with open(dataset_path, newline='', encoding="utf8") as csvfile:
             reader = csv.DictReader(csvfile)
             for row in tqdm(reader, desc='Loading eval dataset'):
                 data.append(row)

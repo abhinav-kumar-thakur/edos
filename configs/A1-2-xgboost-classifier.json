@@ -7,8 +7,8 @@
         "task": ["a"],
         "ensemble": true,
         "files": {
-            "train": "C:/USC Assignments and projects/edos/data/processed/bertweet-all-data/split_1.csv",
-            "eval": "C:/USC Assignments and projects/edos/data/processed/bertweet-all-data/split_2.csv"
+            "train": "data/processed/A1-data-prep/split_1.csv",
+            "eval": "data/processed/A1-data-prep/split_2.csv"
         },
         "additional_files": {
             "sd": "data/raw/SD_dataset_FINAL.csv",
@@ -142,15 +142,39 @@
             "models": [
                 {
                     "type": "bert",
-                    "path": "logs/bertweet-a-confidence-analysis/models/best_model_0.pt",
-                    "metrics": "logs/bertweet-a-confidence-analysis/models/best_metric.json",
+                    "path": "logs/A1-bertweet-base/models/best_model_all_data.pt",
+                    "metrics": "logs/A1-bertweet-base/models/best_metric_all_data.json",
                     "config": "A1-1-bertweet-base.json"
                 },
                 {
                     "type": "bert",
-                    "path": "logs/bertweet-a-confidence-analysis/models/best_model_1.pt",
-                    "metrics": "logs/bertweet-a-confidence-analysis/models/best_metric.json",
-                    "config": "A1-1-bertweet-base.json"
+                    "path": "logs/A1-bertweet-base-1869/models/best_model_all_data.pt",
+                    "metrics": "logs/A1-bertweet-base-1869/models/best_metric_all_data.json",
+                    "config": "A1-1-bertweet-base-1869.json"
+                },
+                {
+                    "type": "bert",
+                    "path": "logs/A1-roberta-base/models/best_model_all_data.pt",
+                    "metrics": "logs/A1-roberta-base/models/best_metric_all_data.json",
+                    "config": "A1-1-roberta-base.json"
+                },
+                {
+                    "type": "bert",
+                    "path": "logs/A1-roberta-base-2323/models/best_model_all_data.pt",
+                    "metrics": "logs/A1-roberta-base-2323/models/best_metric_all_data.json",
+                    "config": "A1-1-roberta-base-2323.json"
+                },
+                {
+                    "type": "bert",
+                    "path": "logs/A1-roberta-large/models/best_model_all_data.pt",
+                    "metrics": "logs/A1-roberta-large/models/best_metric_all_data.json",
+                    "config": "A1-1-roberta-large.json"
+                }, 
+                {
+                    "type": "bert",
+                    "path": "logs/A1-roberta-large-llrd-0.3/models/best_model_all_data.pt",
+                    "metrics": "logs/A1-roberta-large-llrd-0.3/models/best_metric_all_data.json",
+                    "config": "A1-1-roberta-large-llrd.json"
                 }
             ]
         }

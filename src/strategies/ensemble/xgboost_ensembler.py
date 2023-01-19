@@ -1,35 +1,15 @@
-import xgboost as xgb
-from sklearn.preprocessing import OneHotEncoder
-from src.models.bert import BertClassifier
-from src.models.bert_focal_loss import BertClassifier_fl
-from src.models.unifiedQA import UnifiedQAClassifier
-from src.config_reader import read_json_configs
-import random
-from typing import List
-from ...trainer.edos_trainer import EDOSTrainer
-from ...logger import Logger
-from .ensemble import Ensemble
-from torch.utils.data import DataLoader
-from tqdm import tqdm
-from collections import defaultdict
 import os
-import pickle
-import torch as t
+from typing import List
+from collections import defaultdict
 
-def get_model(configs, filepath, device):
-    model_name = configs.model.type
+import xgboost as xgb
+from tqdm import tqdm
 
-    if model_name == 'bert':
-        model = BertClassifier(configs, device)
-    elif model_name == 'bert_fl':
-        model = BertClassifier_fl(configs, device)
-    elif model_name == 'unifiedQA':
-        model = UnifiedQAClassifier(configs, device)
-    else:
-        raise Exception('Invalid model name')
+from src.logger import Logger
+from src.models.utils import get_model
+from src.config_reader import read_json_configs
 
-    model.load_state_dict(t.load(filepath, map_location=device))
-    return model
+from .ensemble import Ensemble
 
 class XGBoostEnsembler(Ensemble):
     def __init__(self, configs, logger:Logger, device='cpu',load_path=None):
@@ -41,7 +21,16 @@ class XGBoostEnsembler(Ensemble):
         
         self.models = []
         self.metrics = []
-        self.xgb = xgb.XGBClassifier()
+        self.xgb = xgb.XGBClassifier(silent=False, 
+                      scale_pos_weight=1,
+                      learning_rate=0.01,  
+                      colsample_bytree = 0.4,
+                      subsample = 0.8,
+                      objective='binary:logistic', 
+                      n_estimators=1000, 
+                      reg_alpha = 0.3,
+                      max_depth=4, 
+                      gamma=10)
 
         for model_config in self.configs.model.xgboost_classifier.models:
             c = read_json_configs(os.path.join('./configs', model_config['config']))

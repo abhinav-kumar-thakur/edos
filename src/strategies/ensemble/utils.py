@@ -27,6 +27,7 @@ def get_ensemble_model(configs, logger, device):
             model = MetaClassifier(configs, device)
             model_path = os.path.join(configs.logs.dir, configs.title + '-' + configs.task, configs.logs.files.models, f'best_model_all_data.pt')
             model.load_state_dict(torch.load(model_path, map_location=device))
+            print(f'Loaded model from {model_path}')
     elif model_name == 'bagging_random_forest':
         model = RandomForestEnsembler(configs = configs, logger= logger, device= device)
     elif model_name == 'xgboost_classifier':
