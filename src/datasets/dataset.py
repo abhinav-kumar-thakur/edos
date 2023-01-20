@@ -208,29 +208,33 @@ class UnlabelledDataset(EDOSDataset):
 
 class DevDataset(EDOSDataset):
     def __init__(self, configs):
-        dev_a_text = {}
-        dev_a_labels = {}
-        dev_data_a = []
+        data = defaultdict(dict)
         with open(configs.datasets.files.dev_a_text, newline='', encoding="utf8") as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                dev_a_text[row['rewire_id']] = row['text']
+                data[row['rewire_id']] = {
+                    'rewire_id': row['rewire_id'],
+                    'text': row['text'],
+                    'label_category': 'none',
+                    'label_vector': 'none'
+                } 
 
         with open(configs.datasets.files.dev_a_label, newline='', encoding="utf8") as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                dev_a_labels[row['rewire_id']] = row['label']
+                data[row['rewire_id']]['label_sexist'] = row['label']
+
+        with open(configs.datasets.files.dev_b_label, newline='', encoding="utf8") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                data[row['rewire_id']]['label_category'] = row['label']
+
+        with open(configs.datasets.files.dev_c_label, newline='', encoding="utf8") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                data[row['rewire_id']]['label_vector'] = row['label']
         
-        for key in dev_a_text:
-            dev_data_a.append({
-                'rewire_id': key,
-                'text': dev_a_text[key],
-                'label_sexist': dev_a_labels[key],
-                'label_category': 'none',
-                'label_vector': 'none'
-            })
-            
-        super().__init__('dev', configs, dev_data_a, configs.train.k_fold)
+        super().__init__('dev', configs, list(data.values()), configs.train.k_fold)
 
 class MamiDataset(EDOSDataset):
     def __init__(self, configs):
