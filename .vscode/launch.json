@@ -26,7 +26,7 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "B1-1-bertweet-base-1869.json", "--device", "cuda:2"]
+            "args": ["--config", "B1-1-bertweet-base-1869.json", "--device", "cuda:4"]
         },
         {
             "name": "Random Forest Ensembler",
