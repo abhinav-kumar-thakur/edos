@@ -4,7 +4,7 @@ import torch
 import random
 
 from src.config_reader import read_json_configs
-from src.datasets.dataset import TrainDataset, UnlabelledDataset, DevDataset
+from src.datasets.base import TrainDataset, UnlabelledDataset, DevDataset
 from src.logger import Logger
 from src.strategies.training.ssl import SemiSupervisedLearning
 from src.strategies.ensemble.utils import get_ensemble_model

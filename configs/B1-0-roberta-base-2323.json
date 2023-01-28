@@ -1,15 +1,43 @@
 {
-    "seed": 625,
-    "title": "B2",
-    "task": "data-prep",
-    "data_dir": "data",
+    "seed": 2323,
+    "title": "B1",
+    "task": "0-roberta-base-2323",
     "train": {
+        "ensemble": false,
+        "task": ["a"],
+        "files": {
+            "train": "data/processed/merged_a.csv"
+        },
+        "additional_files": {
+            "sd": "data/raw/SD_dataset_FINAL.csv",
+            "mami": "data/raw/training.csv"
+        },
+        "k_fold": 7,
+        "run_folds": [0, 1, 2, 3, 4, 5, 6],
+        "train_batch_size": 4,
+        "eval_batch_size": 16,
+        "epochs": 30,
+        "patience": 6,
+        "optimizer": {
+            "name": "AdamW",
+            "lr": 0.0001,
+            "weight_decay": 0.01
+        },
+        "scheduler": {
+            "name": "cosine",
+            "num_warmup_steps": 5,
+            "num_cycles": 4
+        },
+        "loss": "ce"
+    },
+    "submission": {
         "task": "a",
-        "k_fold": 6
+        "dataset": "dev",
+        "file": "data/processed/A1-data-prep/split_2.csv",
+        "model_path": "logs/A1-roberta-base/models/best_model_all_data.pt"
     },
     "datasets": {
         "name": "edos",
-        "splits": [0.8, 0.1, 0.1],
         "files": {
             "train": "data/raw/train_all_tasks.csv",
             "dev_a_text": "data/raw/dev_task_a_entries.csv",
@@ -18,9 +46,7 @@
             "dev_a_label": "data/raw/dev_task_a_labels.csv",
             "dev_b_label": "data/raw/dev_task_b_labels.csv",
             "dev_c_label": "data/raw/dev_task_c_labels.csv",
-            "test_a_text": "data/raw/test_task_a_entries.csv",
-            "gab_unlabeled": "data/raw/gab_1M_unlabeled.csv",
-            "reddit_unlabeled": "data/raw/reddit_1M_unlabeled.csv"
+            "test_a_text": "data/raw/test_task_a_entries.csv"
         },
         "labels": {
             "not sexist": {
@@ -107,6 +133,31 @@
             "models": "models",
             "state": "state.json",
             "submission": "submission.csv"
+        }
+    },
+    "model": {
+        "type": "bert",
+        "bert": {
+            "name": "roberta-base",
+            "max_length": 256,
+            "dimensions": 768,
+            "layers": 12,
+            "llrd": null,
+            "freeze_lower_layers": 9,
+            "heads": {
+                "a": {
+                    "dimensions": 2,
+                    "loss_weights": [1, 1]   
+                },
+                "b": {
+                    "dimensions": 5,
+                    "loss_weights": [1, 1, 1, 1, 1]
+                },
+                "c": {
+                    "dimensions": 12,
+                    "loss_weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                }
+            }
         }
     }
 }

@@ -1,61 +1,12 @@
 import csv
-import os
-import random
 from collections import defaultdict
 
-from torch.utils.data import Dataset
-from transformers import AutoTokenizer
-from sklearn.model_selection import KFold
-from tqdm import tqdm
+from .base import BaseDataset
 
-
-class EDOSDataset(Dataset):
-    def __init__(self, name, configs, data, k_fold):
-        self.name = name
-        self.data = data
-        self.k_fold = k_fold
-        self.kf = KFold(n_splits=self.k_fold, shuffle=True, random_state=42)
-        self.k_splits = list(self.kf.split(self.data))
-        self.configs = configs
-
-    def get_kth_fold_dataset(self, k):
-        train_data = []
-        test_data = []
-        train_set, test_set = self.k_splits[k]
-
-        for i in train_set:
-            train_data.append(self.data[i])
-        for i in test_set:
-            test_data.append(self.data[i])
-
-        return EDOSDataset(f'train_{k}', self.configs, train_data, self.configs.train.k_fold), EDOSDataset(f'eval_{k}', self.configs, test_data, self.configs.train.k_fold)
-
-    def oversample_the_dataset(self):
-        # Create dict counter for each label
-        label_sexist_counter = defaultdict(int)
-
-        for sample in self.data:
-            label_sexist_counter[sample['label_sexist']] += 1
-
-        # Get the max count
-        max_count = max(label_sexist_counter.values())
-
-        # Create dict of lists for each label
-        label_sexist_data = defaultdict(list)
-
-        for sample in self.data:
-            label_sexist_data[sample['label_sexist']].append(sample)
-
-        # Duplicate the minority class samples to match the majority class
-        for label, count in label_sexist_counter.items():
-            if count < max_count:
-                label_sexist_data[label] *= (max_count // count)
-
-        # Concatenate the lists
-        self.data = []
-        for label, data in label_sexist_data.items():
-            self.data += data
-
+class EDOSDataset(BaseDataset):
+    def __init__(self, name, data, k_fold):
+        super().__init__(name, data, k_fold)
+        
     def summarize(self):
         # Create dict counter for each label
         label_sexist_counter = defaultdict(int)
@@ -76,83 +27,20 @@ class EDOSDataset(Dataset):
         }
 
         return summary
-
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, index):
-        item = self.data[index]
-        if self.configs.model.type == 'unifiedQA':
-            sexism_definition = f'Sexism: any abuse or negative sentiment that is directed towards women based on their gender, or based on their gender combined with one or more other identity attributes.'
-            question = f'Detect sexism and classify into category?'
-            options = ' '.join([
-                '(A) not sexist | none | none', 
-                '(B) sexist | 1. threats, plans to harm and incitement | 1.1 threats of harm',
-                '(C) sexist | 1. threats, plans to harm and incitement | 1.2 incitement and encouragement of harm',
-                '(D) sexist | 2. derogation | 2.1 descriptive attacks',
-                '(E) sexist | 2. derogation | 2.2 aggressive and emotive attacks',
-                '(F) sexist | 2. derogation | 2.3 dehumanising attacks & overt sexual objectification',
-                '(G) sexist | 3. animosity | 3.1 casual use of gendered slurs, profanities, and insults',
-                '(H) sexist | 3. animosity | 3.2 immutable gender differences and gender stereotypes',
-                '(I) sexist | 3. animosity | 3.3 backhanded gendered compliments',
-                '(J) sexist | 3. animosity | 3.4 condescending explanations or unwelcome advice',
-                '(K) sexist | 4. prejudiced discussions | 4.1 supporting mistreatment of individual women',
-                '(L) sexist | 4. prejudiced discussions | 4.2 supporting systemic discrimination against women as a group'
-            ])
-            evidence = item['text']
-            unifiedQA_question = f'{question}\n{options}\n{evidence}\n{sexism_definition}'
-            item['question'] = unifiedQA_question
-            item['answer'] = f'{item["label_sexist"]} | {item["label_category"]} | {item["label_vector"]}'
-
-        return item
-
-    def merge(self, dataset):
-        merged_data = self.data.copy()
-        for d in dataset.data:
-            merged_data.append(d)
-
-        return EDOSDataset('merged', dataset.configs, merged_data, dataset.configs.train.k_fold)
-
-    def split(self, split_ratio: list):
-        assert sum(split_ratio) == 1, 'split ratio must sum to 1'
-
-        split_data = []
-        split_count = len(split_ratio) 
-        split_size = [int(len(self.data) * ratio) for ratio in split_ratio]
-        random.shuffle(self.data)
-
-        start = 0
-        for i in range(split_count):
-            end = start + split_size[i]
-            split_data.append(EDOSDataset(f'split_{i}', self.configs, self.data[start:end], self.configs.train.k_fold))
-            start = end
-
-        return split_data
-
-    def save(self):
-        path = os.path.join(self.configs.data_dir, 'processed', self.configs.title + '-' + self.configs.task) 
-        if not os.path.exists(path):
-            os.makedirs(path)
-        
-        with open(os.path.join(path, f'{self.name}.csv'), 'w', newline='', encoding='utf8') as f:
-            writer = csv.DictWriter(f, fieldnames=self.data[0].keys())
-            writer.writeheader()
-            for row in self.data:
-                writer.writerow(row)
             
 class TrainDataset(EDOSDataset):
-    def __init__(self, configs, dataset_path=None, dataset_name='train'):
+    def __init__(self, dataset_name, dataset_path, tasks, k_fold):
         data = []
-        dataset_path = dataset_path if dataset_path else configs.datasets.files.train
+        dataset_path = dataset_path
         with open(dataset_path, newline='', encoding="utf8") as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                if 'a' not in configs.train.task and row['label_sexist'] == 'not sexist':
+                if 'a' not in tasks and row['label_sexist'] == 'not sexist':
                     continue
 
                 data.append(row)
 
-        super().__init__(dataset_name, configs, data, configs.train.k_fold)
+        super().__init__(dataset_name, data, k_fold)
 
 class AdditionalTrainDataset(EDOSDataset):
     def __init__(self, configs):
@@ -179,31 +67,31 @@ class AdditionalTrainDataset(EDOSDataset):
         super().__init__('train', configs, data, configs.train.k_fold)
 
 class PredictionDataset(EDOSDataset):
-    def __init__(self, configs, dataset_path=None, dataset_name='pred'):
+    def __init__(self, dataset_path, k_fold=5):
         print(f'Using prediction dataset: {dataset_path}')
         data = []
         with open(dataset_path, newline='', encoding="utf8") as csvfile:
             reader = csv.DictReader(csvfile)
-            for row in tqdm(reader, desc='Loading eval dataset'):
+            for row in reader:
                 data.append(row)
 
-        super().__init__('pred', configs, data, configs.train.k_fold)
-
-
+        super().__init__('pred', data, k_fold)
 
 class UnlabelledDataset(EDOSDataset):
-    def __init__(self, configs):
+    def __init__(self, name, unlabeled_file, k_fold):
         data = []
         count = 0
-        prefix = 'unlabelled'
-        with open(configs.ssl.unlabelled_file, newline='', encoding="utf8") as csvfile:
+        with open(unlabeled_file, newline='', encoding="utf8") as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                row['rewire_id'] = f'{prefix}_{count}'
+                row['rewire_id'] = f'{name}_{count}'
+                row['label_sexist'] = 'unknown'
+                row['label_category'] = 'unknown'
+                row['label_vector'] = 'unknown'
                 data.append(row)
                 count += 1
         
-        super().__init__('unlabelled', configs, data, configs.ssl.k_fold)
+        super().__init__('unlabeled', data, k_fold)
         
 
 class DevDataset(EDOSDataset):
@@ -234,7 +122,7 @@ class DevDataset(EDOSDataset):
             for row in reader:
                 data[row['rewire_id']]['label_vector'] = row['label']
         
-        super().__init__('dev', configs, list(data.values()), configs.train.k_fold)
+        super().__init__('dev', list(data.values()), configs.train.k_fold)
 
 class MamiDataset(EDOSDataset):
     def __init__(self, configs):

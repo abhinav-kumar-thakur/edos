@@ -1,15 +1,38 @@
 {
-    "seed": 625,
-    "title": "B2",
-    "task": "data-prep",
-    "data_dir": "data",
+    "seed": 2023,
+    "title": "B1",
+    "task": "roberta-large-llrd-0.3",
     "train": {
-        "task": "a",
-        "k_fold": 6
+        "ensemble": false,
+        "task": ["b"],
+        "files": {
+            "train": "data/processed/B1-data-prep/split_0.csv",
+            "eval": "data/processed/B1-data-prep/split_1.csv"
+        },
+        "additional_files": {
+            "sd": "data/raw/SD_dataset_FINAL.csv",
+            "mami": "data/raw/training.csv"
+        },
+        "k_fold": 6,
+        "run_folds": [0 , 1, 2, 3, 4, 5],
+        "train_batch_size": 2,
+        "eval_batch_size": 2,
+        "epochs": 150,
+        "patience": 30,
+        "optimizer": {
+            "name": "AdamW",
+            "lr": 0.0004,
+            "weight_decay": 0.01
+        },
+        "scheduler": {
+            "name": "cosine_with_hard_restarts",
+            "num_warmup_steps": 5,
+            "num_cycles": 5
+        },
+        "loss": "ce"
     },
     "datasets": {
         "name": "edos",
-        "splits": [0.8, 0.1, 0.1],
         "files": {
             "train": "data/raw/train_all_tasks.csv",
             "dev_a_text": "data/raw/dev_task_a_entries.csv",
@@ -18,9 +41,7 @@
             "dev_a_label": "data/raw/dev_task_a_labels.csv",
             "dev_b_label": "data/raw/dev_task_b_labels.csv",
             "dev_c_label": "data/raw/dev_task_c_labels.csv",
-            "test_a_text": "data/raw/test_task_a_entries.csv",
-            "gab_unlabeled": "data/raw/gab_1M_unlabeled.csv",
-            "reddit_unlabeled": "data/raw/reddit_1M_unlabeled.csv"
+            "test_a_text": "data/raw/test_task_a_entries.csv"
         },
         "labels": {
             "not sexist": {
@@ -107,6 +128,31 @@
             "models": "models",
             "state": "state.json",
             "submission": "submission.csv"
+        }
+    },
+    "model": {
+        "type": "bert",
+        "bert": {
+            "name": "roberta-large",
+            "max_length": 256,
+            "dimensions": 1024,
+            "layers": 24,
+            "llrd": 0.3,
+            "freeze_lower_layers": 18,
+            "heads": {
+                "a": {
+                    "dimensions": 2,
+                    "loss_weights": [1, 1]   
+                },
+                "b": {
+                    "dimensions": 5,
+                    "loss_weights": [1, 1, 1, 1, 1]
+                },
+                "c": {
+                    "dimensions": 12,
+                    "loss_weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                }
+            }
         }
     }
 }

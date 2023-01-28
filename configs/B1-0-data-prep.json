@@ -18,7 +18,10 @@
             "dev_a_label": "data/raw/dev_task_a_labels.csv",
             "dev_b_label": "data/raw/dev_task_b_labels.csv",
             "dev_c_label": "data/raw/dev_task_c_labels.csv",
-            "test_a_text": "data/raw/test_task_a_entries.csv"
+            "test_a_text": "data/raw/test_task_a_entries.csv",
+            "test_a_all": "data/processed/test_a.csv",
+            "gab_unlabeled": "data/raw/gab_1M_unlabelled.csv",
+            "reddit_unlabeled": "data/raw/reddit_1M_unlabelled.csv"
         },
         "labels": {
             "not sexist": {

@@ -1,15 +1,20 @@
 {
-    "seed": 625,
-    "title": "B2",
-    "task": "data-prep",
+    "seed": 42,
+    "title": "B1-0",
+    "task": "voting-task-a",
     "data_dir": "data",
     "train": {
+        "task": ["a"],
+        "k_fold": 6,
+        "eval_batch_size": 16
+    },
+    "submission": {
         "task": "a",
-        "k_fold": 6
+        "dataset": "pred",
+        "file": "data/processed/unlabeled_combined.csv"
     },
     "datasets": {
         "name": "edos",
-        "splits": [0.8, 0.1, 0.1],
         "files": {
             "train": "data/raw/train_all_tasks.csv",
             "dev_a_text": "data/raw/dev_task_a_entries.csv",
@@ -18,9 +23,7 @@
             "dev_a_label": "data/raw/dev_task_a_labels.csv",
             "dev_b_label": "data/raw/dev_task_b_labels.csv",
             "dev_c_label": "data/raw/dev_task_c_labels.csv",
-            "test_a_text": "data/raw/test_task_a_entries.csv",
-            "gab_unlabeled": "data/raw/gab_1M_unlabeled.csv",
-            "reddit_unlabeled": "data/raw/reddit_1M_unlabeled.csv"
+            "test_a_text": "data/raw/test_task_a_entries.csv"
         },
         "labels": {
             "not sexist": {
@@ -107,6 +110,43 @@
             "models": "models",
             "state": "state.json",
             "submission": "submission.csv"
+        }
+    },
+    "model": {
+        "type": "voting",
+        "voting": {
+            "models": [
+                {
+                    "type": "bert",
+                    "path": "logs/B1-0-roberta-base-2323/models/best_model_0.pt",
+                    "config": "B1-0-roberta-base-2323.json"
+                },
+                {
+                    "type": "bert",
+                    "path": "logs/B1-0-roberta-base-2323/models/best_model_1.pt",
+                    "config": "B1-0-roberta-base-2323.json"
+                },
+                {
+                    "type": "bert",
+                    "path": "logs/B1-0-roberta-base-2323/models/best_model_3.pt",
+                    "config": "B1-0-roberta-base-2323.json"
+                },
+                {
+                    "type": "bert",
+                    "path": "logs/B1-0-roberta-base-2323/models/best_model_4.pt",
+                    "config": "B1-0-roberta-base-2323.json"
+                },
+                {
+                    "type": "bert",
+                    "path": "logs/B1-0-roberta-base-2323/models/best_model_5.pt",
+                    "config": "B1-0-roberta-base-2323.json"
+                },
+                {
+                    "type": "bert",
+                    "path": "logs/B1-0-roberta-base-2323/models/best_model_6.pt",
+                    "config": "B1-0-roberta-base-2323.json"
+                }
+            ]
         }
     }
 }

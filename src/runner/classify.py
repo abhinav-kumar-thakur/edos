@@ -4,7 +4,7 @@ import torch
 import random
 
 from src.config_reader import read_json_configs, read_dict_configs
-from src.datasets.dataset import TrainDataset, AdditionalTrainDataset, MamiDataset
+from src.datasets.dataset import TrainDataset
 from src.logger import Logger
 from src.strategies.training.cross_validation import CrossValidation
 from src.utils import get_args
@@ -27,12 +27,7 @@ if __name__ == '__main__':
     torch.manual_seed(configs.seed)
     random.seed(configs.seed)
 
-    dataset = TrainDataset(configs)
-    additional_datasets = [
-        # TODO: Disable additional dataset from configuration
-        # AdditionalTrainDataset(configs)
-        # MamiDataset(configs)
-    ]
-
+    dataset = TrainDataset('train', configs.train.files.train, configs.train.task, configs.train.k_fold)
+    additional_datasets = []
     CrossValidation(configs, state_configs, dataset, additional_datasets, logger, args.device).run()
     print("Finished training with cross validation")
