@@ -32,7 +32,7 @@ if __name__ == '__main__':
     random.seed(configs.seed)
 
     train_dataset = TrainDataset('train', configs.train.files.train, configs.train.task, configs.train.k_fold)
-    eval_dataset = TrainDataset('eval', configs.train.files.train, configs.train.task, configs.train.k_fold)
+    eval_dataset = TrainDataset('eval', configs.train.files.eval, configs.train.task, configs.train.k_fold)
     train_dataloader = DataLoader(train_dataset, batch_size=configs.train.train_batch_size, shuffle=True)
     eval_dataloader = DataLoader(eval_dataset, batch_size=configs.train.eval_batch_size, shuffle=False)
     
