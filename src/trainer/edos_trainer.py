@@ -75,14 +75,6 @@ class EDOSTrainer(Trainer):
         pass
 
     def summarize_scores(self, scores):
-        score = 1
-        if "a" in self.configs.train.task:
-            score *= scores['a']['macro avg']['f1-score']
-        
-        if "b" in self.configs.train.task:
-            score *= scores['b']['macro avg']['f1-score']
-        
-        if "c" in self.configs.train.task:
-            score *= scores['c']['macro avg']['f1-score']
-
-        return score
+        objective = self.configs.train.selection_objective
+        self.logger.log_console(f'Summarizing objective: {objective}')
+        return scores[objective]['macro avg']['f1-score']

@@ -67,7 +67,7 @@
             "args": ["--config", "B1-0-voting-on-task-a.json", "--device", "cpu"]
         },
         {
-            "name": "K-fold",
+            "name": "K-fold CV",
             "type": "python",
             "request": "launch",
             "program": "${cwd}/src/runner/classify.py",
@@ -76,7 +76,7 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "B1-0-roberta-base-2323.json", "--device", "cuda:2"]
+            "args": ["--config", "C1-1-bertweet-base-1869-CV-with-b.json", "--device", "cuda:3"]
 
         },
         {
