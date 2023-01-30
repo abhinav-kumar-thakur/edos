@@ -1,7 +1,8 @@
 {
-    "seed": 2023,
+    "seed": 1869,
     "title": "B1",
-    "task": "roberta-large-llrd-0.3",
+    "task": "roberta-base-1869-fl",
+    "data_dir": "data",
     "train": {
         "ensemble": false,
         "task": ["b", "c"],
@@ -15,21 +16,20 @@
         },
         "k_fold": 6,
         "run_folds": [0 , 1, 2, 3, 4, 5],
-        "train_batch_size": 2,
-        "eval_batch_size": 2,
-        "epochs": 150,
-        "patience": 30,
+        "train_batch_size": 4,
+        "eval_batch_size": 16,
+        "epochs": 50,
+        "patience": 10,
         "optimizer": {
             "name": "AdamW",
-            "lr": 0.0004,
+            "lr": 0.0001,
             "weight_decay": 0.01
         },
         "scheduler": {
-            "name": "cosine_with_hard_restarts",
-            "num_warmup_steps": 5,
-            "num_cycles": 5
+            "name": "cosine",
+            "num_warmup_steps": 5
         },
-        "loss": "ce"
+        "loss": "fl"
     },
     "datasets": {
         "name": "edos",
@@ -133,12 +133,12 @@
     "model": {
         "type": "bert",
         "bert": {
-            "name": "roberta-large",
-            "max_length": 256,
-            "dimensions": 1024,
-            "layers": 24,
-            "llrd": 0.3,
-            "freeze_lower_layers": 18,
+            "name": "roberta-base",
+            "max_length": 128,
+            "dimensions": 768,
+            "layers": 12,
+            "llrd": null,
+            "freeze_lower_layers": 9,
             "heads": {
                 "a": {
                     "dimensions": 2,

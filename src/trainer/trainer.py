@@ -61,6 +61,10 @@ class Trainer(ABC):
         model_path = os.path.join(self.model_save_dir, f'best_model_{self.state_configs.kth_fold}.pt')
         return get_model(self.configs, model_path, self.device)
 
+    def get_best_metric(self):
+        metric_path = os.path.join(self.model_save_dir, f'best_metric_{self.state_configs.kth_fold}.json')
+        return json.load(open(metric_path, 'r'))
+
     @abstractmethod
     def summarize_scores(self, scores):
         pass

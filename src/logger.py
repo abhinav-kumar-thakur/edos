@@ -32,7 +32,13 @@ class Logger:
             f.write(text)
             f.write('\n')
 
+    # TODO: remove this after chaning usage to log_console
     def log(self, text):
+        print('----------------------------------------')
+        print(text)
+        print('----------------------------------------')
+
+    def log_console(self, text):
         print('----------------------------------------')
         print(text)
         print('----------------------------------------')
