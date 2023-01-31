@@ -1,6 +1,6 @@
 from src.optimizer.adafactor import AdaFactorOptimizer
 from src.optimizer.adam import AdamOptimizer
-from src.optimizer.adamw import AdamWOptimizer
+from src.optimizer.adamw import AdamWOptimizer, AdamWOptimizerTorch
 
 
 def get_optimizer(model, configs):
@@ -11,5 +11,8 @@ def get_optimizer(model, configs):
         return AdaFactorOptimizer(model, None)
     elif optimizer_name == 'AdamW':
         return AdamWOptimizer(model, configs)
+    elif optimizer_name == 'AdamW_torch':
+        print('Using torch AdamW')
+        return AdamWOptimizerTorch(model, configs)
     else:
         raise ValueError(f'Optimizer {optimizer_name} is not supported')
