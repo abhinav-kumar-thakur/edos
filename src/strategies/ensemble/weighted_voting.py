@@ -27,16 +27,10 @@ class WeightedVoting(Ensemble):
         return {
             'sexist':pred[rewire_id]['sexist'],
             'weight_a': metrics['eval_metric']['a']['macro avg']['f1-score'] if 'a' in self.configs.train.task else None,
-            # 'confidence_s_a': pred['rewire_id']['confidence_s']['sexist'],
-            # 'uncertainity_a': pred['rewire_id']['uncertainity']['sexist'],
             'category': pred[rewire_id]['category'],
             'weight_b': metrics['eval_metric']['b'][pred[rewire_id]['category']]['f1-score'] if 'b' in self.configs.train.task else None,
-            # 'confidence_s_b': pred['rewire_id']['confidence_s']['category'],
-            # 'uncertainity_b': pred['rewire_id']['uncertainity']['category'],
             'vector': pred[rewire_id]['vector'],
-            'weight_c':  metrics['eval_metric']['c'][pred[rewire_id]['vector']]['f1-score'] if 'c' in self.configs.train.task else None,
-            # 'confidence_s_c': pred['rewire_id']['confidence_s']['vector'],
-            # 'uncertainity_c': pred['rewire_id']['uncertainity']['vector']
+            'weight_c':  metrics['eval_metric']['c'][pred[rewire_id]['vector']]['f1-score'] if 'c' in self.configs.train.task else None
         }
 
     def forward(self, batch, train=False):
@@ -64,7 +58,6 @@ class WeightedVoting(Ensemble):
                     label_dict_c[p['vector']] += p['weight_c']
                     weight_sum_c += p['weight_c']
 
-            # label = max(label_dict, key=label_dict.get)
             label_a = max(label_dict_a, key=label_dict_a.get) if 'a' in self.configs.train.task else None
             label_b = max(label_dict_b, key=label_dict_b.get) if 'b' in self.configs.train.task else None
             label_c = max(label_dict_c, key=label_dict_c.get) if 'c' in self.configs.train.task else None
@@ -72,10 +65,11 @@ class WeightedVoting(Ensemble):
                 'sexist': label_a,
                 'category': label_b,
                 'vector': label_c,
-                'confidence_s': {'sexist': label_dict_a[label_a]/weight_sum_a if 'a' in self.configs.train.task else None,
-                                 'category': label_dict_b[label_b]/weight_sum_b if 'b' in self.configs.train.task else None,
-                                'vector': label_dict_c[label_c]/weight_sum_c if 'c' in self.configs.train.task else None
-                                }
+                'confidence_s': {
+                    'sexist': label_dict_a[label_a]/weight_sum_a if 'a' in self.configs.train.task else None,
+                    'category': label_dict_b[label_b]/weight_sum_b if 'b' in self.configs.train.task else None,
+                    'vector': label_dict_c[label_c]/weight_sum_c if 'c' in self.configs.train.task else None
+                }
             }
 
         return labels, None

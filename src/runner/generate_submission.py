@@ -15,7 +15,7 @@ if __name__ == '__main__':
     configs = read_json_configs(os.path.join('./configs', args.config))
 
     logger = Logger(configs)
-    dataset = TrainDataset(configs, configs.submission.file) if configs.submission.dataset == 'dev' else PredictionDataset(configs)
+    dataset = TrainDataset('train', configs.submission.file, configs.train.task, configs.train.k_fold) if configs.submission.dataset == 'dev' else PredictionDataset(configs.submission.file, configs.train.k_fold)
     logger.log_text(configs.logs.files.event, f'Generating submission file for {configs.submission.file} dataset')
     
     model = get_ensemble_model(configs, logger, args.device)
@@ -68,20 +68,26 @@ if __name__ == '__main__':
     if 'a' in configs.train.task:
         output_file_a = os.path.join(logger.dir, 'a-'+configs.logs.files.submission)
         with open(output_file_a, 'w') as f:
+            f.write('rewire_id,label_pred\n')
             for rew_id, pred in predictions_a.items():
-                f.write(f'{rew_id},{pred}\n')
+                pred_string = f'"{pred}"' if ',' in pred else pred
+                f.write(f'{rew_id},{pred_string}\n')
         print(f"Done generating submission file for Task A: {output_file_a}")
     if 'b' in configs.train.task:
         output_file_b = os.path.join(logger.dir, 'b-'+configs.logs.files.submission)
         with open(output_file_b, 'w') as f:
+            f.write('rewire_id,label_pred\n')
             for rew_id, pred in predictions_b.items():
-                f.write(f'{rew_id},{pred}\n')
+                pred_string = f'"{pred}"' if ',' in pred else pred
+                f.write(f'{rew_id},{pred_string}\n')
         print(f"Done generating submission file for Task B: {output_file_b}")
     if 'c' in configs.train.task:
         output_file_c = os.path.join(logger.dir, 'c-'+configs.logs.files.submission)
         with open(output_file_c, 'w') as f:
+            f.write('rewire_id,label_pred\n')
             for rew_id, pred in predictions_c.items():
-                f.write(f'{rew_id},{pred}\n')
+                pred_string = f'"{pred}"' if ',' in pred else pred
+                f.write(f'{rew_id},{pred_string}\n')
         print(f"Done generating submission file for Task C: {output_file_c}")
 
     # assert len(predictions) == len(dataset), f"Expected 4000 predictions, got {len(predictions)}"

@@ -29,6 +29,9 @@ if __name__ == '__main__':
 
     train_dataset = TrainDataset('train', configs.train.files.train, configs.train.task, configs.train.k_fold)
     dev_dataset = DevDataset(configs)
+    if 'a' not in configs.train.task:
+        dev_dataset.data = [d for d in dev_dataset.data if d['label_sexist'] != 'sexist']
+
     dataset = train_dataset.merge(dev_dataset)
 
     additional_datasets = []

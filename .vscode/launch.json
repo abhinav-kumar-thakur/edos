@@ -51,7 +51,7 @@
                 "PYTHONPATH": "${cwd}"
             },
 
-            "args": ["--config", "B1-1-weighted-voting.json", "--device", "cuda"]
+            "args": ["--config", "C1-1-weighted-voting-cv.json", "--device", "cuda:1"]
         },
         {
             "name": "Meta Cl Ensembler",
@@ -89,8 +89,7 @@
             "env": {
                 "PYTHONPATH": "${cwd}"
             },
-            "args": ["--config", "C1-1-bertweet-base-1869-CV-with-b.json", "--device", "cuda:3"]
-
+            "args": ["--config", "C1-1-bertweet-base-1869-CV-with-b-5F.json", "--device", "cuda:3"]
         },
         {
             "name": "Pretrainer",
