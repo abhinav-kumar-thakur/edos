@@ -14,13 +14,13 @@ class Logger:
 
     def log_file(self, log_file, log_dict):
         filepath = os.path.join(self.dir, log_file)
-        with open(filepath, 'a+') as f:
+        with open(filepath, 'a+',encoding='utf8') as f:
             f.write(json.dumps(log_dict))
             f.write('\n')
 
     def log_csv(self, log_file, data):
         filepath = os.path.join(self.dir, log_file)
-        with open(filepath, 'w') as f:
+        with open(filepath, 'w',encoding='utf8') as f:
             for line in data:
                 row = [str(x).replace('"',"'") for x in line]
                 f.write(','.join([f'"{x}"' for x in row]))
@@ -28,7 +28,7 @@ class Logger:
 
     def log_text(self, log_file, text):
         filepath = os.path.join(self.dir, log_file)
-        with open(filepath, 'a+') as f:
+        with open(filepath, 'a+',encoding='utf8') as f:
             f.write(text)
             f.write('\n')
 

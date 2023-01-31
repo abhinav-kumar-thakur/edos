@@ -1,4 +1,4 @@
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, f1_score
 from tqdm import tqdm
 
 from src.trainer.trainer import Trainer
@@ -12,14 +12,17 @@ class EDOSTrainer(Trainer):
         self.model.train()
         total_loss = 0
 
-        for batch in tqdm(train_dataloader):
+        for batch in tqdm(train_dataloader, desc="Training "):
             self.optimizer.zero_grad()
-            _, loss = self.model(batch)
+            pred, loss = self.model(batch)
             total_loss += loss.item()
             loss.backward()
             self.optimizer.step_optimizer()
-
-        self.optimizer.step_scheduler()
+        if self.configs.train.scheduler.name == 'reduce_lr_on_plateau': 
+            f1 = self.get_training_f1(batch, pred)
+            self.optimizer.step_scheduler(metrics=f1)
+        else:
+            self.optimizer.step_scheduler()
         return total_loss / len(train_dataloader)
 
     def eval(self, eval_dataloader):
@@ -35,21 +38,7 @@ class EDOSTrainer(Trainer):
         for batch in tqdm(eval_dataloader):
             pred, _ = self.model(batch, train=False)
             for i, rewire_id in enumerate(batch['rewire_id']):
-                predictions.append((
-                    rewire_id, batch['text'][i],
-                    batch['label_sexist'][i],
-                    pred[rewire_id]['sexist'] if 'a' in self.configs.train.task else '-',
-                    pred[rewire_id]['confidence']['sexist'] if 'a' in self.configs.train.task else '-',
-                    pred[rewire_id]['uncertainity']['sexist'] if 'a' in self.configs.train.task else '-',
-                    batch['label_category'][i],
-                    pred[rewire_id]['category'] if 'b' in self.configs.train.task else '-',
-                    pred[rewire_id]['confidence']['category'] if 'b' in self.configs.train.task else '-',
-                    pred[rewire_id]['uncertainity']['category'] if 'b' in self.configs.train.task else '-',
-                    batch['label_vector'][i],
-                    pred[rewire_id]['vector'] if 'c' in self.configs.train.task else '-',
-                    pred[rewire_id]['confidence']['vector'] if 'c' in self.configs.train.task else '-',
-                    pred[rewire_id]['uncertainity']['vector'] if 'c' in self.configs.train.task else '-'
-                ))
+                predictions.append(self.format_predictions(rewire_id, batch, pred, i))
 
                 if 'a' in self.configs.train.task:
                     actual_a.append(batch['label_sexist'][i])
@@ -78,3 +67,45 @@ class EDOSTrainer(Trainer):
         objective = self.configs.train.selection_objective
         self.logger.log_console(f'Summarizing objective: {objective}')
         return scores[objective]['macro avg']['f1-score']
+    
+    def get_training_f1(self, batch, pred):
+        actual_a, predicted_a, actual_b, predicted_b, actual_c, predicted_c = [], [], [], [], [], []
+        for i, rewire_id in enumerate(batch['rewire_id']):
+            if 'a' in self.configs.train.task:
+                actual_a.append(batch['label_sexist'][i])
+                predicted_a.append(pred[rewire_id]['sexist'])
+
+            if batch['label_sexist'][i] == 'sexist' and 'b' in self.configs.train.task:
+                actual_b.append(batch['label_category'][i])
+                predicted_b.append(pred[rewire_id]['category'])
+
+            if batch['label_sexist'][i] == 'sexist' and 'c' in self.configs.train.task:
+                actual_c.append(batch['label_vector'][i])
+                predicted_c.append(pred[rewire_id]['vector'])
+        assert len(self.configs.train.task) >= 1, "No task selected"
+        f1 = 1
+        for task in self.configs.train.task:
+            if task == 'a':
+                f1 *= f1_score(actual_a, predicted_a, average='macro')
+            elif task == 'b':
+                f1 *= f1_score(actual_b, predicted_b, average='macro')
+            elif task == 'c':
+                f1 *= f1_score(actual_c, predicted_c, average='macro')
+            else:
+                raise ValueError("Invalid task")
+        return f1
+
+    def format_predictions(self,rewire_id, batch, pred, i):
+        return (rewire_id, batch['text'][i],
+            batch['label_sexist'][i],
+            pred[rewire_id]['sexist'] if 'a' in self.configs.train.task else '-',
+            pred[rewire_id]['confidence']['sexist'] if 'a' in self.configs.train.task else '-',
+            pred[rewire_id]['uncertainity']['sexist'] if 'a' in self.configs.train.task else '-',
+            batch['label_category'][i],
+            pred[rewire_id]['category'] if 'b' in self.configs.train.task else '-',
+            pred[rewire_id]['confidence']['category'] if 'b' in self.configs.train.task else '-',
+            pred[rewire_id]['uncertainity']['category'] if 'b' in self.configs.train.task else '-',
+            batch['label_vector'][i],
+            pred[rewire_id]['vector'] if 'c' in self.configs.train.task else '-',
+            pred[rewire_id]['confidence']['vector'] if 'c' in self.configs.train.task else '-',
+            pred[rewire_id]['uncertainity']['vector'] if 'c' in self.configs.train.task else '-')

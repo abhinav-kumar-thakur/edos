@@ -1,36 +1,18 @@
 {
-    "seed": 1869,
-    "title": "B1",
-    "task": "bertweet-base-1869-with-c",
+    "seed": 42,
+    "title": "B1-1",
+    "task": "meta-classifier-task-b",
     "data_dir": "data",
     "train": {
-        "ensemble": false,
-        "task": ["b", "c"],
-        "files": {
-            "train": "data/processed/B1-data-prep/split_0.csv",
-            "eval": "data/processed/B1-data-prep/split_1.csv"
-        },
-        "additional_files": {
-            "sd": "data/raw/SD_dataset_FINAL.csv",
-            "mami": "data/raw/training.csv"
-        },
+        "task": ["b"],
+        "ensemble": true,
         "k_fold": 6,
-        "run_folds": [0 , 1, 2, 3, 4, 5],
-        "train_batch_size": 4,
-        "eval_batch_size": 16,
-        "epochs": 40,
-        "patience": 10,
-        "optimizer": {
-            "name": "AdamW",
-            "lr": 0.0001,
-            "weight_decay": 0.01
-        },
-        "scheduler": {
-            "name": "cosine",
-            "num_warmup_steps": 5,
-            "num_cycles": 4
-        },
-        "loss": "ce"
+        "eval_batch_size": 2
+    },
+    "submission": {
+        "task": "b",
+        "dataset": "dev",
+        "file": "data/processed/B1-data-prep/split_2.csv"
     },
     "datasets": {
         "name": "edos",
@@ -128,32 +110,27 @@
             "data": "data.log",
             "models": "models",
             "state": "state.json",
-            "submission": "submission.csv"
+            "submission": "submission_task_b_metacl.csv"
         }
     },
     "model": {
-        "type": "bert",
-        "bert": {
-            "name": "vinai/bertweet-base",
-            "max_length": 128,
-            "dimensions": 768,
-            "layers": 12,
-            "llrd": null,
-            "freeze_lower_layers": 9,
-            "heads": {
-                "a": {
-                    "dimensions": 2,
-                    "loss_weights": [1, 1]   
+        "mode": "train",
+        "type": "meta_classifier",
+        "meta_classifier": {
+            "models": [
+                {
+                    "type": "bert",
+                    "path": "logs/B1-roberta-base-task-b/models/best_model_all_data.pt",
+                    "metrics": "logs/B1-roberta-base-task-b/models/best_metric_all_data.json",
+                    "config": "B1-1-roberta-base.json"
                 },
-                "b": {
-                    "dimensions": 5,
-                    "loss_weights": [1, 1, 1, 1, 1]
-                },
-                "c": {
-                    "dimensions": 12,
-                    "loss_weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                {
+                    "type": "bert",
+                    "path": "logs/B1-roberta-base-task-b/models/best_model_all_data.pt",
+                    "metrics": "logs/B1-roberta-base-task-b/models/best_metric_all_data.json",
+                    "config": "B1-1-roberta-base.json"
                 }
-            }
+            ]
         }
     }
 }
